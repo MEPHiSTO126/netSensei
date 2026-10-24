@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, Play, FileText, Image as ImageIcon, BarChart3 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const STAGE_ICONS: Record<string, React.ReactNode> = {
   TEXT: <FileText className="h-4 w-4" />,
   IMAGE: <ImageIcon className="h-4 w-4" />,

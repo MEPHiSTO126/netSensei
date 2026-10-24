@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, FileText, Image as ImageIcon, BarChart3, Play } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 const STAGE_ICONS: Record<string, React.ReactNode> = {
   TEXT: <FileText className="h-4 w-4" />,
   IMAGE: <ImageIcon className="h-4 w-4" />,
@@ -119,16 +121,18 @@ export default async function StagePage({
                 <p className="text-xs text-muted-foreground">
                   Complete this phase and test your knowledge
                 </p>
-                <Link
-                  href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
-                  className={`mt-2 inline-flex items-center gap-1.5 text-xs font-medium transition-colors ${
-                    canTakeQuiz ? "text-primary hover:underline" : "text-muted-foreground"
-                  }`}
-                  disabled={!canTakeQuiz}
-                >
-                  {canTakeQuiz ? "Take quiz" : "Finish stages first"}
-                  <ChevronRight className="h-3 w-3" />
-                </Link>
+                {canTakeQuiz ? (
+                  <Link
+                    href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                  >
+                    Take quiz <ChevronRight className="h-3 w-3" />
+                  </Link>
+                ) : (
+                  <span className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    Finish stages first <ChevronRight className="h-3 w-3" />
+                  </span>
+                )}
               </div>
             </Card>
           )}

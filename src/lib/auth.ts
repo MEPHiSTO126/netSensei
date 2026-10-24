@@ -1,4 +1,4 @@
-import { sign, verify, type JWTPayload } from "jose";
+import { SignJWT, jwtVerify } from "jose";
 import { compare, hash } from "bcryptjs";
 import { cookies } from "next/headers";
 import { db } from "./db";
@@ -28,11 +28,14 @@ export async function verifyPassword(
 }
 
 export async function createSession(user: SessionUser): Promise<string> {
-  const token = await sign(
-    { id: user.id, email: user.email, role: user.role },
-    JWT_SECRET,
-    { expiresIn: "24h" }
-  );
+  const token = await new SignJWT({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("24h")
+    .sign(JWT_SECRET);
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -55,7 +58,7 @@ export async function verifySession(
   token: string
 ): Promise<SessionUser | null> {
   try {
-    const { payload } = await verify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, JWT_SECRET);
     return {
       id: payload.id as string,
       email: payload.email as string,
