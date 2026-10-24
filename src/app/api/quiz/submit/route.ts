@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     const { quiz } = phase;
     let totalScore = 0;
-    let maxScore = 0;
+    const maxScore = quiz.questions.length * 100;
     const results: Array<{
       questionId: string;
       score: number;
@@ -46,7 +46,6 @@ export async function POST(req: Request) {
 
     for (const question of quiz.questions) {
       const answer = answers[question.id] ?? "";
-      maxScore += question.points;
 
       const grade = await gradeAnswer({
         questionType: question.type as "SNIPPET" | "TEXT" | "AUDIO",
