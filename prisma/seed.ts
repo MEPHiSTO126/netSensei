@@ -449,14 +449,14 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Execution model.",
         stages: [
-          { title: "Call Stack and Sync", type: "TEXT", content: "JS is single-threaded; call stack executes sync code. Async operations push tasks." },
-          { title: "Task and Microtask Queues", type: "TEXT", content: "Task queue (macrotask) vs microtask queue (promises). Microtasks run before next task." },
-          { title: "Event Loop", type: "TEXT", content: "Event loop waits for call stack to drain, then drains microtask queue before next task." },
+          { title: "Call Stack and Sync", type: "TEXT", content: "JavaScript is single-threaded, so one call stack executes the code. Synchronous code runs to completion on that stack. Async operations such as fetch or timers hand off and notify when they are done instead of blocking." },
+          { title: "Task and Microtask Queues", type: "TEXT", content: "The event loop has a task queue for macrotasks such as timers and I/O, and a microtask queue for promises. After the call stack drains, microtasks run before the next task." },
+          { title: "Event Loop", type: "TEXT", content: "The event loop watches the call stack and the queues. When the stack is empty it pulls the next task, and before that task it drains the microtask queue." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "After an async task resolves, when do microtasks run relative to the next task?", expectedAnswer: "Before the next task (microtasks drain first).", rubric: "Check event loop understanding.", points: 1 },
+            { type: "TEXT", prompt: "After an async task resolves, when do microtasks run relative to the next task?", fullGoal: "Explain microtask timing after an async task resolves.", expectedAnswer: "Before the next task (microtasks drain first).", rubric: "Check event loop understanding.", points: 1 },
           ],
         },
       },
@@ -465,8 +465,8 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Async programming and network.",
         stages: [
-          { title: "Promises", type: "TEXT", content: "Promise states: pending, fulfilled, rejected. then/catch/finally." },
-          { title: "async/await and fetch", type: "TEXT", content: "async/await wraps promises; fetch returns a promise for HTTP requests; handle res.ok and status codes." },
+          { title: "Promises", type: "TEXT", content: "A promise is a handle to a value that is coming. It moves through pending, fulfilled, or rejected. then, catch, and finally let you react as it settles." },
+          { title: "async/await and fetch", type: "TEXT", content: "async functions return promises and await pauses until a promise settles, then continues. fetch returns a promise that resolves to a response, so you await it and then check res.ok or the status." },
         ],
         quiz: {
           passThreshold: 70,
@@ -480,8 +480,8 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "Loading, empty, error, offline, stale handling in UI.",
         stages: [
-          { title: "Loading and Empty", type: "TEXT", content: "Loading state shows progress; empty state shows no-data messaging. Design for both." },
-          { title: "Error and Stale", type: "TEXT", content: "Error state with plain-language message + retry; stale state with last-updated time. Offline state with retry." },
+          { title: "Loading and Empty", type: "TEXT", content: "Every data view needs a loading state while data is in flight, and an empty state when there is nothing to show. Design both explicitly." },
+          { title: "Error and Stale", type: "TEXT", content: "Show a plain-language error message with a retry action when a fetch fails. Show stale data with a last-updated timestamp when data may be outdated, and offer retry when offline." },
         ],
         quiz: {
           passThreshold: 70,
