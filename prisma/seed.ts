@@ -539,13 +539,13 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "React foundation.",
         stages: [
-          { title: "Vite and JSX", type: "TEXT", content: "Vite scaffolds React fast. JSX compiles to React.createElement; class becomes className." },
-          { title: "First Component", type: "TEXT", content: "Function component returning JSX. Know JSX = JavaScript syntax extension." },
+          { title: "Vite and JSX", type: "TEXT", content: "Vite scaffolds a React project with a dev server and fast refresh. JSX is a syntax extension that looks like HTML but compiles to React.createElement calls, so the HTML class attribute becomes className in JavaScript. JSX is a JavaScript syntax extension." },
+          { title: "First Component", type: "TEXT", content: "A React component is a function that returns JSX. Because JSX compiles to React.createElement, a component returns UI as a JavaScript expression. The mental model shifts from the DOM being the UI to the UI being a function of state." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "In JSX, how do you write the HTML class attribute?", expectedAnswer: "className.", rubric: "Check JSX knowledge.", points: 1 },
+            { type: "TEXT", prompt: "In JSX, how do you write the HTML class attribute?", fullGoal: "Write the HTML class attribute in JSX.", expectedAnswer: "className.", rubric: "Check JSX knowledge.", points: 1 },
           ],
         },
       },
@@ -554,12 +554,12 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Passing data into components.",
         stages: [
-          { title: "Props Passing", type: "TEXT", content: "Props flow parent → child; props are read-only inputs." },
+          { title: "Props Passing", type: "TEXT", content: "Props flow from parent to child. A component receives an object of props and reads from it, and props are how a parent passes data and behaviour down. From the child perspective props are read-only — a component should not mutate them." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Are props mutable in React?", expectedAnswer: "No; props are immutable inputs from parent.", rubric: "Check props understanding.", points: 1 },
+            { type: "TEXT", prompt: "Are props mutable in React?", fullGoal: "Explain whether props are mutable in React.", expectedAnswer: "No; props are immutable inputs from parent.", rubric: "Check props understanding.", points: 1 },
           ],
         },
       },
@@ -568,13 +568,13 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "useState, lists, keys, conditional rendering.",
         stages: [
-          { title: "useState", type: "TEXT", content: "useState hook adds state; setState updates immutably." },
-          { title: "Lists and Keys", type: "TEXT", content: "Render lists from arrays; keys stable and unique; conditional rendering with ternary or &&." },
+          { title: "useState", type: "TEXT", content: "useState is a React hook that adds state to a function component. The first call returns the current value and a setter; calling the setter schedules a re-render with the new value.\n\nState updates are immutable — you always compute the next state as new data rather than mutating the old." },
+          { title: "Lists and Keys", type: "TEXT", content: "To render a list, map over the array and return JSX per item, giving each item a stable, unique key. Conditional rendering uses a ternary or && to show or hide UI." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Why do lists need stable keys in React?", expectedAnswer: "Keys help reconciliation match items across renders; unstable keys cause bugs.", rubric: "Check keys understanding.", points: 1 },
+            { type: "TEXT", prompt: "Why do lists need stable keys in React?", fullGoal: "Explain why lists in React need stable keys.", expectedAnswer: "Keys help reconciliation match items across renders; unstable keys cause bugs.", rubric: "Check keys understanding.", points: 1 },
           ],
         },
       },
@@ -583,14 +583,14 @@ const modules: ModuleSeed[] = [
         order: 4,
         description: "Event handlers, controlled forms, effects.",
         stages: [
-          { title: "Events via Props", type: "TEXT", content: "Pass handler functions via props; onClick etc. in React.", },
-          { title: "Controlled Forms", type: "TEXT", content: "Controlled inputs: value + onChange in state. Controlled = single source of truth." },
-          { title: "useEffect", type: "TEXT", content: "useEffect runs side effects (fetch, subscriptions); dependency array controls when." },
+          { title: "Events via Props", type: "TEXT", content: "In React you wire events by passing handler functions down via props, for example onClick. The handler is just a function; React calls it when the event fires." },
+          { title: "Controlled Forms", type: "TEXT", content: "A controlled input takes its value from state and updates state through onChange. The state is the single source of truth — the input and the state stay in sync." },
+          { title: "useEffect", type: "TEXT", content: "useEffect lets a component run side effects — fetching data, subscribing — after render. The dependency array controls when the effect re-runs." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What is a controlled input in React?", expectedAnswer: "Input value comes from state and changes update state via onChange.", rubric: "Check controlled component understanding.", points: 1 },
+            { type: "TEXT", prompt: "What is a controlled input in React?", fullGoal: "Explain what a controlled input is in React.", expectedAnswer: "Input value comes from state and changes update state via onChange.", rubric: "Check controlled component understanding.", points: 1 },
           ],
         },
       },
@@ -599,14 +599,14 @@ const modules: ModuleSeed[] = [
         order: 5,
         description: "Compose components; build mini app.",
         stages: [
-          { title: "Lifting State", type: "TEXT", content: "Lift state to closest common ancestor; pass down via props with callbacks." },
-          { title: "Custom Hooks", type: "TEXT", content: "Extract reusable stateful logic into custom hooks using useState/useEffect." },
-          { title: "Mini Capstone App", type: "TEXT", content: "Build a small interactive app: counter or list with state, derived values, effects, forms." },
+          { title: "Lifting State", type: "TEXT", content: "Lift state to the closest common ancestor that needs it, then pass it down via props along with callbacks that update the state." },
+          { title: "Custom Hooks", type: "TEXT", content: "Extract reusable stateful logic into custom hooks that use useState and useEffect under the hood." },
+          { title: "Mini Capstone App", type: "TEXT", content: "Build a small interactive app: a counter or list with state, derived values, effects, and forms." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "When should you lift state up in React?", expectedAnswer: "When sibling or child components need shared state.", rubric: "Check lifting understanding.", points: 1 },
+            { type: "TEXT", prompt: "When should you lift state up in React?", fullGoal: "Explain when a developer should lift state up in React.", expectedAnswer: "When sibling or child components need shared state.", rubric: "Check lifting understanding.", points: 1 },
           ],
         },
       },
