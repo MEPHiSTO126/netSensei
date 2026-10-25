@@ -502,13 +502,13 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Core state model concepts.",
         stages: [
-          { title: "Definitions", type: "TEXT", content: "State is internal mutable data; props are inputs from parent; derived can be computed. Know the distinction." },
-          { title: "When to Lift", type: "TEXT", content: "Lift state up when sibling components need shared state; keep local when not." },
+          { title: "Definitions", type: "TEXT", content: "State is data a component owns and can change over time. Props are inputs a parent passes down, and they arrive read-only. Derived data can be computed from state or props and does not need its own storage." },
+          { title: "When to Lift", type: "TEXT", content: "Lift state up when sibling or child components need shared state, placing it in the closest common ancestor. Keep state local when only one component uses it." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "In React, is state mutable or immutable?", expectedAnswer: "Immutable (state updates create new objects/arrays).", rubric: "Check immutability understanding.", points: 1 },
+            { type: "TEXT", prompt: "In React, is state mutable or immutable?", fullGoal: "Answer whether React state is mutable or immutable.", expectedAnswer: "Immutable (state updates create new objects/arrays).", rubric: "Check immutability understanding.", points: 1 },
           ],
         },
       },
@@ -517,13 +517,13 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Mutation pitfalls and data flow.",
         stages: [
-          { title: "Mutation vs New", type: "TEXT", content: "Mutating state directly causes stale UI bugs; always create new objects/arrays when updating state." },
-          { title: "Two-Copies Bug", type: "TEXT", content: "Mutating a nested object that was spread into state creates two copies with divergent values; leads to stale UI." },
+          { title: "Mutation vs New", type: "TEXT", content: "Mutating state directly causes stale UI bugs because React does not know the data changed. Always create new objects or arrays when updating state." },
+          { title: "Two-Copies Bug", type: "TEXT", content: "Mutating a nested object that was spread into state creates two copies with divergent values, which leads to stale UI bugs. That is the two-copies problem." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What causes the 'two-copies' bug in React state?", expectedAnswer: "Direct mutation of a nested object that was previously copied into state.", rubric: "Check immutability understanding.", points: 1 },
+            { type: "TEXT", prompt: "What causes the 'two-copies' bug in React state?", fullGoal: "Explain what causes the two-copies bug in React state.", expectedAnswer: "Direct mutation of a nested object that was previously copied into state.", rubric: "Check immutability understanding.", points: 1 },
           ],
         },
       },
