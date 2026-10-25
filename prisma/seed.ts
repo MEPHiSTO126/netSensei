@@ -296,13 +296,13 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "querySelector and friends.",
         stages: [
-          { title: "querySelector", type: "TEXT", content: "querySelector takes a CSS selector string and returns the first match. querySelectorAll returns all matches." },
-          { title: "getElementById Contrast", type: "TEXT", content: "getElementById is a convenience for #id; querySelector generalizes to any CSS selector." },
+          { title: "querySelector", type: "TEXT", content: "querySelector takes a CSS selector string and returns the first element that matches. querySelectorAll returns all matching elements as a NodeList. Use querySelector when you need one element and querySelectorAll when you need the collection.\n\nThe selector language is CSS, so \".hero .title\" reads the way you would style it. That is the power: one syntax for finding and styling. Start simple — tag names, class names, ids — and add complexity only when the page demands it." },
+          { title: "getElementById Contrast", type: "TEXT", content: "getElementById is a shortcut for one specific case: an element whose id is \"...\". It is fast and simple, but it only handles ids — no classes, no tags, no nesting. querySelector handles all of CSS. Use getElementById for the simple id case and querySelector for anything richer." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "When should you use querySelector over getElementById?", expectedAnswer: "When the selection is CSS-selector based rather than id-based.", rubric: "Check API selection understanding.", points: 1 },
+            { type: "TEXT", prompt: "When should you use querySelector over getElementById?", fullGoal: "Choose the right DOM selection method for a task.", expectedAnswer: "Use querySelector when the selection is CSS-selector based rather than id-based; use getElementById for simple id lookups.", rubric: "Check API selection understanding.", points: 1 },
           ],
         },
       },
@@ -311,13 +311,13 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "createElement, textContent vs innerHTML, classList, dataset.",
         stages: [
-          { title: "createElement and textContent", type: "TEXT", content: "createElement builds elements; textContent sets text safely (no HTML interpretation); innerHTML injects HTML (dangerous with user input)." },
-          { title: "classList and dataset", type: "TEXT", content: "classList add/remove/contains for classes; dataset for data-* attributes." },
+          { title: "createElement and textContent", type: "TEXT", content: "createElement builds a new element of a given tag: document.createElement(\"button\"). Then you can set properties and attach it.\n\ntextContent sets text inside an element and treats it as plain text — it does not interpret HTML, which is why it is the safe choice for user-provided strings. innerHTML injects HTML markup, which means user input could become elements or scripts. Prefer textContent unless you truly mean to render markup." },
+          { title: "classList and dataset", type: "TEXT", content: "classList manages classes on an element with add, remove, and contains. dataset reads and writes data-* attributes (data-name becomes dataset.name). Both are how you wire behaviour and styling without touching innerHTML." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Why prefer textContent over innerHTML when inserting user-provided strings?", expectedAnswer: "textContent treats content as plain text; innerHTML parses HTML (XSS risk).", rubric: "Check safe-practice understanding.", points: 1 },
+            { type: "TEXT", prompt: "Why prefer textContent over innerHTML when inserting user-provided strings?", fullGoal: "Explain why textContent is the safe choice over innerHTML for user-provided strings.", expectedAnswer: "textContent treats content as plain text; innerHTML parses HTML (XSS risk).", rubric: "Check safe-practice understanding.", points: 1 },
           ],
         },
       },
@@ -326,12 +326,12 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "DOM traversal and safe updates.",
         stages: [
-          { title: "Traversal", type: "TEXT", content: "parentElement, children, nextElementSibling, previousElementSibling for moving through the tree." },
+          { title: "Traversal", type: "TEXT", content: "parentElement, children, nextElementSibling, and previousElementSibling let you walk the tree — up one level, down into children, sideways to siblings. Use them when you need to move or reshape DOM programmatically, for example reordering a list." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "How do you move a node to a different parent safely?", expectedAnswer: "Use appendChild/insertBefore with a reference node; reassigning parent directly is error-prone.", rubric: "Check DOM API understanding.", points: 1 },
+            { type: "TEXT", prompt: "How do you move a node to a different parent safely?", fullGoal: "Describe the safe way to move a DOM node to a new parent.", expectedAnswer: "Use appendChild or insertBefore with a reference node; directly reassigning the parent is error-prone.", rubric: "Check DOM API understanding.", points: 1 },
           ],
         },
       },
