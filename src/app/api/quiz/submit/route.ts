@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { gradeAnswer } from "@/lib/ai";
+import { checkSnippet, gradeAnswer } from "@/lib/ai";
 import { z } from "zod";
 
 const schema = z.object({
@@ -47,12 +47,20 @@ export async function POST(req: Request) {
     for (const question of quiz.questions) {
       const answer = answers[question.id] ?? "";
 
-      const grade = await gradeAnswer({
-        questionType: question.type as "SNIPPET" | "TEXT" | "AUDIO",
-        userAnswer: answer,
-        questionId: question.id,
-        studentId: user.id,
-      });
+      const grade = await (question.type === "SNIPPET"
+        ? checkSnippet({
+            code: answer,
+            language: "javascript",
+            fullGoal: question.fullGoal,
+            questionId: question.id,
+            studentId: user.id,
+          })
+        : gradeAnswer({
+            questionType: question.type as "SNIPPET" | "TEXT" | "AUDIO",
+            userAnswer: answer,
+            questionId: question.id,
+            studentId: user.id,
+          }));
 
       // Determine attempt number
       const existing = await db.answerRecord.findFirst({

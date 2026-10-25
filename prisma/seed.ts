@@ -235,7 +235,7 @@ const modules: ModuleSeed[] = [
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Write a JavaScript function that takes a number and returns true when the number is even.", fullGoal: "Write a function isEven(n) that returns true when n is even, using the remainder operator.", expectedAnswer: "function isEven(n) { return n % 2 === 0; }", rubric: "Check function syntax, return usage, and modulo logic.", points: 1 },
+            { type: "SNIPPET", prompt: "Write a JavaScript function that takes a number and returns true when the number is even.", fullGoal: "Write a function isEven(n) that returns true when n is even, using the remainder operator.", expectedAnswer: "function isEven(n) { return n % 2 === 0; }", rubric: "Check function syntax, return usage, and modulo logic.", points: 1 },
           ],
         },
       },
@@ -318,6 +318,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "Why prefer textContent over innerHTML when inserting user-provided strings?", fullGoal: "Explain why textContent is the safe choice over innerHTML for user-provided strings.", expectedAnswer: "textContent treats content as plain text; innerHTML parses HTML (XSS risk).", rubric: "Check safe-practice understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Create a button element, set its text to Click me, and add it to the page.", fullGoal: "Create a button element, set its text content to Click me, and append it to the document body.", expectedAnswer: "const btn = document.createElement('button'); btn.textContent = 'Click me'; document.body.appendChild(btn);", rubric: "Check createElement, textContent, and appendChild usage.", points: 2 },
           ],
         },
       },
@@ -546,6 +547,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "In JSX, how do you write the HTML class attribute?", fullGoal: "Write the HTML class attribute in JSX.", expectedAnswer: "className.", rubric: "Check JSX knowledge.", points: 1 },
+            { type: "SNIPPET", prompt: "Write a React function component that renders a heading with the text Hello world.", fullGoal: "Write a React functional component that returns JSX containing an h1 with the text Hello world.", expectedAnswer: "function HelloWorld() { return <h1>Hello world</h1>; }", rubric: "Check function component returning JSX and JSX syntax.", points: 2 },
           ],
         },
       },
@@ -575,6 +577,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "Why do lists need stable keys in React?", fullGoal: "Explain why lists in React need stable keys.", expectedAnswer: "Keys help reconciliation match items across renders; unstable keys cause bugs.", rubric: "Check keys understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Write the code to render an array of names as a list of items with stable keys.", fullGoal: "Render an array of names as a list using map and stable keys.", expectedAnswer: "names.map((name) => <li key={name}>{name}</li>)", rubric: "Check map usage and stable keys.", points: 2 },
           ],
         },
       },
