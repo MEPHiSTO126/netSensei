@@ -203,6 +203,467 @@ const modules: ModuleSeed[] = [
       },
     ],
   },
+  {
+    title: "JavaScript Survival Kit",
+    order: 4,
+    description: "Just enough JavaScript before the DOM and events: values, types, functions, control flow, objects, arrays, scope, hoisting, errors, debugger.",
+    phases: [
+      {
+        title: "Values and Types",
+        order: 1,
+        description: "Primitives and declarations.",
+        stages: [
+          { title: "Primitives", type: "TEXT", content: "Strings, numbers, booleans, null, undefined. Values are typed; comparisons use === for strict equality." },
+          { title: "let and const vs var", type: "TEXT", content: "let and const are block-scoped; var is function-scoped. Prefer let/const for predictability." },
+          { title: "typeof", type: "TEXT", content: "typeof returns the type of a value; for null it returns object, which is a famous JS quirk to know." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What does typeof null return in JavaScript?", expectedAnswer: "object", rubric: "Check the typeof quirk is known.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Functions and Control Flow",
+        order: 2,
+        description: "Functions, return, conditionals, truthiness.",
+        stages: [
+          { title: "Function Declarations and Arrows", type: "TEXT", content: "Functions as values. Arrow functions with implicit return; declarations with return keyword." },
+          { title: "Return and Conditionals", type: "TEXT", content: "return exits a function. if/else branches execution. Truthy/falsy values drive conditionals." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Write a function that returns true if a number is even.", expectedAnswer: "function isEven(n) { return n % 2 === 0; }", rubric: "Check function + return usage.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Objects and Arrays",
+        order: 3,
+        description: "Object literals, array methods, iteration.",
+        stages: [
+          { title: "Objects and Dot Access", type: "TEXT", content: "Object literals with key-value pairs; dot access for known keys, bracket access for dynamic keys." },
+          { title: "Arrays and forEach", type: "TEXT", content: "Array literals, index access, length, and forEach for iteration over arrays." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Given an array of names, what does arr.forEach print?", expectedAnswer: "Each name in order.", rubric: "Check iteration understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Scope and Hoisting",
+        order: 4,
+        description: "Scope rules and hoisting behavior.",
+        stages: [
+          { title: "Scope", type: "TEXT", content: "Function scope vs block scope. let/const are block-scoped; function declarations hoist." },
+          { title: "Hoisting", type: "TEXT", content: "Function declarations hoist fully; let/const are hoisted but in temporal dead zone until initialized." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What happens if you call a let variable before its declaration line executes?", expectedAnswer: "Temporal dead zone error.", rubric: "Check hoisting/TDZ understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Errors and Debugger",
+        order: 5,
+        description: "Error handling and browser DevTools debugging.",
+        stages: [
+          { title: "try and catch", type: "TEXT", content: "try/catch/finally for error handling. Errors are objects with messages." },
+          { title: "Reading Errors and Debugger", type: "TEXT", content: "Read error messages plainly (file, line, message). Use DevTools Sources debugger breakpoints and step-through." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "How do you handle an error you expect in user input?", expectedAnswer: "try/catch around the risky operation or validate before.", rubric: "Check error-handling basics.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "The DOM Is an API",
+    order: 5,
+    description: "Selecting, creating, updating, traversing the DOM, and keeping updates safe.",
+    phases: [
+      {
+        title: "Selecting",
+        order: 1,
+        description: "querySelector and friends.",
+        stages: [
+          { title: "querySelector", type: "TEXT", content: "querySelector takes a CSS selector string and returns the first match. querySelectorAll returns all matches." },
+          { title: "getElementById Contrast", type: "TEXT", content: "getElementById is a convenience for #id; querySelector generalizes to any CSS selector." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "When should you use querySelector over getElementById?", expectedAnswer: "When the selection is CSS-selector based rather than id-based.", rubric: "Check API selection understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Creating and Updating",
+        order: 2,
+        description: "createElement, textContent vs innerHTML, classList, dataset.",
+        stages: [
+          { title: "createElement and textContent", type: "TEXT", content: "createElement builds elements; textContent sets text safely (no HTML interpretation); innerHTML injects HTML (dangerous with user input)." },
+          { title: "classList and dataset", type: "TEXT", content: "classList add/remove/contains for classes; dataset for data-* attributes." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why prefer textContent over innerHTML when inserting user-provided strings?", expectedAnswer: "textContent treats content as plain text; innerHTML parses HTML (XSS risk).", rubric: "Check safe-practice understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Traversing and Safety",
+        order: 3,
+        description: "DOM traversal and safe updates.",
+        stages: [
+          { title: "Traversal", type: "TEXT", content: "parentElement, children, nextElementSibling, previousElementSibling for moving through the tree." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "How do you move a node to a different parent safely?", expectedAnswer: "Use appendChild/insertBefore with a reference node; reassigning parent directly is error-prone.", rubric: "Check DOM API understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "Events: The Page Talks Back",
+    order: 6,
+    description: "addEventListener, bubbling, delegation, forms, keyboard access.",
+    phases: [
+      {
+        title: "First Listeners",
+        order: 1,
+        description: "addEventListener and the event object.",
+        stages: [
+          { title: "addEventListener", type: "TEXT", content: "addEventListener(type, handler). Event object carries type, target, currentTarget, preventDefault." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What does the event object provide for handling user actions?", expectedAnswer: "Type, target, currentTarget, and methods like preventDefault.", rubric: "Check event object understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Bubbling and Delegation",
+        order: 2,
+        description: "Event propagation and delegated listeners.",
+        stages: [
+          { title: "Bubbling", type: "TEXT", content: "Events bubble from target up through ancestors. Delegation attaches one listener at a container." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why is event delegation useful?", expectedAnswer: "One listener on a common ancestor handles children; add/remove without re-binding.", rubric: "Check delegation understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Forms and Keyboard",
+        order: 3,
+        description: "Submit handling and keyboard access.",
+        stages: [
+          { title: "Submit Event and preventDefault", type: "TEXT", content: "Forms fire submit; preventDefault stops native submission so you can handle via fetch/JS." },
+          { title: "Keyboard Access", type: "TEXT", content: "Keyboard events (Enter/Space) for buttons; focus management for a11y." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why do you preventDefault on a form submit in an SPA?", expectedAnswer: "To stop native page navigation and handle submission via async logic.", rubric: "Check preventDefault understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "JavaScript Core",
+    order: 7,
+    description: "Types, coercion, scope, functions, modules, errors.",
+    phases: [
+      {
+        title: "Types and Coercion",
+        order: 1,
+        description: "Strict equality and coercion pitfalls.",
+        stages: [
+          { title: "Strict Equality", type: "TEXT", content: "=== compares value and type; == performs coercion. === is the default choice." },
+          { title: "Coercion Pitfalls", type: "TEXT", content: "Common coercion traps, e.g., \"2\" + 2 === \"22\". Use Number() or parseInt intentionally." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What does \"2\" + 2 evaluate to and why?", expectedAnswer: "\"22\" because + with strings concatenates.", rubric: "Check coercion understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Scope and Functions",
+        order: 2,
+        description: "Deep scope and higher-order functions.",
+        stages: [
+          { title: "Scope Deep Dive", type: "TEXT", content: "Scope chains, closures intro, function scope." },
+          { title: "Callbacks and Higher-Order Functions", type: "TEXT", content: "Functions as arguments; returning functions; map/filter for simple transforms." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What is a closure?", expectedAnswer: "A function that retains access to variables from its enclosing scope after that scope exits.", rubric: "Check closure concept.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Modules and Errors",
+        order: 3,
+        description: "ES modules and error objects.",
+        stages: [
+          { title: "Modules", type: "TEXT", content: "import/export syntax to split code into modules." },
+          { title: "Error Objects", type: "TEXT", content: "Error instances carry message, name, stack; catch specific error types when needed." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "How do you export a function from a module?", expectedAnswer: "export function name() {} or export default.", rubric: "Check module syntax.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "Async and the Event Loop",
+    order: 8,
+    description: "Sync vs async, call stack, queues, promises, async/await, fetch, six data states.",
+    phases: [
+      {
+        title: "Sync vs Async and Queues",
+        order: 1,
+        description: "Execution model.",
+        stages: [
+          { title: "Call Stack and Sync", type: "TEXT", content: "JS is single-threaded; call stack executes sync code. Async operations push tasks." },
+          { title: "Task and Microtask Queues", type: "TEXT", content: "Task queue (macrotask) vs microtask queue (promises). Microtasks run before next task." },
+          { title: "Event Loop", type: "TEXT", content: "Event loop waits for call stack to drain, then drains microtask queue before next task." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "After an async task resolves, when do microtasks run relative to the next task?", expectedAnswer: "Before the next task (microtasks drain first).", rubric: "Check event loop understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Promises, async/await, fetch",
+        order: 2,
+        description: "Async programming and network.",
+        stages: [
+          { title: "Promises", type: "TEXT", content: "Promise states: pending, fulfilled, rejected. then/catch/finally." },
+          { title: "async/await and fetch", type: "TEXT", content: "async/await wraps promises; fetch returns a promise for HTTP requests; handle res.ok and status codes." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What does await do in async code?", expectedAnswer: "Pauses function execution until a promise settles, then continues with the value.", rubric: "Check async understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Six Data States",
+        order: 3,
+        description: "Loading, empty, error, offline, stale handling in UI.",
+        stages: [
+          { title: "Loading and Empty", type: "TEXT", content: "Loading state shows progress; empty state shows no-data messaging. Design for both." },
+          { title: "Error and Stale", type: "TEXT", content: "Error state with plain-language message + retry; stale state with last-updated time. Offline state with retry." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "In a data view, what is the difference between error and stale?", expectedAnswer: "Error = fetch failed; stale = data exists but is outdated (last-updated time).", rubric: "Check state design understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "State",
+    order: 9,
+    description: "State vs prop vs derived; immutability; one-way flow.",
+    phases: [
+      {
+        title: "State vs Prop vs Derived",
+        order: 1,
+        description: "Core state model concepts.",
+        stages: [
+          { title: "Definitions", type: "TEXT", content: "State is internal mutable data; props are inputs from parent; derived can be computed. Know the distinction." },
+          { title: "When to Lift", type: "TEXT", content: "Lift state up when sibling components need shared state; keep local when not." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "In React, is state mutable or immutable?", expectedAnswer: "Immutable (state updates create new objects/arrays).", rubric: "Check immutability understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Immutability and One-Way Flow",
+        order: 2,
+        description: "Mutation pitfalls and data flow.",
+        stages: [
+          { title: "Mutation vs New", type: "TEXT", content: "Mutating state directly causes stale UI bugs; always create new objects/arrays when updating state." },
+          { title: "Two-Copies Bug", type: "TEXT", content: "Mutating a nested object that was spread into state creates two copies with divergent values; leads to stale UI." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What causes the 'two-copies' bug in React state?", expectedAnswer: "Direct mutation of a nested object that was previously copied into state.", rubric: "Check immutability understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "React Basics",
+    order: 10,
+    description: "Vite, JSX, components, props, state, lists, keys, forms, effects, lifting, custom hooks, mini-app.",
+    phases: [
+      {
+        title: "Vite, JSX, Component",
+        order: 1,
+        description: "React foundation.",
+        stages: [
+          { title: "Vite and JSX", type: "TEXT", content: "Vite scaffolds React fast. JSX compiles to React.createElement; class becomes className." },
+          { title: "First Component", type: "TEXT", content: "Function component returning JSX. Know JSX = JavaScript syntax extension." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "In JSX, how do you write the HTML class attribute?", expectedAnswer: "className.", rubric: "Check JSX knowledge.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Props",
+        order: 2,
+        description: "Passing data into components.",
+        stages: [
+          { title: "Props Passing", type: "TEXT", content: "Props flow parent → child; props are read-only inputs." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Are props mutable in React?", expectedAnswer: "No; props are immutable inputs from parent.", rubric: "Check props understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "State and Lists",
+        order: 3,
+        description: "useState, lists, keys, conditional rendering.",
+        stages: [
+          { title: "useState", type: "TEXT", content: "useState hook adds state; setState updates immutably." },
+          { title: "Lists and Keys", type: "TEXT", content: "Render lists from arrays; keys stable and unique; conditional rendering with ternary or &&." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why do lists need stable keys in React?", expectedAnswer: "Keys help reconciliation match items across renders; unstable keys cause bugs.", rubric: "Check keys understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Events, Forms, useEffect",
+        order: 4,
+        description: "Event handlers, controlled forms, effects.",
+        stages: [
+          { title: "Events via Props", type: "TEXT", content: "Pass handler functions via props; onClick etc. in React.", },
+          { title: "Controlled Forms", type: "TEXT", content: "Controlled inputs: value + onChange in state. Controlled = single source of truth." },
+          { title: "useEffect", type: "TEXT", content: "useEffect runs side effects (fetch, subscriptions); dependency array controls when." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What is a controlled input in React?", expectedAnswer: "Input value comes from state and changes update state via onChange.", rubric: "Check controlled component understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Lifting State, Custom Hooks, Mini App",
+        order: 5,
+        description: "Compose components; build mini app.",
+        stages: [
+          { title: "Lifting State", type: "TEXT", content: "Lift state to closest common ancestor; pass down via props with callbacks." },
+          { title: "Custom Hooks", type: "TEXT", content: "Extract reusable stateful logic into custom hooks using useState/useEffect." },
+          { title: "Mini Capstone App", type: "TEXT", content: "Build a small interactive app: counter or list with state, derived values, effects, forms." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "When should you lift state up in React?", expectedAnswer: "When sibling or child components need shared state.", rubric: "Check lifting understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "Shipping It",
+    order: 11,
+    description: "Git workflow, deploy, accessibility, performance, capstone brief, what's next.",
+    phases: [
+      {
+        title: "Git Workflow",
+        order: 1,
+        description: "Branch, commit, push, PR basics.",
+        stages: [
+          { title: "Git Basics", type: "TEXT", content: "init/add/commit/status; branch, push, pull request workflow for shipping." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What does git add . do?", expectedAnswer: "Stages all changes for the next commit.", rubric: "Check git basics.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Deploy",
+        order: 2,
+        description: "Static deploy via zero-cost host (Vercel/GitHub Pages).",
+        stages: [
+          { title: "Static Deploy Setup", type: "TEXT", content: "Configure static build output (Vite static) and deploy to Vercel or GitHub Pages at zero cost." },
+          { title: "Deploy the Mini App", type: "TEXT", content: "Deploy the React mini app to staging/production URL; verify it loads." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What is typically required to deploy a Vite static app?", expectedAnswer: "Build command output dist, host serving static files.", rubric: "Check deploy understanding.", points: 1 },
+          ],
+        },
+      },
+      {
+        title: "Accessibility, Performance, Capstone Brief, What's Next",
+        order: 3,
+        description: "Final polish and next steps.",
+        stages: [
+          { title: "Accessibility Checklist", type: "TEXT", content: "Semantic HTML, labels, keyboard nav, contrast, focus order. WCAG basics." },
+          { title: "Performance", type: "TEXT", content: "Core web vitals basics; reduce blocking; lazy load; optimize images." },
+          { title: "Capstone Brief and Next Steps", type: "TEXT", content: "Wrap: what the learner built; what's next (routing, state management, API integration, testing)." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Name one accessibility improvement for a page with an image missing alt text.", expectedAnswer: "Add meaningful alt text.", rubric: "Check a11y understanding.", points: 1 },
+          ],
+        },
+      },
+    ],
+  },
 ];
 
 async function main() {
