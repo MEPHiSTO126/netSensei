@@ -347,12 +347,12 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "addEventListener and the event object.",
         stages: [
-          { title: "addEventListener", type: "TEXT", content: "addEventListener(type, handler). Event object carries type, target, currentTarget, preventDefault." },
+          { title: "addEventListener", type: "TEXT", content: "addEventListener(type, handler) registers a listener for an event type, and the handler receives an event object carrying type, target, currentTarget, and methods such as preventDefault.\n\nPrefer addEventListener over inline handlers because you can register many listeners, and you can later remove a listener with removeEventListener. The event object is your channel to the outside world — you read which key or action fired and can stop default behaviour." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What does the event object provide for handling user actions?", expectedAnswer: "Type, target, currentTarget, and methods like preventDefault.", rubric: "Check event object understanding.", points: 1 },
+            { type: "TEXT", prompt: "What does the event object provide for handling user actions?", fullGoal: "List the useful fields and methods of the event object for handling user actions.", expectedAnswer: "Type, target, currentTarget, and methods like preventDefault.", rubric: "Check event object understanding.", points: 1 },
           ],
         },
       },
@@ -361,12 +361,12 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Event propagation and delegated listeners.",
         stages: [
-          { title: "Bubbling", type: "TEXT", content: "Events bubble from target up through ancestors. Delegation attaches one listener at a container." },
+          { title: "Bubbling", type: "TEXT", content: "Event flow starts at the target and bubbles up through its ancestors to the document. Delegation exploits this: attach one listener to a common ancestor and use event.target to know which child fired.\n\nThat lets one listener handle many children — a list of buttons, a row of cards — without binding each one separately." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Why is event delegation useful?", expectedAnswer: "One listener on a common ancestor handles children; add/remove without re-binding.", rubric: "Check delegation understanding.", points: 1 },
+            { type: "TEXT", prompt: "Why is event delegation useful?", fullGoal: "Explain the benefit of event delegation.", expectedAnswer: "One listener on a common ancestor handles children; add/remove without re-binding.", rubric: "Check delegation understanding.", points: 1 },
           ],
         },
       },
@@ -375,13 +375,13 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "Submit handling and keyboard access.",
         stages: [
-          { title: "Submit Event and preventDefault", type: "TEXT", content: "Forms fire submit; preventDefault stops native submission so you can handle via fetch/JS." },
-          { title: "Keyboard Access", type: "TEXT", content: "Keyboard events (Enter/Space) for buttons; focus management for a11y." },
+          { title: "Submit Event and preventDefault", type: "TEXT", content: "A form fires a submit event. By default the browser navigates, or reloads the page, to submit the form. Calling preventDefault on the event stops that native submission so you can handle the data yourself with fetch or XHR.\n\nThis is how single-page apps submit forms without full page reloads." },
+          { title: "Keyboard Access", type: "TEXT", content: "Keyboard users navigate with Tab and activate with Enter or Space. Listen for keydown events and check the key value; for buttons, Enter and Space provide click-like activation. Keep focus management in mind for accessibility." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Why do you preventDefault on a form submit in an SPA?", expectedAnswer: "To stop native page navigation and handle submission via async logic.", rubric: "Check preventDefault understanding.", points: 1 },
+            { type: "TEXT", prompt: "Why do you preventDefault on a form submit in an SPA?", fullGoal: "Explain why preventDefault matters on a form submit in a single-page app.", expectedAnswer: "To stop native page navigation and handle submission via async logic.", rubric: "Check preventDefault understanding.", points: 1 },
           ],
         },
       },
