@@ -622,7 +622,7 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Branch, commit, push, PR basics.",
         stages: [
-          { title: "Git Basics", type: "TEXT", content: "init/add/commit/status; branch, push, pull request workflow for shipping." },
+          { title: "Git Basics", type: "TEXT", content: "Git tracks changes: init starts a repo, add stages changes, commit records a snapshot, status shows what changed. A branch, commit, and pull request workflow is how you ship safely." },
         ],
         quiz: {
           passThreshold: 70,
@@ -636,8 +636,8 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Static deploy via zero-cost host (Vercel/GitHub Pages).",
         stages: [
-          { title: "Static Deploy Setup", type: "TEXT", content: "Configure static build output (Vite static) and deploy to Vercel or GitHub Pages at zero cost." },
-          { title: "Deploy the Mini App", type: "TEXT", content: "Deploy the React mini app to staging/production URL; verify it loads." },
+          { title: "Static Deploy Setup", type: "TEXT", content: "A Vite React app builds to static files in a dist folder. Deploy that folder to a static host such as Vercel or GitHub Pages at zero cost." },
+          { title: "Deploy the Mini App", type: "TEXT", content: "Deploy the React mini app to a live URL and verify it loads in the browser." },
         ],
         quiz: {
           passThreshold: 70,
@@ -651,14 +651,14 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "Final polish and next steps.",
         stages: [
-          { title: "Accessibility Checklist", type: "TEXT", content: "Semantic HTML, labels, keyboard nav, contrast, focus order. WCAG basics." },
-          { title: "Performance", type: "TEXT", content: "Core web vitals basics; reduce blocking; lazy load; optimize images." },
-          { title: "Capstone Brief and Next Steps", type: "TEXT", content: "Wrap: what the learner built; what's next (routing, state management, API integration, testing)." },
+          { title: "Accessibility Checklist", type: "TEXT", content: "Use semantic HTML, real labels, keyboard navigation, sufficient contrast, and a sensible focus order. These are the core accessibility wins." },
+          { title: "Performance", type: "TEXT", content: "Learn core web vitals basics, reduce render-blocking work, lazy load what you can, and optimize images. Every millisecond is a user experience decision." },
+          { title: "Capstone Brief and Next Steps", type: "TEXT", content: "Wrap up by naming what you built and what comes next: routing, state management, API integration, testing." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Name one accessibility improvement for a page with an image missing alt text.", expectedAnswer: "Add meaningful alt text.", rubric: "Check a11y understanding.", points: 1 },
+            { type: "TEXT", prompt: "Name one accessibility improvement for a page with an image missing alt text.", fullGoal: "Name an accessibility improvement for missing image alt text.", expectedAnswer: "Add meaningful alt text.", rubric: "Check a11y understanding.", points: 1 },
           ],
         },
       },
