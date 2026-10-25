@@ -213,14 +213,14 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Primitives and declarations.",
         stages: [
-          { title: "Primitives", type: "TEXT", content: "Strings, numbers, booleans, null, undefined. Values are typed; comparisons use === for strict equality." },
-          { title: "let and const vs var", type: "TEXT", content: "let and const are block-scoped; var is function-scoped. Prefer let/const for predictability." },
-          { title: "typeof", type: "TEXT", content: "typeof returns the type of a value; for null it returns object, which is a famous JS quirk to know." },
+          { title: "Primitives", type: "TEXT", content: "JavaScript gives you building blocks, and the first thing to own is what a primitive is. A primitive holds one value and cannot be changed — it is immutable. The ones you will meet first: string, number, boolean, null, and undefined.\n\nA string is text you write in quotes: \"hello\" or 'hello'. A number is numeric: 42, 3.14, -7. A boolean is either true or false. null means \"intentionally empty\" — a value that exists to mean nothing. undefined means \"not provided\" — the default for a missing value.\n\nWatch the null quirk early: typeof null returns \"object\" even though null is really an object-wrapped primitive. That surprise trips up nearly every learner, so we name it here instead of hiding it.\n\nPrimitives are compared by value. That is why strict equality (===) checks both value and type. The string \"1\" and the number 1 are different types, so \"1\" === 1 is false — no silent conversion happens." },
+          { title: "let and const vs var", type: "TEXT", content: "let and const are block-scoped: they live inside the nearest {} block. var is function-scoped, which means it escapes blocks — a classic source of bugs. Because of that, prefer let and const by default and reserve var for old code you have to read.\n\nconst means the binding cannot be reassigned, not that the value cannot be an object that you mutate. For primitives like strings and numbers, const gives you immutability. Use let when a value will change; use const when it will not." },
+          { title: "typeof", type: "TEXT", content: "typeof is a JavaScript operator that returns a string describing the type of a value. typeof \"hello\" is \"string\", typeof 42 is \"number\", typeof true is \"boolean\". For null it famously returns \"object\", which is why the null quirk above matters.\n\nYou will use typeof to check what kind of data you are holding — for guards, for logging, and for debugging. When you are unsure, typeof is the first tool to reach for." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What does typeof null return in JavaScript?", expectedAnswer: "object", rubric: "Check the typeof quirk is known.", points: 1 },
+            { type: "TEXT", prompt: "What does typeof null return in JavaScript?", fullGoal: "Explain what typeof returns for the main primitive types and why null is the famous exception.", expectedAnswer: "typeof returns the type string for primitives; for null it returns \"object\" due to a long-standing implementation quirk.", rubric: "Check the student explains the typeof quirk correctly, not just the returned value.", points: 1 },
           ],
         },
       },
@@ -229,13 +229,13 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Functions, return, conditionals, truthiness.",
         stages: [
-          { title: "Function Declarations and Arrows", type: "TEXT", content: "Functions as values. Arrow functions with implicit return; declarations with return keyword." },
-          { title: "Return and Conditionals", type: "TEXT", content: "return exits a function. if/else branches execution. Truthy/falsy values drive conditionals." },
+          { title: "Function Declarations and Arrows", type: "TEXT", content: "Functions are reusable blocks of logic, and in JavaScript functions are values. A function declaration starts with the keyword function and is hoisted, so it is available before its definition line. An arrow function uses => and is often written as an expression, with implicit return when the body is a single expression.\n\nBecause functions are first-class, you can assign them to variables, pass them as arguments, and return them from other functions. That is the foundation for callbacks, which you will meet soon." },
+          { title: "Return and Conditionals", type: "TEXT", content: "return exits the current function and can hand back a value. Without return, the function simply returns undefined. Code after a return never runs.\n\nConditionals are built from if / else if / else. An if runs its block when the condition is truthy; else runs when it is not. Conditions are evaluated by truthiness — false, 0, \"\", null, undefined, and NaN are falsy, and everything else is truthy. Always compare with === for equality so no coercion sneaks in." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Write a function that returns true if a number is even.", expectedAnswer: "function isEven(n) { return n % 2 === 0; }", rubric: "Check function + return usage.", points: 1 },
+            { type: "TEXT", prompt: "Write a JavaScript function that takes a number and returns true when the number is even.", fullGoal: "Write a function isEven(n) that returns true when n is even, using the remainder operator.", expectedAnswer: "function isEven(n) { return n % 2 === 0; }", rubric: "Check function syntax, return usage, and modulo logic.", points: 1 },
           ],
         },
       },
@@ -244,13 +244,13 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "Object literals, array methods, iteration.",
         stages: [
-          { title: "Objects and Dot Access", type: "TEXT", content: "Object literals with key-value pairs; dot access for known keys, bracket access for dynamic keys." },
-          { title: "Arrays and forEach", type: "TEXT", content: "Array literals, index access, length, and forEach for iteration over arrays." },
+          { title: "Objects and Dot Access", type: "TEXT", content: "An object groups related values under named keys. Write it as a literal: { name: \"Ada\", role: \"Engineer\" }. Access with dot for known keys: obj.name. Use bracket notation obj[\"name\"] when the key is dynamic or computed. Keys are strings; camelCase is the convention.\n\nObjects can nest: obj.address.city reads an address object inside an address key. Read deeply one level at a time until it feels natural." },
+          { title: "Arrays and forEach", type: "TEXT", content: "An array holds an ordered list of values: [\"Ada\", \"Grace\", \"Linus\"]. Access by index starting at 0; the last valid index is length - 1, so length tells you how many items you have.\n\nforEach is a built-in array method that runs a function once per element, in order, passing each element to the callback. It does not build a new array — it runs side logic per item. Later you will meet map, filter, and reduce for transforming arrays into new arrays." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "Given an array of names, what does arr.forEach print?", expectedAnswer: "Each name in order.", rubric: "Check iteration understanding.", points: 1 },
+            { type: "TEXT", prompt: "Given const names = [\"Ada\", \"Grace\", \"Linus\"]; what does names.forEach do?", fullGoal: "Explain what array.forEach does with the array elements and the callback.", expectedAnswer: "forEach runs the callback once per element, in order, passing each element; it does not return a new array.", rubric: "Check iteration understanding (callback receives each element).", points: 1 },
           ],
         },
       },
@@ -259,13 +259,13 @@ const modules: ModuleSeed[] = [
         order: 4,
         description: "Scope rules and hoisting behavior.",
         stages: [
-          { title: "Scope", type: "TEXT", content: "Function scope vs block scope. let/const are block-scoped; function declarations hoist." },
-          { title: "Hoisting", type: "TEXT", content: "Function declarations hoist fully; let/const are hoisted but in temporal dead zone until initialized." },
+          { title: "Scope", type: "TEXT", content: "Scope is the set of variables a function can see. Function scope means variables live inside the function they are declared in. Block scope means variables live inside the nearest { } block — and let and const are block-scoped, unlike function-scoped var.\n\nYou will see bugs where a loop variable \"leaks\" because var was used, or where a variable you thought was block-scoped is actually function-scoped. Prefer let and const and you remove whole categories of scope bugs." },
+          { title: "Hoisting", type: "TEXT", content: "Function declarations are hoisted: the whole function is available before its definition line. let and const are hoisted too, but they start in an uninitialized state — the temporal dead zone — until the declaration line executes. Reading them before that throws a ReferenceError.\n\nThis is why you should declare variables before use, and why calling a function before its declaration line works for function declarations but not for let/const." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What happens if you call a let variable before its declaration line executes?", expectedAnswer: "Temporal dead zone error.", rubric: "Check hoisting/TDZ understanding.", points: 1 },
+            { type: "TEXT", prompt: "What error do you get if you read a let variable before its declaration line has executed?", fullGoal: "Explain what happens when a let binding is accessed before initialization, and why.", expectedAnswer: "ReferenceError: temporal dead zone (TDZ) — let and const are hoisted but uninitialized until the declaration line runs.", rubric: "Check the student knows about hoisting and the temporal dead zone.", points: 1 },
           ],
         },
       },
@@ -274,13 +274,13 @@ const modules: ModuleSeed[] = [
         order: 5,
         description: "Error handling and browser DevTools debugging.",
         stages: [
-          { title: "try and catch", type: "TEXT", content: "try/catch/finally for error handling. Errors are objects with messages." },
-          { title: "Reading Errors and Debugger", type: "TEXT", content: "Read error messages plainly (file, line, message). Use DevTools Sources debugger breakpoints and step-through." },
+          { title: "try and catch", type: "TEXT", content: "Errors are objects that carry a message. You can wrap risky work in try / catch / finally. try runs the code; catch handles the error when one is thrown; finally always runs when the block completes, whether or not an error happened.\n\nFor expected problems — like bad user input — validate first, or catch and respond with a clear message. Do not use catch to hide bugs you do not understand." },
+          { title: "Reading Errors and Debugger", type: "TEXT", content: "Read error messages plainly: the error type, the file, the line, and the message. Build a hypothesis about the cause, then test it.\n\nWhen a bug is stubborn, use the browser DevTools Sources panel: set a breakpoint, reload, and step through code line by line. That turns \"it broke\" into a conversation you can debug." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "How do you handle an error you expect in user input?", expectedAnswer: "try/catch around the risky operation or validate before.", rubric: "Check error-handling basics.", points: 1 },
+            { type: "TEXT", prompt: "How should you handle an error you expect in user input?", fullGoal: "Describe how to handle an expected error in user input.", expectedAnswer: "Validate before the risky operation, or wrap the operation in try/catch and handle the error gracefully.", rubric: "Check error-handling basics (validate or try/catch).", points: 1 },
           ],
         },
       },
