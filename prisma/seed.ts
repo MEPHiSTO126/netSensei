@@ -397,13 +397,13 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Strict equality and coercion pitfalls.",
         stages: [
-          { title: "Strict Equality", type: "TEXT", content: "=== compares value and type; == performs coercion. === is the default choice." },
-          { title: "Coercion Pitfalls", type: "TEXT", content: "Common coercion traps, e.g., \"2\" + 2 === \"22\". Use Number() or parseInt intentionally." },
+          { title: "Strict Equality", type: "TEXT", content: "Strict equality (===) compares both value and type, while loose equality (==) coerces types before comparing. === is the default choice because coercion hides bugs. Learn what == would do before you use it." },
+          { title: "Coercion Pitfalls", type: "TEXT", content: "Coercion happens when JavaScript automatically converts types during an operation. The classic trap is that the + operator concatenates when either operand is a string, so adding a number to a string produces a string. Use Number() or parseInt() when you want arithmetic." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What does \"2\" + 2 evaluate to and why?", expectedAnswer: "\"22\" because + with strings concatenates.", rubric: "Check coercion understanding.", points: 1 },
+            { type: "TEXT", prompt: "What does \"2\" + 2 evaluate to and why?", fullGoal: "Explain the result of adding a number to a string in JavaScript.", expectedAnswer: "\"22\" because + with strings concatenates.", rubric: "Check coercion understanding.", points: 1 },
           ],
         },
       },
@@ -412,8 +412,8 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Deep scope and higher-order functions.",
         stages: [
-          { title: "Scope Deep Dive", type: "TEXT", content: "Scope chains, closures intro, function scope." },
-          { title: "Callbacks and Higher-Order Functions", type: "TEXT", content: "Functions as arguments; returning functions; map/filter for simple transforms." },
+          { title: "Scope Deep Dive", type: "TEXT", content: "Scope is the set of variables a function can see. Scope chains pass from the current scope up through parent scopes, which is how closures keep working. Function scope means variables live inside the function they were declared in." },
+          { title: "Callbacks and Higher-Order Functions", type: "TEXT", content: "Functions are first-class values, so functions can be passed as arguments and returned from other functions. These are higher-order functions, and callbacks are the arguments you pass in. map and filter are built-in helpers for simple array transforms." },
         ],
         quiz: {
           passThreshold: 70,
@@ -427,8 +427,8 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "ES modules and error objects.",
         stages: [
-          { title: "Modules", type: "TEXT", content: "import/export syntax to split code into modules." },
-          { title: "Error Objects", type: "TEXT", content: "Error instances carry message, name, stack; catch specific error types when needed." },
+          { title: "Modules", type: "TEXT", content: "Modules split an application into files. import brings a function or value in, and export sends one out. Named exports use the function name; default export is a single fallback.\n\nKeeping modules small and focused is what keeps a growing codebase readable." },
+          { title: "Error Objects", type: "TEXT", content: "Error instances carry a message, a name, and a stack trace. You can catch specific error types rather than catching everything, which keeps failure handling precise." },
         ],
         quiz: {
           passThreshold: 70,
