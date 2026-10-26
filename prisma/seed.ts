@@ -354,6 +354,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "What does the event object provide for handling user actions?", fullGoal: "List the useful fields and methods of the event object for handling user actions.", expectedAnswer: "Type, target, currentTarget, and methods like preventDefault.", rubric: "Check event object understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Attach a click listener to a button that changes the button text when clicked.", fullGoal: "Attach a click event listener to a button element that updates the button text content when clicked.", expectedAnswer: "button.addEventListener('click', () => button.textContent = 'Clicked!');", rubric: "Check addEventListener usage and handler logic.", points: 2 },
           ],
         },
       },
@@ -473,6 +474,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "What does await do in async code?", expectedAnswer: "Pauses function execution until a promise settles, then continues with the value.", rubric: "Check async understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Write an async function that fetches data from an API endpoint and logs the JSON response.", fullGoal: "Write an async function that uses fetch, awaits the response, and logs the parsed JSON.", expectedAnswer: "async function load() { const res = await fetch('/api/data'); const data = await res.json(); console.log(data); }", rubric: "Check async function, await, fetch, and JSON parsing usage.", points: 2 },
           ],
         },
       },
@@ -594,6 +596,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "What is a controlled input in React?", fullGoal: "Explain what a controlled input is in React.", expectedAnswer: "Input value comes from state and changes update state via onChange.", rubric: "Check controlled component understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Write a React input handler that updates component state when the user types.", fullGoal: "Write an onChange event handler that reads the input value and updates React state.", expectedAnswer: "const handleChange = (e) => setValue(e.target.value);", rubric: "Check event handler reads value and updates state.", points: 2 },
           ],
         },
       },
