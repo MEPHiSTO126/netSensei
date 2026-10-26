@@ -43,10 +43,10 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "Learn the four panes of the development workshop and the edit-save-refresh loop.",
         stages: [
-          { title: "The Editor and File Explorer", type: "TEXT", content: "The editor is where you write code. The file explorer shows your folder tree. A file is a path; folders are folders. You will keep all course code in one project folder." },
-          { title: "The Browser and URL Bar", type: "TEXT", content: "The browser displays your running page. The URL bar shows the address. Refreshing after a save is how you see changes. The local server serves your files over HTTP on localhost." },
-          { title: "The Terminal", type: "TEXT", content: "The terminal runs the local server (for example Vite or npx serve) and runs build/CLI commands. Keep it open alongside the editor and browser." },
-          { title: "The Loop", type: "CHART", content: "The development loop: write code in editor → save → browser auto-updates or refresh → read result → repeat. This loop runs hundreds of times per learning session." },
+          { title: "The Editor and File Explorer", type: "TEXT", content: "The editor is where you write code, and the file explorer shows your folder tree. A file is just a path; folders are just folders. You will keep all course code in one project folder and refer to files by path from the HTML that uses them." },
+          { title: "The Browser and URL Bar", type: "TEXT", content: "The browser displays your running page, and the URL bar shows the address it is serving. Refreshing after a save is how you see changes, and the local server serves your files over HTTP on localhost." },
+          { title: "The Terminal", type: "TEXT", content: "The terminal runs the local server, for example Vite or npx serve, and runs build and CLI commands. Keep it open alongside the editor and browser for the whole session." },
+          { title: "The Loop", type: "CHART", content: "The development loop: write code in the editor, save, let the browser auto-update or refresh, then read the result and repeat. This loop runs hundreds of times in a single learning session." },
         ],
         quiz: {
           passThreshold: 70,
@@ -61,10 +61,10 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Create index.html, understand document anatomy, and serve your first page.",
         stages: [
-          { title: "HTML Document Anatomy", type: "TEXT", content: "An HTML document has four parts: doctype, html, head, and body. The doctype declares standards mode. head holds metadata and links. body holds visible content." },
-          { title: "Serve and Open", type: "TEXT", content: "Run the local server from the terminal, then open the URL in the browser (for example http://localhost:3000). A static server just serves the files you give it." },
-          { title: "Add and See the h1", type: "TEXT", content: "Add an h1 inside body and save. Refresh to see it. The browser only knows about what is in the document." },
-          { title: "File Paths and Relative References", type: "TEXT", content: "Resources like CSS and images are referenced by relative paths from the document. A missing file shows a 404. Understand the relationship between URL path and file path." },
+          { title: "HTML Document Anatomy", type: "TEXT", content: "An HTML document has four parts: the doctype, the html element, the head, and the body. The doctype declares standards mode, the head holds metadata and links, and the body holds visible content." },
+          { title: "Serve and Open", type: "TEXT", content: "Run the local server from the terminal, then open the URL in the browser, for example http://localhost:3000. A static server just serves the files you give it." },
+          { title: "Add and See the h1", type: "TEXT", content: "Add an h1 inside the body and save, then refresh to see it. The browser only knows about what is actually in the document." },
+          { title: "File Paths and Relative References", type: "TEXT", content: "Resources like CSS and images are referenced by relative paths from the document. A missing file shows a 404, so the URL path has to match the file on the server. Understand the relationship between the URL path and the file path." },
         ],
         quiz: {
           passThreshold: 70,
@@ -79,9 +79,9 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "DevTools basics, reading errors plainly, and first git steps.",
         stages: [
-          { title: "DevTools Elements and Console", type: "TEXT", content: "DevTools has Elements (DOM tree), Console (logs/errors), Sources, Network, Performance. Learn to read console errors as plain sentences with context." },
-          { title: "Reading Errors Plainly", type: "TEXT", content: "Errors are not punishments. Read the message, find the file and line, form a hypothesis, test. Write down what you expected vs what happened." },
-          { title: "Git Basics", type: "TEXT", content: "Learn git init, add, commit, status. Commit early and often. These are the only git commands needed at this stage." },
+          { title: "DevTools Elements and Console", type: "TEXT", content: "DevTools has panels for the Elements, which show the DOM tree, the Console for logs and errors, Sources, Network, and Performance. Learn to read console errors as plain sentences with context." },
+          { title: "Reading Errors Plainly", type: "TEXT", content: "Errors are not punishments. Read the message, find the file and line, form a hypothesis, then test it. Write down what you expected versus what happened." },
+          { title: "Git Basics", type: "TEXT", content: "Learn git init, add, commit, and status. Commit early and often; those are the git commands needed at this stage." },
         ],
         quiz: {
           passThreshold: 70,
@@ -102,10 +102,10 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "From the moment you press Enter to the response arriving.",
         stages: [
-          { title: "DNS Resolution", type: "TEXT", content: "DNS translates the domain name into an IP address. Without DNS there is no conversation. Cache and TTL affect how long a lookup may be reused." },
-          { title: "TCP and TLS", type: "TEXT", content: "TCP opens a connection (three-way handshake). TLS wraps it for security (HTTPS). Status codes begin at the transport/session layer boundary." },
-          { title: "HTTP Methods and Status Codes", type: "CHART", content: "GET (read), POST (create), PUT/PATCH (update), DELETE (remove). Status codes: 2xx success, 3xx redirect, 4xx client error, 5xx server error. Learn the common ones: 200, 301, 302, 304, 400, 401, 403, 404, 500, 503." },
-          { title: "URL Anatomy", type: "TEXT", content: "URL = scheme (https), host (domain), port (default 443), path (/resource), query (?key=value). Each part has meaning for caching, routing, and semantics." },
+          { title: "DNS Resolution", type: "TEXT", content: "DNS translates the domain name you type into an IP address the browser can reach. Without DNS there is no conversation, so understanding it explains why the first load can feel slow." },
+          { title: "TCP and TLS", type: "TEXT", content: "TCP opens a connection with a three-way handshake. TLS wraps that connection so the traffic is encrypted, which is why we call it HTTPS. Status codes belong to the layer above this transport conversation." },
+          { title: "HTTP Methods and Status Codes", type: "CHART", content: "GET reads, POST creates, PUT and PATCH update, DELETE removes. Status codes are grouped as 2xx success, 3xx redirect, 4xx client error, and 5xx server error; learn the common ones like 200, 301, 302, 304, 400, 401, 403, 404, 500, and 503." },
+          { title: "URL Anatomy", type: "TEXT", content: "A URL is made of a scheme like https, a host like example.com, a port like 443, a path like /resource, and a query like ?key=value; each part carries meaning for caching, routing, and semantics." },
         ],
         quiz: {
           passThreshold: 70,
@@ -120,8 +120,8 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "How the browser turns a fetched response into painted pixels.",
         stages: [
-          { title: "Fetch and Response", type: "TEXT", content: "Browser fetches over HTTP, receives bytes, parses. Network timing (TTFB, download, first contentful paint) is visible in DevTools." },
-          { title: "Parse HTML and CSS", type: "TEXT", content: "HTML builds DOM; CSS builds CSSOM; then they combine into a render tree. Parsing is sequential; render-blocking resources delay first paint." },
+          { title: "Fetch and Response", type: "TEXT", content: "The browser fetches over HTTP, receives bytes, and parses. Network timing such as TTFB, download time, and first contentful paint is visible in DevTools." },
+          { title: "Parse HTML and CSS", type: "TEXT", content: "HTML builds the DOM and CSS builds the CSSOM, then the two combine into a render tree; parsing is sequential and render-blocking resources delay first paint." },
           { title: "Layout, Paint, Composite", type: "CHART", content: "Render tree → layout (compute geometry) → paint (rasterize) → composite (layers). Frame budget: 16.67ms per 60fps frame; multiple layers can composite in parallel." },
         ],
         quiz: {
@@ -137,7 +137,7 @@ const modules: ModuleSeed[] = [
         description: "Using the Network panel to diagnose requests, timings, and status codes.",
         stages: [
           { title: "Request List and Refresh", type: "TEXT", content: "Open DevTools → Network, reload, watch the request list. Identify resources: document, stylesheet, script, image, font, XHR/fetch." },
-          { title: "Status Codes and Timings", type: "TEXT", content: "Read status codes and timing breakdown (TTFB, content download, first contentful paint). Use timings to explain slow loads." },
+          { title: "Status Codes and Timings", type: "TEXT", content: "Read status codes and the timing breakdown, including TTFB, content download time, and first contentful paint, to explain slow loads." },
           { title: "Inspecting Failed Requests", type: "TEXT", content: "Filter failed requests (red), inspect headers/body of errors to find root cause. Correlate with server logs." },
         ],
         quiz: {
@@ -159,9 +159,9 @@ const modules: ModuleSeed[] = [
         order: 1,
         description: "How the browser's two trees merge into one render tree.",
         stages: [
-          { title: "DOM Tree", type: "TEXT", content: "DOM is a tree of nodes representing the document structure. HTML parsed into DOM; CSS parsed into CSSOM." },
-          { title: "CSSOM", type: "TEXT", content: "CSSOM is the map of style rules. Styles apply to DOM nodes. Understanding CSSOM clarifies selector → element application." },
-          { title: "Render Tree", type: "TEXT", content: "Combine DOM and CSSOM into render tree (only nodes with styles). Then layout, paint, composite." },
+          { title: "DOM Tree", type: "TEXT", content: "The DOM is a tree of nodes representing the document structure; HTML is parsed into the DOM and CSS into the CSSOM." },
+          { title: "CSSOM", type: "TEXT", content: "The CSSOM is the map of style rules; styles apply to DOM nodes, and understanding the CSSOM clarifies the selector to element relationship." },
+          { title: "Render Tree", type: "TEXT", content: "Combine the DOM and CSSOM into a render tree, which holds only nodes that have styles; then layout, paint, and composite." },
         ],
         quiz: {
           passThreshold: 70,
@@ -175,8 +175,8 @@ const modules: ModuleSeed[] = [
         order: 2,
         description: "Rendering pipeline performance fundamentals.",
         stages: [
-          { title: "Layout and Reflow", type: "TEXT", content: "Layout computes geometry (position/size) for render tree nodes. Reflow is re-layout when something that affects layout changes. Repaint redraws; compositing moves layers." },
-          { title: "Paint and Composite", type: "TEXT", content: "Paint rasterizes visual; composite assembles layers. Repaint vs repaint-layer vs compositor are distinct costs. Frame budget 16.67ms at 60fps." },
+          { title: "Layout and Reflow", type: "TEXT", content: "Layout computes geometry, position, and size, for render tree nodes; reflow is re-layout when something that affects layout changes, repaint redraws, and compositing moves layers." },
+          { title: "Paint and Composite", type: "TEXT", content: "Paint rasterizes the visual and composite assembles layers; repaint versus repaint-layer versus compositor are distinct costs, with a frame budget of 16.67ms at 60fps." },
           { title: "Reflow vs Repaint vs Composite", type: "CHART", content: "Reflow = layout recomputation; Repaint = rasterize changed pixels; Composite = layer compositing. Costs differ; prefer transform/opacity for animation to hit frame budget." },
         ],
         quiz: {
@@ -191,13 +191,13 @@ const modules: ModuleSeed[] = [
         order: 3,
         description: "What blocks first paint and how to reduce blocking.",
         stages: [
-          { title: "Render-Blocking Resources", type: "TEXT", content: "CSS and synchronous scripts block first paint. Async/defer scripts change ordering. Inline critical CSS is a mitigation." },
-          { title: "First Paint Timing", type: "TEXT", content: "First paint marks the first rendered pixel. Metrics: FCP, TTFB. Reduce blocking to improve FCP." },
+          { title: "Render-Blocking Resources", type: "TEXT", content: "CSS and synchronous scripts block first paint; async or defer scripts change ordering, and inline critical CSS is a mitigation." },
+          { title: "First Paint Timing", type: "TEXT", content: "First paint marks the first rendered pixel, and metrics such as FCP and TTFB help you reason about it; reducing blocking improves FCP." },
         ],
         quiz: {
           passThreshold: 70,
           questions: [
-            { type: "TEXT", prompt: "What makes a page render-blocking before first paint?", expectedAnswer: "CSS in head and synchronous scripts block rendering.", rubric: "Check blocking concept.", points: 1 },
+            { type: "TEXT", prompt: "What makes a page render-blocking before first paint?", fullGoal: "Name what makes a page render-blocking before first paint.", expectedAnswer: "CSS in head and synchronous scripts block rendering.", rubric: "Check blocking concept.", points: 1 },
           ],
         },
       },
