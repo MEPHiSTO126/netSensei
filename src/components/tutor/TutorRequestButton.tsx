@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/useSession";
 
@@ -53,6 +54,12 @@ export function TutorRequestButton({
           A tutor will pick up your request from the queue when they are online.
           Meanwhile, re-read the stage and try the phase quiz.
         </p>
+        <Link
+          href="/tutor/chat"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          Open tutor chat
+        </Link>
       </div>
     );
   }

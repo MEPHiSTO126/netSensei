@@ -60,7 +60,7 @@ export function TutorComposer({
           type="text"
           value={stageId}
           onChange={(e) => setStageId(e.target.value)}
-          placeholder="Stage ID to highlight (e.g. stage-abc123)"
+          placeholder="Stage ID from the stage page URL"
           className="w-full px-4 py-2 rounded-lg border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       )}

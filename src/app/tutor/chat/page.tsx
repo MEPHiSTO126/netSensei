@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User } from "lucide-react";
@@ -128,6 +129,31 @@ export default async function TutorChatPage({
     ? session.student
     : session.tutor ?? { email: "Tutor" };
 
+  const highlightStageIds = Array.from(
+    new Set(
+      session.messages
+        .filter((m) => m.type === "HIGHLIGHT" && m.stageId)
+        .map((m) => m.stageId as string)
+    )
+  );
+  const highlightedStages = highlightStageIds.length
+    ? await db.stage.findMany({
+        where: { id: { in: highlightStageIds } },
+        select: {
+          id: true,
+          title: true,
+          phaseId: true,
+          phase: {
+            select: {
+              moduleId: true,
+              module: { select: { courseId: true } },
+            },
+          },
+        },
+      })
+    : [];
+  const stageMap = new Map(highlightedStages.map((s) => [s.id, s]));
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto">
       <div className="flex items-center justify-between p-4 border-b border-border">
@@ -150,38 +176,54 @@ export default async function TutorChatPage({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {session.messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex ${
-              m.senderId === user.id ? "justify-end" : "justify-start"
-            }`}
-          >
-            <Card className={`max-w-[80%] p-3 rounded-xl ${
-              m.senderId === user.id
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground"
-            }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium opacity-80">
-                  {m.sender.role === "TUTOR" ? "Tutor" : "You"}
-                </span>
-                {m.type === "HIGHLIGHT" && (
-                  <Badge variant="secondary" className="text-xs">
-                    Stage highlight
-                  </Badge>
+        {session.messages.map((m) => {
+          const highlighted =
+            m.type === "HIGHLIGHT" && m.stageId ? stageMap.get(m.stageId) : undefined;
+          return (
+            <div
+              key={m.id}
+              className={`flex ${
+                m.senderId === user.id ? "justify-end" : "justify-start"
+              }`}
+            >
+              <Card className={`max-w-[80%] p-3 rounded-xl ${
+                m.senderId === user.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground"
+              }`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-medium opacity-80">
+                    {m.senderId === user.id
+                      ? "You"
+                      : m.sender.role === "TUTOR"
+                        ? "Tutor"
+                        : "Student"}
+                  </span>
+                  {m.type === "HIGHLIGHT" && (
+                    <Badge variant="secondary" className="text-xs">
+                      Stage highlight
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm">{m.content}</p>
+                {highlighted && (
+                  <Link
+                    href={`/courses/${highlighted.phase.module.courseId}/${highlighted.phase.moduleId}/${highlighted.phaseId}/${highlighted.id}`}
+                    className="text-xs underline underline-offset-2 opacity-80 mt-1 inline-block"
+                  >
+                    Highlighted stage: {highlighted.title}
+                  </Link>
                 )}
-              </div>
-              <p className="text-sm">{m.content}</p>
-              <span className="text-[10px] text-muted-foreground mt-1 block">
-                {new Date(m.createdAt).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </Card>
-          </div>
-        ))}
+                <span className="text-[10px] text-muted-foreground mt-1 block">
+                  {new Date(m.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </Card>
+            </div>
+          );
+        })}
       </div>
 
       <TutorComposer
