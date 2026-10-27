@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export type SessionUser = {
   id: string;
@@ -9,34 +9,43 @@ export type SessionUser = {
   role: "STUDENT" | "TUTOR";
 };
 
+async function fetchSessionUser(): Promise<SessionUser | null> {
+  try {
+    const res = await fetch("/api/auth/session", {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.user ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function useSession() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   const loadUser = useCallback(async () => {
-    try {
-      const res = await fetch("/api/auth/session", {
-        cache: "no-store",
-        headers: { Accept: "application/json" },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user ?? null);
-      } else {
-        setUser(null);
-      }
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+    setUser(await fetchSessionUser());
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    let cancelled = false;
+
+    fetchSessionUser().then((sessionUser) => {
+      if (cancelled) return;
+      setUser(sessionUser);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {

@@ -16,8 +16,7 @@ function ruleBasedGrade(
   questionType: "SNIPPET" | "TEXT" | "AUDIO",
   userAnswer: string,
   expectedAnswer: string | null,
-  fullGoal: string | null,
-  rubric: string | null
+  fullGoal: string | null
 ): GradeResult {
   const answer = (userAnswer || "").trim();
   const expected = (expectedAnswer || "").trim();
@@ -113,7 +112,6 @@ export async function gradeAnswer({
   questionType,
   userAnswer,
   questionId,
-  studentId,
 }: {
   questionType: "SNIPPET" | "TEXT" | "AUDIO";
   userAnswer: string;
@@ -152,8 +150,7 @@ export async function gradeAnswer({
     questionType,
     userAnswer,
     question.expectedAnswer,
-    question.fullGoal,
-    question.rubric
+    question.fullGoal
   );
 }
 
@@ -221,8 +218,6 @@ export async function checkSnippet({
   code,
   language,
   fullGoal,
-  questionId,
-  studentId,
 }: {
   code: string;
   language: string;
@@ -231,7 +226,7 @@ export async function checkSnippet({
   studentId: string;
 }): Promise<GradeResult> {
   if (!fullGoal) {
-    return ruleBasedGrade("SNIPPET", code, null, null, null);
+    return ruleBasedGrade("SNIPPET", code, null, null);
   }
 
   if (GROQ_API_KEY) {
@@ -286,5 +281,5 @@ No markdown, no extra text.
     }
   }
 
-  return ruleBasedGrade("SNIPPET", code, null, fullGoal, null);
+  return ruleBasedGrade("SNIPPET", code, null, fullGoal);
 }

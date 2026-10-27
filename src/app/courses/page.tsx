@@ -2,7 +2,6 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { BookOpen, Users, Play } from "lucide-react";
 
 export default async function CoursesPage() {

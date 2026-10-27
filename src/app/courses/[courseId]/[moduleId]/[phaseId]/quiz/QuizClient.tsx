@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "@/hooks/useSession";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
 type Question = {
   id: string;
@@ -38,24 +38,31 @@ export function QuizClient({ phaseId }: QuizClientProps) {
   const [result, setResult] = useState<QuizResult | null>(null);
   const [error, setError] = useState("");
 
-  const fetchQuiz = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/quiz/phase/${phaseId}`, {
-        cache: "no-store",
-      });
-      if (!res.ok) throw new Error("Failed to load quiz");
-      const data = await res.json();
-      setQuestions(data.questions ?? []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load quiz");
-    } finally {
-      setLoading(false);
-    }
-  }, [phaseId]);
-
   useEffect(() => {
-    fetchQuiz();
-  }, [fetchQuiz]);
+    let cancelled = false;
+
+    async function loadQuiz() {
+      try {
+        const res = await fetch(`/api/quiz/phase/${phaseId}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("Failed to load quiz");
+        const data = await res.json();
+        if (!cancelled) setQuestions(data.questions ?? []);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load quiz");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadQuiz();
+    return () => {
+      cancelled = true;
+    };
+  }, [phaseId]);
 
   const handleChange = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -95,16 +102,16 @@ export function QuizClient({ phaseId }: QuizClientProps) {
       <div className="space-y-6 max-w-2xl mx-auto">
         <Card className={`p-8 text-center ${
           result.passed
-            ? "border-green-200 bg-green-50/50"
-            : "border-amber-200 bg-amber-50/50"
+            ? "border-primary/20 bg-primary/5"
+            : "border-destructive/20 bg-destructive/5"
         }`}>
           <div className={`flex items-center justify-center gap-3 mb-4 ${
-            result.passed ? "text-green-600" : "text-amber-600"
+            result.passed ? "text-primary" : "text-destructive"
           }`}>
             {result.passed ? (
-              <span role="img" aria-label="passed">✓</span>
+              <CheckCircle2 className="h-10 w-10" />
             ) : (
-              <span role="img" aria-label="failed">✗</span>
+              <XCircle className="h-10 w-10" />
             )}
           </div>
           <h1 className="text-3xl font-bold text-heading mb-2">

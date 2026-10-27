@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Clock, User } from "lucide-react";
+import { Clock, User } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export default async function SessionPage({
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <h1 className="text-2xl font-bold text-heading">Session not found</h1>
-        <p className="text-muted-foreground mb-4">You don't have access to this session.</p>
+        <p className="text-muted-foreground mb-4">You don&apos;t have access to this session.</p>
       </div>
     );
   }

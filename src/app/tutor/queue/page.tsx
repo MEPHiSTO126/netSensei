@@ -3,12 +3,12 @@ import { db } from "@/lib/db";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, User, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function TutorQueuePage() {
-  const user = await requireTutor();
+  await requireTutor();
 
   const requests = await db.tutorRequest.findMany({
     where: { status: "PENDING" },

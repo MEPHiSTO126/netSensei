@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getCourseProgress } from "@/lib/progress";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Clock, CheckCircle2 } from "lucide-react";
@@ -32,18 +33,7 @@ export default async function ProgressPage() {
   });
 
   const courseId = "course-frontend-v1";
-  const allPhases = await db.phase.findMany({
-    where: {
-      module: { courseId },
-    },
-    include: {
-      module: true,
-    },
-  });
-
-  const totalPhases = allPhases.length;
-  const passedPhases = progressRecords.filter((r) => r.passed).length;
-  const percentage = totalPhases > 0 ? Math.round((passedPhases / totalPhases) * 100) : 0;
+  const progress = await getCourseProgress(user.id, courseId);
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -58,14 +48,14 @@ export default async function ProgressPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Course Completion</p>
-                <div className="text-3xl font-bold text-heading">{percentage}%</div>
+                <div className="text-3xl font-bold text-heading">{progress.percentage}%</div>
               </div>
               <div className="w-16 h-16 rounded-full border-4 border-primary/20 flex items-center justify-center">
                 <BarChart3 className="h-8 w-8 text-primary" />
               </div>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              {passedPhases} of {totalPhases} phases completed
+              {progress.passedPhases} of {progress.totalPhases} phases completed
             </p>
           </div>
         </Card>
@@ -73,7 +63,7 @@ export default async function ProgressPage() {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Quizzes Taken</p>
+                <p className="text-sm text-muted-foreground">Phases Attempted</p>
                 <div className="text-3xl font-bold text-heading">
                   {progressRecords.length}
                 </div>
@@ -88,9 +78,9 @@ export default async function ProgressPage() {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Current Streak</p>
+                <p className="text-sm text-muted-foreground">Phases Passed</p>
                 <div className="text-3xl font-bold text-heading">
-                  {progressRecords.filter((r) => r.passed).length}
+                  {progress.passedPhases}
                 </div>
               </div>
               <div className="w-16 h-16 rounded-full border-4 border-primary/20 flex items-center justify-center">

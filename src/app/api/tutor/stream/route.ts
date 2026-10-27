@@ -31,8 +31,6 @@ export async function GET(req: Request) {
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        let heartbeat: NodeJS.Timeout;
-
         const sendEvent = (data: unknown) => {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
         };
@@ -45,7 +43,7 @@ export async function GET(req: Request) {
         sendEvent({ type: "tutors_online", tutors });
 
         // Poll for new messages
-        heartbeat = setInterval(async () => {
+        const heartbeat = setInterval(async () => {
           try {
             const messages = await db.message.findMany({
               where: { sessionId },

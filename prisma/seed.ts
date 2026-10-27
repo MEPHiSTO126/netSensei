@@ -904,13 +904,13 @@ async function main() {
   }
 
   for (const mod of modules) {
-    const module = await db.module.create({
+    const createdModule = await db.module.create({
       data: { courseId: course.id, title: mod.title, order: mod.order, description: mod.description },
     });
 
     for (const phase of mod.phases) {
       const createdPhase = await db.phase.create({
-        data: { moduleId: module.id, title: phase.title, order: phase.order, description: phase.description },
+        data: { moduleId: createdModule.id, title: phase.title, order: phase.order, description: phase.description },
       });
 
       for (const [idx, stage] of phase.stages.entries()) {

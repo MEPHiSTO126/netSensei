@@ -72,8 +72,6 @@ export async function POST(req: Request) {
       });
       const attemptNumber = (existing?.attemptNumber ?? 0) + 1;
 
-      const passed = grade.score >= 70;
-
       await db.answerRecord.create({
         data: {
           questionId: question.id,
@@ -110,8 +108,8 @@ export async function POST(req: Request) {
       await db.progressRecord.update({
         where: { id: existingProgress.id },
         data: {
-          score: percentage,
-          passed: passedQuiz,
+          score: Math.max(existingProgress.score, percentage),
+          passed: existingProgress.passed || passedQuiz,
           attemptNumber: existingProgress.attemptNumber + 1,
           completedAt: new Date(),
         },

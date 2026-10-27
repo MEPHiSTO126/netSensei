@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { getCourseProgress } from "@/lib/progress";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LayoutList, Play } from "lucide-react";
+import { CheckCircle2, LayoutList, Play } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +52,7 @@ export default async function CoursePage({
     (sum, m) => sum + m.phases.length,
     0
   );
+  const progress = await getCourseProgress(user?.id ?? null, courseId);
 
   return (
     <div className="space-y-8">
@@ -85,8 +87,12 @@ export default async function CoursePage({
         {user && (
           <Card>
             <div className="p-6">
-              <div className="text-2xl font-bold text-heading">0%</div>
-              <p className="text-sm text-muted-foreground">Course completion</p>
+            <div className="text-2xl font-bold text-heading">
+              {progress.percentage}%
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {progress.passedPhases} of {progress.totalPhases} phases passed
+            </p>
             </div>
           </Card>
         )}
@@ -108,29 +114,40 @@ export default async function CoursePage({
                 </p>
               )}
               <div className="space-y-2">
-                {module.phases.map((phase) => (
-                  <Link
-                    key={phase.id}
-                    href={`/courses/${courseId}/${module.id}/${phase.id}`}
-                    className="flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Play className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span className="font-medium">{phase.title}</span>
-                      {phase._count.stages > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {phase._count.stages} stage
-                          {phase._count.stages !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </div>
-                    {phase.quiz && (
-                      <Badge variant="outline" className="text-xs">
-                        Quiz
-                      </Badge>
-                    )}
-                  </Link>
-                ))}
+                {module.phases.map((phase) => {
+                  const phaseProgress = progress.byPhase.get(phase.id);
+                  return (
+                    <Link
+                      key={phase.id}
+                      href={`/courses/${courseId}/${module.id}/${phase.id}`}
+                      className="flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Play className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="font-medium">{phase.title}</span>
+                        {phase._count.stages > 0 && (
+                          <span className="text-xs text-muted-foreground">
+                            {phase._count.stages} stage
+                            {phase._count.stages !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {phaseProgress?.passed && (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Passed
+                          </span>
+                        )}
+                        {phase.quiz && (
+                          <Badge variant="outline" className="text-xs">
+                            Quiz
+                          </Badge>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </Card>
