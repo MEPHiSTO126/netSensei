@@ -1,0 +1,244 @@
+{
+  "phases": [
+    {
+      "file": "phase6.md",
+      "order": 6,
+      "title": "Positioning and Layering",
+      "description": "Take boxes out of normal flow, anchor overlays, and control which layer paints on top.",
+      "quiz": {
+        "passThreshold": 70,
+        "questions": [
+          {
+            "type": "TEXT",
+            "prompt": "Why does an absolutely positioned element stop reserving space in the layout?",
+            "fullGoal": "Explain absolute positioning and normal flow.",
+            "expectedAnswer": "Absolute positioning removes the box from normal flow and positions it against the nearest positioned ancestor, so its original space collapses.",
+            "rubric": "Check removal from flow and the containing block.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Name two reasons a position: sticky element might fail to stick.",
+            "fullGoal": "Diagnose sticky positioning failures.",
+            "expectedAnswer": "It needs an offset such as top: 0, and an ancestor with overflow hidden or auto, a transform, or a filter can break it; it also stops at the edge of its parent.",
+            "rubric": "Check the offset and at least one ancestor or parent constraint.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What creates a stacking context, and why does that matter for z-index?",
+            "fullGoal": "Explain stacking contexts.",
+            "expectedAnswer": "A positioned element with a z-index, opacity below 1, a transform, filter, or isolation can create a stacking context; z-index only competes inside its context, so a high value cannot escape.",
+            "rubric": "Check a stacking-context trigger and the containment effect.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Why is the native dialog element a better base for a modal than a positioned div?",
+            "fullGoal": "Explain native dialog behavior.",
+            "expectedAnswer": "It provides modal semantics, focus handling, Escape to close, and a backdrop, while a div requires those behaviors to be rebuilt and tested.",
+            "rubric": "Check semantics, focus, and dismissal.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Why should a design use a small set of z-index tokens instead of 9999?",
+            "fullGoal": "Explain layering tokens.",
+            "expectedAnswer": "Tokens keep layer order intentional and predictable; arbitrary large values start an arms race and still cannot escape a parent stacking context.",
+            "rubric": "Check predictable order and the stacking-context limit.",
+            "points": 1
+          },
+          {
+            "type": "SNIPPET",
+            "language": "css",
+            "prompt": "Make .site-header stick to the top of the viewport and sit above ordinary page content.",
+            "fullGoal": "Use sticky positioning with an offset and a z-index.",
+            "expectedAnswer": ".site-header { position: sticky; top: 0; z-index: 10; }",
+            "rubric": "Check sticky positioning, the top offset, and a sensible z-index.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    {
+      "file": "phase7.md",
+      "order": 7,
+      "title": "Motion and Visual Effects",
+      "description": "Animate state changes with transitions and keyframes, use transforms and filters, and respect a motion budget.",
+      "quiz": {
+        "passThreshold": 70,
+        "questions": [
+          {
+            "type": "TEXT",
+            "prompt": "Why should a transition be declared on the base rule instead of only on :hover?",
+            "fullGoal": "Explain where transitions belong.",
+            "expectedAnswer": "The base rule animates both entering and leaving the state; a transition only on hover animates one direction and snaps back.",
+            "rubric": "Check both directions of the state change.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Why are transform and opacity better animation properties than width and top?",
+            "fullGoal": "Explain rendering cost.",
+            "expectedAnswer": "Transform and opacity can be composited without layout or paint, while width and top trigger layout on each frame and can drop frames.",
+            "rubric": "Check layout and paint cost.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What should happen to animation when prefers-reduced-motion is reduce?",
+            "fullGoal": "Explain reduced-motion handling.",
+            "expectedAnswer": "Remove or replace non-essential motion, such as disabling transitions and looping animations while keeping content and state changes usable.",
+            "rubric": "Check respect for the user preference.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What is the difference between opacity and an alpha color?",
+            "fullGoal": "Compare opacity and alpha transparency.",
+            "expectedAnswer": "Opacity fades the whole element including its text and children, while an alpha color fades only that paint layer and lets the background show through.",
+            "rubric": "Check whole-element versus single-layer transparency.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "When several background layers are declared, which one paints on top?",
+            "fullGoal": "Explain background layer order.",
+            "expectedAnswer": "The layer listed first in the background shorthand or background-image list paints on top, with later layers behind it.",
+            "rubric": "Check first-listed on top.",
+            "points": 1
+          },
+          {
+            "type": "SNIPPET",
+            "language": "css",
+            "prompt": "Make .card fade to 60% opacity on hover with a 150ms transition.",
+            "fullGoal": "Use a transition and a hover state.",
+            "expectedAnswer": ".card { transition: opacity 150ms ease; } .card:hover { opacity: 0.6; }",
+            "rubric": "Check the base transition, the hover selector, and the opacity value.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    {
+      "file": "phase8.md",
+      "order": 8,
+      "title": "Components and Content",
+      "description": "Style the parts people actually use: links, navigation, forms, tables, icons, and generated content.",
+      "quiz": {
+        "passThreshold": 70,
+        "questions": [
+          {
+            "type": "TEXT",
+            "prompt": "Why is a visible label better than a placeholder for a form field?",
+            "fullGoal": "Explain persistent form labels.",
+            "expectedAnswer": "A label stays visible after typing, gives the control a reliable accessible name, and can carry a stronger contrast than placeholder text.",
+            "rubric": "Check persistence and accessible naming.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "How do you make a data table adapt to a narrow screen without destroying its semantics?",
+            "fullGoal": "Explain a responsive table pattern.",
+            "expectedAnswer": "Wrap the table in a horizontally scrollable container with keyboard access and an accessible name, and keep the table, caption, and header cells intact.",
+            "rubric": "Check scrolling wrapper and preserved table semantics.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What is required for ::before and ::after to appear, and what should they not be used for?",
+            "fullGoal": "Explain generated content constraints.",
+            "expectedAnswer": "They need the content property. They should not carry essential text or interactive controls because they are not part of the DOM and cannot receive events or focus.",
+            "rubric": "Check content and the essential-content restriction.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "How do CSS counters number a list of steps?",
+            "fullGoal": "Explain the counter lifecycle.",
+            "expectedAnswer": "Reset the counter on the container, increment it on each item, and display it with content: counter(name), usually in a pseudo-element.",
+            "rubric": "Check reset, increment, and display.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Why use :user-invalid instead of :invalid for a required field?",
+            "fullGoal": "Explain validation timing.",
+            "expectedAnswer": "An empty required field matches :invalid immediately, while :user-invalid waits until the user has interacted, so the page does not start in an error state.",
+            "rubric": "Check pre-interaction behavior.",
+            "points": 1
+          },
+          {
+            "type": "SNIPPET",
+            "language": "css",
+            "prompt": "Give an input inside .field a visible keyboard focus ring with a 2px solid #2563eb outline.",
+            "fullGoal": "Style keyboard focus on a form control.",
+            "expectedAnswer": ".field input:focus-visible { outline: 2px solid #2563eb; }",
+            "rubric": "Check the descendant selector, focus-visible, and the outline.",
+            "points": 2
+          }
+        ]
+      }
+    },
+    {
+      "file": "phase9.md",
+      "order": 9,
+      "title": "Modern CSS and Architecture",
+      "description": "Keep styles maintainable with native nesting, cascade layers, feature queries, relational selectors, logical properties, and themes.",
+      "quiz": {
+        "passThreshold": 70,
+        "questions": [
+          {
+            "type": "TEXT",
+            "prompt": "What is one difference between native CSS nesting and a preprocessor such as Sass?",
+            "fullGoal": "Compare native nesting with preprocessors.",
+            "expectedAnswer": "Native nesting runs in the browser without a build step and uses & for the parent, but it does not support string concatenation such as &__title.",
+            "rubric": "Check browser execution and one accurate limitation.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "Where do unlayered normal declarations sit relative to cascade layers?",
+            "fullGoal": "Explain the cascade layer boundary.",
+            "expectedAnswer": "Unlayered normal declarations win over layered normal declarations, while important declarations reverse the layer order and unlayered important declarations lose.",
+            "rubric": "Check normal unlayered priority and the important reversal.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What does @supports test, and what does it not guarantee?",
+            "fullGoal": "Explain feature queries.",
+            "expectedAnswer": "It tests whether the browser can parse a declaration or selector; it does not guarantee that the feature works correctly or looks right.",
+            "rubric": "Check syntax detection and the lack of behavior testing.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What does :has() let you style, and give one practical example.",
+            "fullGoal": "Explain the relational selector.",
+            "expectedAnswer": "It styles an element based on whether a relative selector matches inside it, such as styling a field wrapper when its input is user-invalid.",
+            "rubric": "Check relational matching and a concrete use.",
+            "points": 1
+          },
+          {
+            "type": "TEXT",
+            "prompt": "What does @property add to a custom property?",
+            "fullGoal": "Explain registered custom properties.",
+            "expectedAnswer": "It registers a syntax type, an inheritance rule, and an initial value, which enables validation and interpolation.",
+            "rubric": "Check type, inheritance, initial value, or animation.",
+            "points": 1
+          },
+          {
+            "type": "SNIPPET",
+            "language": "css",
+            "prompt": "Give .card 16px of padding on the inline axis and 24px on the block axis using logical properties.",
+            "fullGoal": "Use logical padding properties.",
+            "expectedAnswer": ".card { padding-inline: 16px; padding-block: 24px; }",
+            "rubric": "Check padding-inline and padding-block with the correct values.",
+            "points": 2
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { db } from "../src/lib/db";
 import { hashPassword } from "../src/lib/auth";
+import { cssExtraPhases } from "./css-extra-phases";
 
 type StageSeed = {
   title: string;
@@ -233,7 +234,7 @@ const modules: ModuleSeed[] = [
   {
     title: "CSS: The Styling Layer",
     order: 4,
-    description: "The language that turns markup into an interface: selectors and the cascade, the box model, type and color, flexbox and grid, then responsive layout.",
+    description: "The language that turns markup into an interface: selectors and the cascade, the box model, type and color, flexbox and grid, responsive layout, positioning, motion, components, and modern CSS architecture.",
     phases: [
       {
         title: "Selectors and the Cascade",
@@ -352,6 +353,7 @@ const modules: ModuleSeed[] = [
           ],
         },
       },
+      ...cssExtraPhases,
     ],
   },
   {
