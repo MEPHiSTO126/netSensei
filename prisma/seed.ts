@@ -16,6 +16,7 @@ type PhaseSeed = {
     passThreshold?: number;
     questions: Array<{
       type: "SNIPPET" | "TEXT" | "AUDIO";
+      language?: string;
       prompt: string;
       fullGoal?: string;
       expectedAnswer?: string;
@@ -230,8 +231,132 @@ const modules: ModuleSeed[] = [
     ],
   },
   {
-    title: "JavaScript Survival Kit",
+    title: "CSS: The Styling Layer",
     order: 4,
+    description: "The language that turns markup into an interface: selectors and the cascade, the box model, type and color, flexbox and grid, then responsive layout.",
+    phases: [
+      {
+        title: "Selectors and the Cascade",
+        order: 1,
+        description: "Match elements with selectors and understand which declaration wins when rules disagree.",
+        stages: [
+          { title: "A Rule Has Three Parts", type: "TEXT", content: "CSS is a list of rules. Each rule has a selector that says which elements to style, and a declaration block of property-value pairs. The browser reads every stylesheet, matches selectors against the DOM, and computes a final style for each element.\n\n```css\n.card {\n  padding: 16px;\n  border: 1px solid #d6d6d6;\n  background: #ffffff;\n}\n```\n\nThe selector is `.card`, the properties are `padding`, `border`, and `background`, and each declaration ends with a semicolon. Whitespace is flexible; the semicolon is not optional when another declaration follows.\n\nAttach the stylesheet from the document head so it is available before paint:\n\n```html\n<link rel='stylesheet' href='styles/main.css'>\n```\n\nCSS is declarative: you describe the result, not the steps. That is why one rule can affect twenty elements and why a mistake in a selector appears in places you did not open. Keep rules small and name classes by role, not by appearance." },
+          { title: "Type, Class, and ID Selectors", type: "TEXT", content: "A type selector matches an element name: `p` styles every paragraph. A class selector starts with a dot and matches every element carrying that class. An ID selector starts with `#` and is meant to identify one element in the document.\n\n```css\np { margin-block: 0 1rem; }\n.card { padding: 16px; }\n#site-header { border-bottom: 1px solid #d6d6d6; }\n```\n\nClasses are the workhorse. An element can carry several (`class='card card-featured'`), and a class can be reused everywhere. Compound selectors raise specificity without an ID: `.card.featured` matches only elements with both classes.\n\nUse IDs for anchors and JavaScript hooks, not for styling. They are hard to reuse, impossible to combine on one element, and they push specificity so high that later rules need `!important` to win. A class-based system stays flexible.\n\nNames describe purpose: `.site-header`, not `.blue-box`. The visual can change; the role usually does not." },
+          { title: "Combinators and State", type: "TEXT", content: "Combinators describe relationships. A space means any descendant; `>` means a direct child; `+` means the next sibling; `~` means any later sibling.\n\n```css\n.nav a { color: inherit; }\n.nav > ul { display: flex; gap: 16px; }\nh2 + p { margin-top: 0; }\ninput:focus-visible { outline: 2px solid #2563eb; }\n```\n\nPseudo-classes select state or position: `:hover`, `:focus-visible`, `:first-child`, `:nth-child(2n)`, `:disabled`, and `:checked`. They are still selectors, so they participate in specificity like a class. `:focus-visible` is the right tool for keyboard focus because it avoids drawing a ring on every mouse click.\n\nAttribute selectors match markup: `a[href^='https://']`, `input[type='checkbox']`, and `[aria-current='page']`. They style what the document already declares instead of adding another class for every variation.\n\nKeep selectors shallow. `.card-title` beats `.card .body .content h3`, which is brittle and hard to override." },
+          { title: "Which Rule Wins", type: "CHART", content: "Rule matches the element → Cascade origin and importance → Specificity → Source order → Computed value" },
+          { title: "Specificity Without Guessing", type: "TEXT", content: "Specificity is a score. Inline styles beat IDs; IDs beat classes, attributes, and pseudo-classes; those beat type selectors and pseudo-elements. When scores tie, the later rule wins.\n\n```css\n.card { color: #1f2937; }\n.card.featured { color: #111827; }\n#hero .card { color: #ffffff; }\n```\n\nRead those as (0,1,0), (0,2,0), and (1,1,0). The ID rule wins even if it appears earlier. Keep a selector's score low and consistent so overrides stay predictable.\n\n`!important` inverts the normal cascade and is difficult to undo. Treat it as a last resort for third-party overrides, not as a fix for a selector fight. If you need it to beat your own rule, the rule structure is the problem.\n\n`:where()` contributes zero specificity, which makes it ideal for resets and defaults. `:is()` takes the specificity of its most specific argument. Both reduce repetition:\n\n```css\n:where(ul, ol) { padding-inline-start: 1.25rem; }\n```\n\nDebug with the Styles pane: it shows the winning declaration and crosses out the losers." },
+          { title: "Inheritance and Custom Properties", type: "TEXT", content: "Some properties inherit by default: `color`, `font-family`, `font-size`, `line-height`, and `visibility`, among others. Others do not: `margin`, `padding`, `border`, and `display`. Inheritance moves values down the tree; it does not move them up or sideways.\n\n```css\nbody { color: #1f2937; font: 16px/1.6 system-ui, sans-serif; }\na { color: inherit; }\n```\n\n`inherit` forces a property to take its parent's value, `initial` resets it to the specification default, and `unset` behaves as inherit for inherited properties and initial for the rest. These keywords solve specific problems; use them deliberately.\n\nCustom properties are variables in the cascade. Declare them on `:root` for global tokens, override them on a component for a local variation, and read them with `var()`:\n\n```css\n:root {\n  --space: 8px;\n  --ink: #1f2937;\n  --accent: #2563eb;\n}\n.card { padding: calc(var(--space) * 2); color: var(--ink); }\n```\n\n`var(--token, fallback)` supplies a default when the property is missing. Because custom properties inherit, a theme becomes a set of overrides on a container instead of a rewrite of every component. Name tokens by role: `--accent`, not `--blue`." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "What are the three parts of a CSS rule, and which one decides where the rule applies?", fullGoal: "Identify the selector and the declaration block.", expectedAnswer: "A selector, a declaration block, and declarations made of property and value pairs. The selector decides which elements match.", rubric: "Check selector and declaration block roles.", points: 1 },
+            { type: "TEXT", prompt: "Why is a class usually a better styling hook than an ID?", fullGoal: "Compare class and ID selectors for styling.", expectedAnswer: "A class is reusable across many elements and can be combined on one element, while an ID is unique and creates high specificity that is hard to override.", rubric: "Check reuse and specificity.", points: 1 },
+            { type: "TEXT", prompt: "Rank these from weakest to strongest: .card, inline style, #hero .card, .card.featured.", fullGoal: "Order selectors by specificity.", expectedAnswer: ".card, then .card.featured, then #hero .card, then the inline style.", rubric: "Check specificity order.", points: 1 },
+            { type: "TEXT", prompt: "What does :where() contribute to specificity, and when is that useful?", fullGoal: "Explain the zero-specificity selector.", expectedAnswer: ":where() contributes zero specificity, which makes it useful for resets and default styles that should be easy to override.", rubric: "Check zero specificity and resets.", points: 1 },
+            { type: "SNIPPET", language: "css", prompt: "Write a rule that gives every element with the class card 16px of padding and a 1px solid border.", fullGoal: "Style the card class with padding and a solid border.", expectedAnswer: ".card { padding: 16px; border: 1px solid #d6d6d6; }", rubric: "Check the class selector, padding, and border declarations.", points: 2 },
+          ],
+        },
+      },
+      {
+        title: "The Box Model",
+        order: 2,
+        description: "Every element is a box. Learn the four layers, how width is calculated, and how overflow behaves.",
+        stages: [
+          { title: "Four Boxes, One Element", type: "TEXT", content: "Every element generates a box with four layers. The content box holds text or children. Padding surrounds the content inside the border. The border draws the edge. Margin is empty space outside the border that separates the element from its neighbors.\n\n```css\n.card {\n  width: 320px;\n  padding: 16px;\n  border: 1px solid #d6d6d6;\n  margin: 24px;\n}\n```\n\nBackgrounds paint under the content and padding by default, and under the border when it is transparent. Padding is part of the element's clickable area; margin is not. That distinction explains why a larger hit target needs padding, not margin.\n\nThe DevTools Layout tab draws the box model for the selected element. Use it when spacing looks wrong: it labels content, padding, border, and margin with live numbers, so you can see which layer is responsible instead of guessing from the screenshot.\n\nShorthand follows a clock: one value applies to all sides, two mean vertical and horizontal, three mean top, horizontal, bottom, and four go clockwise from the top." },
+          { title: "box-sizing: border-box", type: "TEXT", content: "By default, `width` sets only the content box. Add padding and a border and the element grows wider than the number you wrote: `width: 320px` plus 16px padding on each side plus a 1px border becomes 354px.\n\n```css\n.card {\n  box-sizing: border-box;\n  width: 320px;\n  padding: 16px;\n  border: 1px solid #d6d6d6;\n}\n```\n\nWith `border-box`, the declared width includes padding and border, so the card stays 320px and the content area shrinks instead. Most modern codebases apply it globally:\n\n```css\n*, *::before, *::after { box-sizing: border-box; }\n```\n\nThat reset makes every width predictable and is the single most useful CSS default you can add. It does not change margins; those remain outside the declared size.\n\nWhen a layout overflows by exactly the padding and border you added, this is the first property to check. The Computed pane shows the final content size after the box model resolves." },
+          { title: "Block, Inline, and Inline-Block", type: "TEXT", content: "`display` decides how a box participates in layout. A block box starts on a new line and fills the available inline space; width, height, and vertical margins apply. An inline box flows inside text; width and height are ignored, and vertical padding can paint outside the line without moving it.\n\n```css\np { display: block; }\na { display: inline; }\n.tag { display: inline-block; padding: 4px 8px; }\n```\n\n`inline-block` keeps the element in the text flow but lets it take width, height, padding, and margins like a block. It is useful for chips, badges, and small controls that must sit beside text.\n\n`display: none` removes the box and its subtree from layout and accessibility. `visibility: hidden` keeps the space but paints nothing. Choose based on whether the space should remain.\n\nModern layout often replaces inline-block with flex or grid on the parent. Use the simplest model that expresses the relationship; do not turn every container into a grid." },
+          { title: "Box From the Inside Out", type: "CHART", content: "Content box → Padding → Border → Margin" },
+          { title: "Margins, Gaps, and Collapse", type: "TEXT", content: "Margin is space between boxes. Padding is space inside a box. Choosing the wrong one produces layouts that look right until content or borders change.\n\n```css\n.stack > * + * { margin-top: 16px; }\n.toolbar { display: flex; gap: 8px; }\n```\n\nVertical margins between adjacent block boxes can collapse: the larger margin wins instead of adding. A parent and its first or last child can collapse too, which is why a heading sometimes pushes its container away instead of sitting inside it. Padding, a border, or `overflow: auto` on the parent stops that collapse.\n\nIn flex and grid, use `gap` for spacing between items. It does not add space at the outer edges, it never collapses, and it removes the need for `:last-child` margin resets. `gap` is the modern default for both models.\n\nMargin still owns centering (`margin-inline: auto`), offsets, and space between a component and its surroundings. Use `margin` outside the component and `padding` or `gap` inside it." },
+          { title: "Overflow, Intrinsic Size, and Aspect Ratio", type: "TEXT", content: "Content can be larger than its box. `overflow: visible` lets it spill; `hidden` clips it; `auto` adds scrollbars only when needed; `scroll` always reserves them. Clipping without a way to reach the content is an accessibility bug, so test with the keyboard.\n\n```css\n.panel {\n  max-width: 100%;\n  overflow: auto;\n  aspect-ratio: 16 / 9;\n}\n```\n\nFlex and grid items have a minimum size of `auto`, which means long words or wide images can refuse to shrink. `min-width: 0` on the item allows it to shrink and lets `text-overflow: ellipsis` work. This one line fixes most sidebar bugs.\n\n`aspect-ratio` reserves a shape before the image loads and prevents layout shift. Combine it with `width: 100%` and `height: auto`, and use `object-fit: cover` when the image must fill a fixed frame without distortion.\n\n`max-width: 100%` on images and media is another safe default: it lets them shrink on small screens while keeping their intrinsic size on large ones." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Name the four layers of the CSS box model from the inside out.", fullGoal: "List the box model layers.", expectedAnswer: "Content, padding, border, and margin.", rubric: "Check all four layers in order.", points: 1 },
+            { type: "TEXT", prompt: "What does box-sizing: border-box change about width?", fullGoal: "Explain border-box sizing.", expectedAnswer: "The declared width includes padding and border, so the content box shrinks instead of the element growing.", rubric: "Check inclusive width calculation.", points: 1 },
+            { type: "TEXT", prompt: "When does an element use block layout versus inline layout?", fullGoal: "Compare block and inline display behavior.", expectedAnswer: "A block box starts on a new line and accepts width and height, while an inline box flows inside text and ignores width and height.", rubric: "Check line behavior and sizing.", points: 1 },
+            { type: "TEXT", prompt: "A flex item refuses to shrink and overflows its row. What property fixes it, and why?", fullGoal: "Diagnose a flex item that will not shrink.", expectedAnswer: "Set min-width to zero, because flex items default to a minimum size of auto that respects their content.", rubric: "Check min-width zero and the auto minimum.", points: 1 },
+            { type: "SNIPPET", language: "css", prompt: "Make .card keep its declared width even after padding and a border are added.", fullGoal: "Use border-box sizing on the card class.", expectedAnswer: ".card { box-sizing: border-box; }", rubric: "Check the class selector and border-box value.", points: 2 },
+          ],
+        },
+      },
+      {
+        title: "Type, Color, and Spacing",
+        order: 3,
+        description: "Set readable type, build a color system with contrast, and space elements on a deliberate scale.",
+        stages: [
+          { title: "A Type Stack That Loads", type: "TEXT", content: "A font stack is a list of fallbacks. The browser tries each family in order and uses the first one available, ending with a generic family that always resolves.\n\n```css\nbody {\n  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;\n  font-size: 1rem;\n  line-height: 1.6;\n}\n```\n\nThe system stack loads instantly because it uses fonts already on the device. A web font can improve the brand, but it costs a request, may flash unstyled text, and can fail; if you use one, pair it with a close fallback and `font-display: swap`.\n\n`line-height` without a unit multiplies the element's font size, so it scales when type scales. A value around 1.5 to 1.7 suits body text; headings can be tighter, around 1.1 to 1.3.\n\nMeasure is the length of a line. Aim for 45 to 75 characters, which usually means a `max-width` near `65ch`. Long lines tire the eye; short lines break rhythm.\n\nUse weight and size to build hierarchy, not color alone. Two weights and a small size scale do more than five competing styles." },
+          { title: "Fluid Type with rem and clamp", type: "TEXT", content: "`px` is an absolute unit. `rem` is relative to the root font size, and `em` is relative to the current element's font size. Users can change the root size in their browser, so rem-based type respects that choice.\n\n```css\nhtml { font-size: 100%; }\nh1 { font-size: clamp(2rem, 5vw, 3.5rem); }\np { font-size: 1rem; }\n```\n\n`clamp(minimum, preferred, maximum)` keeps a value inside a range. The middle value can use viewport units, so the heading grows with the screen but never becomes tiny or absurd. Use `rem` for the minimum and maximum so zoom still works.\n\nDo not set `html { font-size: 62.5% }` to make rem math easy. It overrides the user's default and forces every size to compensate. Keep the root at 100% and write the sizes you mean.\n\nNever disable pinch zoom with `user-scalable=no`. Zoom is an accessibility feature, and a layout that only works at one size is not responsive. Test at 200% zoom on a desktop viewport.\n\n`text-wrap: balance` is a nice enhancement for headings, but treat it as a progressive improvement rather than a layout requirement." },
+          { title: "Color Models and Contrast", type: "TEXT", content: "CSS accepts several color models. Hex is compact (`#2563eb`), `rgb()` is readable when values are computed, `hsl()` makes lightness and saturation explicit, and `oklch()` offers perceptually even lightness across hues.\n\n```css\n:root {\n  --ink: #1f2937;\n  --muted: rgb(107 114 128);\n  --accent: hsl(221 83% 53%);\n  --surface: oklch(98% 0.01 250);\n}\n```\n\nAlpha is a fourth channel: `rgb(0 0 0 / 0.5)` or the eight-digit hex `#00000080`. Alpha lets the background show through; `opacity` fades the whole element, including its text and borders. Choose based on what should become transparent.\n\n`currentColor` passes the text color to borders, icons, and SVG fills, which keeps components in sync with one token.\n\nContrast is not a matter of taste. Body text needs at least 4.5 to 1 against its background, and large text needs 3 to 1. Placeholder text, disabled states, and thin borders are common failures. Test the actual rendered colors, including dark mode.\n\nBuild a small token set: ink, muted ink, surface, raised surface, border, accent, and danger. Components consume tokens so a theme change stays in one place." },
+          { title: "Contrast Check", type: "CHART", content: "Pick text and background → Measure the ratio → Aim for 4.5 to 1 → Adjust one token" },
+          { title: "A Spacing Scale, Not Guesswork", type: "TEXT", content: "Spacing looks intentional when it comes from a scale. Pick a base, usually 4px or 8px, and use multiples for padding, margins, and gaps. A handful of steps covers almost every layout.\n\n```css\n:root {\n  --space-1: 4px;\n  --space-2: 8px;\n  --space-3: 16px;\n  --space-4: 24px;\n  --space-5: 32px;\n  --space-6: 48px;\n}\n.section { padding-block: var(--space-6); }\n.stack > * + * { margin-top: var(--space-3); }\n```\n\nArbitrary values such as 13px and 27px are how a page starts to feel uneven. Two values that are almost the same read as a mistake, not a decision. If a spacing step is missing, add it to the scale or use the nearest one.\n\nSpace belongs between groups, not inside every child. Put a gap on the container or a top margin on siblings, then remove the last margin. Repeated margin rules on individual children multiply the places a layout can break.\n\nDensity is a design choice: marketing pages breathe, dashboards compress. Keep the scale and change which steps you use, rather than inventing a new scale per page." },
+          { title: "Borders, Radius, Shadow, and Focus", type: "TEXT", content: "Borders define edges; radius softens them; shadows lift surfaces; focus rings show where the keyboard is. Each should be a token, not a one-off value.\n\n```css\n:root {\n  --border: 1px solid #d6d6d6;\n  --radius: 8px;\n  --shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n.card {\n  border: var(--border);\n  border-radius: var(--radius);\n  box-shadow: var(--shadow);\n}\n```\n\nOne-pixel borders and low-contrast shadows separate surfaces without competing with content. Layered, heavy shadows date quickly and cost paint time on large areas. Large radii make every card look like a pill; pick a radius that matches the density of the interface.\n\nNever remove the focus outline without replacing it. `:focus-visible` draws a ring for keyboard navigation and leaves mouse clicks alone:\n\n```css\n:focus-visible {\n  outline: 2px solid var(--accent);\n  outline-offset: 2px;\n}\n```\n\nTest focus order with Tab, not with the mouse. A visible ring that is clipped by `overflow: hidden` is almost as bad as no ring at all." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why use a font stack instead of a single font name?", fullGoal: "Explain font fallbacks.", expectedAnswer: "The stack lists fallbacks so text still renders when a font is missing, ending with a generic family such as sans-serif.", rubric: "Check fallback and generic family.", points: 1 },
+            { type: "TEXT", prompt: "What is the difference between rem and px for font sizes?", fullGoal: "Compare relative and absolute type units.", expectedAnswer: "rem is relative to the root font size and respects user settings, while px is fixed.", rubric: "Check root-relative behavior.", points: 1 },
+            { type: "TEXT", prompt: "What contrast ratio should body text reach against its background?", fullGoal: "State the WCAG contrast target.", expectedAnswer: "At least 4.5 to 1 for normal text, and 3 to 1 for large text.", rubric: "Check both ratios.", points: 1 },
+            { type: "TEXT", prompt: "Why prefer :focus-visible over removing the focus outline?", fullGoal: "Explain visible keyboard focus.", expectedAnswer: ":focus-visible keeps a visible ring for keyboard users while avoiding a ring on every mouse click, and removing the outline makes keyboard navigation impossible to follow.", rubric: "Check keyboard access and focus-visible behavior.", points: 1 },
+            { type: "TEXT", prompt: "Why use a spacing scale instead of arbitrary pixel values?", fullGoal: "Explain consistent spacing tokens.", expectedAnswer: "A scale keeps spacing consistent and repeatable, while arbitrary values create almost-equal gaps that look accidental and are hard to maintain.", rubric: "Check consistency and maintainability.", points: 1 },
+            { type: "SNIPPET", language: "css", prompt: "Define an accent color custom property on :root and use it as the background of .button.", fullGoal: "Create a custom property and consume it with var().", expectedAnswer: ":root { --accent: #2563eb; } .button { background: var(--accent); }", rubric: "Check :root, the custom property, and var() usage.", points: 2 },
+          ],
+        },
+      },
+
+      {
+        title: "Flexbox and Grid",
+        order: 4,
+        description: "Lay out one-dimensional rows and columns with flexbox, then two-dimensional pages with grid.",
+        stages: [
+          { title: "Flex Is One Dimension", type: "TEXT", content: "Set `display: flex` on a parent and its direct children become flex items arranged along one axis. The main axis follows `flex-direction`; the cross axis is perpendicular to it.\n\n```css\n.toolbar {\n  display: flex;\n  flex-direction: row;\n  gap: 8px;\n}\n```\n\nWith `row`, items run left to right and the cross axis is vertical. With `column`, items stack top to bottom and the cross axis is horizontal. Everything else about alignment follows from that choice, so decide the direction first.\n\nFlexbox is for distribution along one line: navigation bars, button groups, media objects, and rows of cards that should share space. It can wrap into multiple lines, but it does not define a grid of rows and columns; when both dimensions matter, grid is the clearer tool.\n\nOnly direct children become flex items. A wrapper inside the container is laid out as one item, no matter how many elements it contains. That is a frequent surprise when a three-column row turns into two columns plus a stranger." },
+          { title: "Growing, Shrinking, and Wrapping", type: "TEXT", content: "Flex items share free space according to three values: `flex-grow`, `flex-shrink`, and `flex-basis`. The shorthand `flex: 1` means grow and shrink with a zero basis, so items split the available space evenly.\n\n```css\n.layout { display: flex; gap: 24px; }\n.sidebar { flex: 0 0 240px; }\n.content { flex: 1 1 0; min-width: 0; }\n```\n\nThe sidebar keeps a fixed basis and does not grow. The content takes the rest and may shrink, and `min-width: 0` lets it shrink below its content width so long text and code blocks do not force the row wider.\n\nAdd `flex-wrap: wrap` when items should move to a new line instead of shrinking forever. Pair it with `gap` for consistent space in both directions. A row of cards that wraps is often enough; a full grid may still be simpler.\n\nAvoid percentage widths on flex items and then adding gaps. The percentages resolve against the container, while the gaps take space too, so the row overflows. Let flex or grid distribute the space instead." },
+          { title: "Alignment Without Margins", type: "TEXT", content: "Flex alignment is easier once you know the axes. `justify-content` distributes items on the main axis; `align-items` aligns them on the cross axis; `align-self` overrides alignment for one item; `align-content` spaces wrapped lines.\n\n```css\n.stage {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  min-height: 320px;\n}\n```\n\nThat centers a child both ways. For a row of links with one pushed to the right, use `margin-inline-start: auto` on that item; it absorbs the free space without a spacer element.\n\n`justify-content: space-between` puts the first item at the start and the last at the end. With three items it leaves the middle wherever the space falls, which is rarely what a header needs. Prefer `gap` plus auto margins for deliberate placement.\n\nAlignment values such as `flex-start`, `center`, `flex-end`, `space-between`, `space-around`, and `space-evenly` apply to free space, not to the items themselves. If there is no free space, they have nothing to distribute." },
+          { title: "The Flex Axis", type: "CHART", content: "flex-direction row → main axis left to right → justify-content on the main axis → align-items on the cross axis" },
+          { title: "Grid Defines Two Dimensions", type: "TEXT", content: "Grid lays out rows and columns at the same time. Declare the tracks on the container, and place items into the cells.\n\n```css\n.cards {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 24px;\n}\n```\n\n`1fr` means one share of the free space. `repeat(3, 1fr)` creates three equal columns. `minmax(240px, 1fr)` sets a floor and a flexible maximum, and `auto-fit` creates as many columns as fit, collapsing empty ones. Together they make a card grid that needs no media queries.\n\nA page shell is just as direct:\n\n```css\n.page {\n  display: grid;\n  grid-template-columns: 240px minmax(0, 1fr);\n  gap: 32px;\n}\n```\n\nThe `minmax(0, 1fr)` prevents the content column from refusing to shrink. Grid items, like flex items, default to a minimum size of `auto`; the zero minimum is the safety valve.\n\n`gap` works in both directions and never collapses. Use it instead of margins between cells." },
+          { title: "Placing Items and Naming Areas", type: "TEXT", content: "Items can be placed by line numbers, by span, or by named areas. Line numbers are precise; named areas are readable.\n\n```css\n.page {\n  display: grid;\n  grid-template-areas:\n    'header header'\n    'sidebar main'\n    'footer footer';\n  grid-template-columns: 240px 1fr;\n  gap: 24px;\n}\n.site-header { grid-area: header; }\n.sidebar { grid-area: sidebar; }\n.main { grid-area: main; }\n.site-footer { grid-area: footer; }\n```\n\nThe areas form a visual map of the layout. Every named cell must be a rectangle, and every name must be used. Changing the map changes the page; the item rules stay the same.\n\nFor a single item, `grid-column: 1 / 3` spans from the first line to the third, and `grid-column: span 2` asks for two tracks from wherever it lands. `grid-row` works the same way. Auto-placement fills the remaining cells in source order.\n\nUse grid when both dimensions matter: page shells, dashboards, galleries, and forms with aligned labels. Use flex when the layout is a single line that distributes space. Mixing them is normal: a grid page with flex toolbars inside." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "When should you reach for flexbox instead of grid?", fullGoal: "Compare one-dimensional and two-dimensional layout.", expectedAnswer: "Use flexbox for one-dimensional layout along a single row or column, and grid for two-dimensional layout with rows and columns.", rubric: "Check the dimensional distinction.", points: 1 },
+            { type: "TEXT", prompt: "What does flex: 1 1 0 mean?", fullGoal: "Explain the flex shorthand.", expectedAnswer: "Grow and shrink are enabled with a zero basis, so items share the free space equally.", rubric: "Check grow, shrink, and basis.", points: 1 },
+            { type: "TEXT", prompt: "What is the difference between justify-content and align-items in a flex row?", fullGoal: "Explain main-axis and cross-axis alignment.", expectedAnswer: "justify-content distributes items along the main axis, while align-items aligns them on the cross axis.", rubric: "Check both axes.", points: 1 },
+            { type: "TEXT", prompt: "How do auto-fit and minmax combine to make a responsive card grid?", fullGoal: "Explain a responsive grid pattern.", expectedAnswer: "repeat(auto-fit, minmax(240px, 1fr)) creates as many columns as fit at 240px and lets them stretch to fill the row.", rubric: "Check auto-fit and the minmax floor.", points: 1 },
+            { type: "SNIPPET", language: "css", prompt: "Center .card horizontally and vertically inside .stage using flexbox.", fullGoal: "Use flexbox alignment to center the card.", expectedAnswer: ".stage { display: flex; align-items: center; justify-content: center; }", rubric: "Check display flex, justify-content, and align-items.", points: 2 },
+          ],
+        },
+      },
+      {
+        title: "Responsive Layout in Practice",
+        order: 5,
+        description: "Adapt layouts to real screens with mobile-first queries, fluid units, responsive images, and a debugging routine.",
+        stages: [
+          { title: "The Viewport and Mobile First", type: "TEXT", content: "The viewport meta tag tells mobile browsers to use the device width instead of a zoomed-out desktop canvas:\n\n```html\n<meta name='viewport' content='width=device-width, initial-scale=1'>\n```\n\nWithout it, a 390px phone renders the page at roughly 980px and shrinks it, which makes text tiny and media queries misleading.\n\nMobile-first means the base styles describe the small screen, and `min-width` media queries add complexity as space appears. The cascade then reads as progressive enhancement instead of a series of overrides.\n\n```css\n.cards { display: grid; gap: 16px; }\n\n@media (min-width: 768px) {\n  .cards { grid-template-columns: repeat(2, 1fr); gap: 24px; }\n}\n```\n\nChoose breakpoints where the content stops working, not where a particular phone is. Resize the window slowly and watch for cramped lines, overlapping controls, and awkward gaps; add a breakpoint at the first real failure. Device-specific breakpoints age badly." },
+          { title: "Media Queries and Container Queries", type: "TEXT", content: "A media query applies rules when a condition about the viewport or user preference is true. Modern syntax supports ranges and comma-separated alternatives.\n\n```css\n@media (min-width: 768px) and (max-width: 1023px) {\n  .sidebar { display: none; }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  * { animation: none; transition: none; }\n}\n```\n\n`prefers-color-scheme` and `prefers-reduced-motion` respond to user settings, not device sizes. Respect them: a dark theme is a preference, and motion can cause real discomfort.\n\nContainer queries respond to the size of a component's parent, so a card can change layout wherever it is placed:\n\n```css\n.card-wrap { container-type: inline-size; }\n@container (min-width: 420px) {\n  .card { grid-template-columns: 120px 1fr; }\n}\n```\n\nUse media queries for the page shell and container queries for reusable components. A component that only responds to the viewport breaks when it moves into a narrow sidebar." },
+          { title: "Responsive Units and Images", type: "TEXT", content: "Use the unit that expresses the constraint. `%` and `fr` divide available space; `rem` scales with type; `vw` and `vh` refer to the viewport; `ch` measures characters.\n\n`min()`, `max()`, and `clamp()` combine them:\n\n```css\n.shell {\n  width: min(100% - 32px, 1120px);\n  margin-inline: auto;\n}\n```\n\nThat shell has 16px of breathing room on each side on small screens and stops growing at 1120px. `calc()` handles the subtraction; `min()` picks the smaller result.\n\nImages need intrinsic sizing and a shape. `width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover` keeps them fluid and prevents layout shift. For art direction and bandwidth, `srcset` and `sizes` let the browser choose a file:\n\n```html\n<img\n  src='photo-800.jpg'\n  srcset='photo-400.jpg 400w, photo-800.jpg 800w, photo-1600.jpg 1600w'\n  sizes='(min-width: 768px) 50vw, 100vw'\n  alt='Workshop desks'>\n```\n\nAvoid fixed heights on text containers. Content grows when the user zooms or the translation runs long; a fixed height clips it." },
+          { title: "Breakpoint Ladder", type: "CHART", content: "Base styles → 640px small → 768px medium → 1024px large → 1280px wide" },
+          { title: "Debugging Layout", type: "TEXT", content: "Start with the box, not the screenshot. Select the element, open the Layout tab, and check its size, padding, border, and margin. Then read the Styles pane from top to bottom: the winning rule is visible, and overridden declarations are crossed out.\n\nDevTools can overlay flex and grid tracks. Turn on the grid badge next to `display: grid` to see lines and gaps, and use the flex badge to inspect the main and cross axes. These overlays answer alignment questions faster than reading CSS.\n\nFor a stubborn outline, add a temporary rule:\n\n```css\n* { outline: 1px solid rgb(255 0 0 / 0.3); }\n```\n\nEvery box becomes visible, including the ones you forgot. Remove it afterward. For overflow, search the page for elements wider than the viewport, and remember that `min-width: auto` on flex and grid items is a common culprit.\n\nTest at 320px, 768px, and 1280px, then at 200% zoom. Check with the keyboard and with reduced motion enabled. A layout is not responsive until it survives those conditions, not just the width of your monitor." },
+          { title: "Capstone: A Responsive Landing Page", type: "TEXT", content: "Build one page that uses everything in this module: a header with navigation, a hero section, a feature grid, and a footer. Write the HTML first, with semantic elements and a sensible heading order.\n\nThen style mobile-first:\n\n```css\n:root {\n  --ink: #1f2937;\n  --surface: #ffffff;\n  --accent: #2563eb;\n  --space: 8px;\n}\nbody {\n  margin: 0;\n  color: var(--ink);\n  background: var(--surface);\n  font: 16px/1.6 system-ui, sans-serif;\n}\n.features {\n  display: grid;\n  gap: calc(var(--space) * 3);\n}\n@media (min-width: 768px) {\n  .features { grid-template-columns: repeat(3, 1fr); }\n}\n```\n\nAcceptance checklist: no horizontal scroll at 320px, readable at 200% zoom, every control reachable by keyboard with a visible focus ring, images sized with `width`, `height`, and `alt`, color contrast at least 4.5 to 1 for body text, and one accent color used deliberately.\n\nDo not add a framework to finish this. The point is to feel the cascade, the box model, and the two layout systems directly. Save the page, resize it slowly, and fix the first thing that breaks. That loop is the skill." },
+        ],
+        quiz: {
+          passThreshold: 70,
+          questions: [
+            { type: "TEXT", prompt: "Why write base styles first and add min-width media queries after them?", fullGoal: "Explain mobile-first CSS.", expectedAnswer: "Mobile-first CSS starts with the small-screen layout and progressively adds rules for larger screens, so the base stays simple and the cascade is easier to follow.", rubric: "Check progressive enhancement and min-width.", points: 1 },
+            { type: "TEXT", prompt: "When is a container query better than a media query?", fullGoal: "Compare viewport and container queries.", expectedAnswer: "A container query responds to the size of a component's parent, so the component adapts wherever it is placed, while a media query responds only to the viewport.", rubric: "Check parent size versus viewport.", points: 1 },
+            { type: "TEXT", prompt: "How do srcset and sizes improve a responsive image?", fullGoal: "Explain responsive image selection.", expectedAnswer: "srcset offers several image widths and sizes tells the browser the display size, so it can download the smallest file that fits.", rubric: "Check candidate widths and display size.", points: 1 },
+            { type: "TEXT", prompt: "Name three checks before calling a responsive layout done.", fullGoal: "List responsive acceptance checks.", expectedAnswer: "No horizontal scroll at 320px, readable text at 200 percent zoom, and keyboard focus visible on every control.", rubric: "Check the three practical checks.", points: 1 },
+            { type: "SNIPPET", language: "css", prompt: "Write a mobile-first rule that makes .grid one column by default and two equal columns from 768px up.", fullGoal: "Use a min-width media query to add a second column.", expectedAnswer: ".grid { grid-template-columns: 1fr; } @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }", rubric: "Check mobile base, min-width query, and the two-column override.", points: 2 },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: "JavaScript Survival Kit",
+    order: 5,
     description: "Just enough JavaScript before the DOM and events: values, types, functions, control flow, objects, arrays, scope, hoisting, errors, and the debugger.",
     phases: [
       {
@@ -334,7 +459,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "The DOM Is an API",
-    order: 5,
+    order: 6,
     description: "Selecting, creating, updating, traversing the DOM, and keeping updates safe.",
     phases: [
       {
@@ -399,7 +524,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "Events: The Page Talks Back",
-    order: 6,
+    order: 7,
     description: "addEventListener, the event object, bubbling, delegation, forms, keyboard access.",
     phases: [
       {
@@ -461,7 +586,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "JavaScript Core",
-    order: 7,
+    order: 8,
     description: "Types and coercion, scope and closures, array and object tools, modules and errors.",
     phases: [
       {
@@ -543,7 +668,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "Async and the Event Loop",
-    order: 8,
+    order: 9,
     description: "Call stack, queues, promises, async/await, fetch, cancellation, six data states.",
     phases: [
       {
@@ -626,7 +751,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "State",
-    order: 9,
+    order: 10,
     description: "State vs props vs derived data, immutability, one-way flow, and state in real UIs.",
     phases: [
       {
@@ -693,7 +818,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "React Basics",
-    order: 10,
+    order: 11,
     description: "Vite, JSX, components, props, state, lists, forms, effects, lifting, custom hooks, mini-app.",
     phases: [
       {
@@ -795,7 +920,7 @@ const modules: ModuleSeed[] = [
   },
   {
     title: "Shipping It",
-    order: 11,
+    order: 12,
     description: "Git workflow, deploy, environment variables, accessibility, performance, capstone brief, what's next.",
     phases: [
       {
@@ -935,16 +1060,17 @@ async function main() {
           },
         });
 
-        for (const q of phase.quiz.questions) {
+        for (const [idx, q] of phase.quiz.questions.entries()) {
           await db.question.create({
             data: {
               quizId: quiz.id,
               type: q.type,
+              language: q.language ?? "javascript",
               prompt: q.prompt,
               fullGoal: q.fullGoal ?? null,
               expectedAnswer: q.expectedAnswer ?? null,
               rubric: q.rubric ?? null,
-              order: (q.points ?? 1),
+              order: idx,
               points: q.points ?? 1,
             },
           });

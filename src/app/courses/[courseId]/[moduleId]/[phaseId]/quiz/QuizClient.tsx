@@ -10,6 +10,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 type Question = {
   id: string;
   type: string;
+  language: string;
   prompt: string;
   fullGoal: string | null;
 };
@@ -184,7 +185,9 @@ export function QuizClient({ phaseId }: QuizClientProps) {
           <Card key={q.id} className="p-5">
             <div className="flex items-start gap-3 mb-4">
               <Badge variant="outline" className="text-xs mt-0.5">
-                {q.type}
+                {q.type === "SNIPPET"
+                  ? `SNIPPET · ${q.language.toUpperCase()}`
+                  : q.type}
               </Badge>
               <p className="font-medium text-foreground">{q.prompt}</p>
             </div>
@@ -194,7 +197,7 @@ export function QuizClient({ phaseId }: QuizClientProps) {
                   className="w-full min-h-[200px] font-mono text-sm rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
-                  placeholder="Write your code here..."
+                  placeholder={`Write your ${q.language.toUpperCase()} here...`}
                 />
               </div>
             ) : (

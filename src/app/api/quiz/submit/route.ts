@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       const grade = await (question.type === "SNIPPET"
         ? checkSnippet({
             code: answer,
-            language: "javascript",
+            language: question.language,
             fullGoal: question.fullGoal,
             questionId: question.id,
             studentId: user.id,

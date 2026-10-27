@@ -83,6 +83,7 @@ model Question {
   quizId      String
   quiz        Quiz     @relation(fields: [quizId], references: [id])
   type        String
+  language    String   @default("javascript")
   prompt      String
   fullGoal    String?
   expectedAnswer String?

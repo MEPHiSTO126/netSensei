@@ -30,6 +30,7 @@ export async function GET(
     const questions = phase.quiz.questions.map((q) => ({
       id: q.id,
       type: q.type,
+      language: q.language,
       prompt: q.prompt,
       fullGoal: q.fullGoal,
     }));
