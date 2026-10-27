@@ -3,21 +3,23 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Clock, Send, MessageCircle } from "lucide-react";
+import { User } from "lucide-react";
+import { TutorComposer } from "@/components/tutor/TutorComposer";
+import { TutorThreadRefresh } from "@/components/tutor/TutorThreadRefresh";
 
 export const dynamic = "force-dynamic";
 
 export default async function TutorChatPage({
   searchParams,
 }: {
-  searchParams: Promise<{ studentId?: string; requestId?: string; sessionId?: string }>;
+  searchParams: Promise<{ studentId?: string; requestId?: string; sessionId?: string; stageId?: string }>;
 }) {
   const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
 
-  const { studentId, requestId, sessionId } = await searchParams;
+  const { studentId, requestId, sessionId, stageId } = await searchParams;
 
   // Find or create a session
   let session;
@@ -34,14 +36,9 @@ export default async function TutorChatPage({
       },
     });
   } else if (studentId && user.role === "TUTOR") {
-    // Tutor starting chat with student
-    session = await db.tutorSession.create({
-      data: {
-        studentId,
-        tutorId: user.id,
-        mode: "LIVE",
-        status: "ACTIVE",
-      },
+    // Tutor starting or resuming chat with student
+    session = await db.tutorSession.findFirst({
+      where: { studentId, status: "ACTIVE" },
       include: {
         messages: {
           include: { sender: { select: { id: true, email: true, role: true } } },
@@ -50,11 +47,37 @@ export default async function TutorChatPage({
         student: { select: { id: true, email: true } },
         tutor: { select: { id: true, email: true } },
       },
+      orderBy: { createdAt: "desc" },
     });
+    if (!session) {
+      session = await db.tutorSession.create({
+        data: {
+          studentId,
+          tutorId: user.id,
+          mode: "LIVE",
+          status: "ACTIVE",
+        },
+        include: {
+          messages: {
+            include: { sender: { select: { id: true, email: true, role: true } } },
+            orderBy: { createdAt: "asc" },
+          },
+          student: { select: { id: true, email: true } },
+          tutor: { select: { id: true, email: true } },
+        },
+      });
+    } else if (!session.tutorId) {
+      // Claim an unassigned session so this tutor can post messages
+      await db.tutorSession.update({
+        where: { id: session.id },
+        data: { tutorId: user.id },
+      });
+      session = { ...session, tutorId: user.id };
+    }
     // Mark request as answered
     if (requestId) {
-      await db.tutorRequest.update({
-        where: { id: requestId },
+      await db.tutorRequest.updateMany({
+        where: { id: requestId, status: "PENDING" },
         data: { status: "ANSWERED", answeredAt: new Date() },
       });
     }
@@ -70,6 +93,7 @@ export default async function TutorChatPage({
         student: { select: { id: true, email: true } },
         tutor: { select: { id: true, email: true } },
       },
+      orderBy: { createdAt: "desc" },
     });
     if (!session) {
       session = await db.tutorSession.create({
@@ -160,25 +184,12 @@ export default async function TutorChatPage({
         ))}
       </div>
 
-      <div className="p-4 border-t border-border">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="flex-1 px-4 py-2 rounded-lg border border-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          />
-          <button
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
-            disabled
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Message sending will be enabled with SSE connection. Tutor can highlight
-          stages to reference specific lesson content.
-        </p>
-      </div>
+      <TutorComposer
+        sessionId={session.id}
+        defaultType={isTutor && stageId ? "HIGHLIGHT" : "TEXT"}
+        defaultStageId={stageId ?? null}
+      />
+      <TutorThreadRefresh />
     </div>
   );
 }

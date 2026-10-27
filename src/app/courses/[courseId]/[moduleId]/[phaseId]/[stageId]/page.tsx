@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, FileText, Image as ImageIcon, BarChart3, Play } from "lucide-react";
+import { TutorRequestButton } from "@/components/tutor/TutorRequestButton";
 
 export const dynamic = "force-dynamic";
 
@@ -153,6 +154,8 @@ export default async function StagePage({
             />
           </div>
 
+          <TutorRequestButton stageId={stage.id} stageTitle={stage.title} />
+
           <div className="mt-10 flex justify-between items-center pt-6 border-t border-border">
             {prevStage && (
               <Link
@@ -189,17 +192,29 @@ function StageContent({
   switch (type) {
     case "IMAGE":
       return (
-        <div className="mt-4 flex items-center justify-center">
+        <div className="mt-4 space-y-3">
           {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={content}
-              className="max-w-full h-auto rounded-lg border border-border shadow-sm"
-            />
-          ) : (
-            <div className="h-64 w-full rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-sm">
-              No image available for this stage
+            <div className="flex items-center justify-center">
+              <img
+                src={imageUrl}
+                alt={content || "Stage illustration"}
+                className="max-w-full h-auto rounded-lg border border-border shadow-sm"
+              />
             </div>
+          ) : (
+            <div className="h-64 w-full rounded-lg border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-center p-6">
+              <ImageIcon className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm font-medium text-foreground mb-1">Image coming soon</p>
+              <p className="text-xs text-muted-foreground max-w-sm">
+                {content || "This stage includes a diagram or illustration to support the explanation."}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Images are stored in <code className="px-1 py-0.5 bg-muted rounded">public/uploads/</code>
+              </p>
+            </div>
+          )}
+          {content && imageUrl && (
+            <p className="text-sm text-muted-foreground text-center italic">{content}</p>
           )}
         </div>
       );

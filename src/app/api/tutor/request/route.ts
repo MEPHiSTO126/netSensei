@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 
 const schema = z.object({
-  stageId: z.string().optional(),
+  stageId: z.string().nullish(),
   question: z.string().min(1),
 });
 

@@ -369,6 +369,7 @@ const modules: ModuleSeed[] = [
           passThreshold: 70,
           questions: [
             { type: "TEXT", prompt: "Why is event delegation useful?", fullGoal: "Explain the benefit of event delegation.", expectedAnswer: "One listener on a common ancestor handles children; add/remove without re-binding.", rubric: "Check delegation understanding.", points: 1 },
+            { type: "SNIPPET", prompt: "Rewrite a list of three buttons so clicking any of them is handled by a single delegated listener.", fullGoal: "Use event delegation so one listener on a container handles clicks on many buttons.", expectedAnswer: "container.addEventListener('click', (event) => { const button = event.target.closest('button'); /* act on button */ });", rubric: "Check delegation pattern: one listener, event delegation via closest.", points: 2 },
           ],
         },
       },
