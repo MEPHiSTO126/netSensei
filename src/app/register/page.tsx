@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TUTOR">("STUDENT");
+  const [tutorCode, setTutorCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useSession();
@@ -22,7 +23,7 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      await signUp(email, password, role);
+      await signUp(email, password, role, tutorCode);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -31,8 +32,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted px-4">
-      <Card className="w-full max-w-md elevated">
+    <div className="flex min-h-[calc(100dvh-12rem)] items-center justify-center px-0 py-10 sm:px-4">
+      <Card variant="elevated" className="w-full max-w-md">
         <div className="p-8">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold text-heading">Create account</h1>
@@ -51,6 +52,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
+                aria-label="Email address"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -63,6 +65,7 @@ export default function RegisterPage() {
               <Input
                 id="password"
                 type="password"
+                aria-label="Password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -72,16 +75,16 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">I am a</Label>
+              <Label htmlFor="role-student">I am a</Label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="cursor-pointer">
                   <input
-                    id="role"
+                    id="role-student"
                     type="radio"
                     value="STUDENT"
                     checked={role === "STUDENT"}
                     onChange={() => setRole("STUDENT")}
-                    className="sr-only peer"
+                    className="peer sr-only"
                   />
                   <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground">
                     Student
@@ -89,12 +92,12 @@ export default function RegisterPage() {
                 </label>
                 <label className="cursor-pointer">
                   <input
-                    id="role"
+                    id="role-tutor"
                     type="radio"
                     value="TUTOR"
                     checked={role === "TUTOR"}
                     onChange={() => setRole("TUTOR")}
-                    className="sr-only peer"
+                    className="peer sr-only"
                   />
                   <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground">
                     Tutor
@@ -102,6 +105,25 @@ export default function RegisterPage() {
                 </label>
               </div>
             </div>
+            {role === "TUTOR" && (
+              <div className="space-y-2">
+                <Label htmlFor="tutor-code">Tutor access code</Label>
+                <Input
+                  id="tutor-code"
+                  type="password"
+                  aria-label="Tutor access code"
+                  placeholder="Provided by an administrator"
+                  value={tutorCode}
+                  onChange={(e) => setTutorCode(e.target.value)}
+                  required
+                  leftIcon={<Lock className="h-4 w-4 text-muted-foreground" />}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Tutor accounts are invite-only so students can trust who is
+                  answering.
+                </p>
+              </div>
+            )}
             <div className="flex items-center space-x-2">
               <input
                 id="terms"

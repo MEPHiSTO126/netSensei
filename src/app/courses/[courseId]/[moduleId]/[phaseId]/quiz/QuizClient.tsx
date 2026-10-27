@@ -195,6 +195,7 @@ export function QuizClient({ phaseId }: QuizClientProps) {
               <div className="space-y-2">
                 <textarea
                   className="w-full min-h-[200px] font-mono text-sm rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  aria-label={q.prompt}
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
                   placeholder={`Write your ${q.language.toUpperCase()} here...`}
@@ -204,6 +205,7 @@ export function QuizClient({ phaseId }: QuizClientProps) {
               <div className="space-y-2">
                 <textarea
                   className="w-full min-h-[120px] rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  aria-label={q.prompt}
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
                   placeholder="Type your answer..."

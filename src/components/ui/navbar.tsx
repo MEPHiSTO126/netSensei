@@ -1,46 +1,130 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "@/hooks/useSession";
-import { LogOut, User, MousePointer2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, type ComponentType } from "react";
+import {
+  BarChart3,
+  BookOpen,
+  Code2,
+  History,
+  Inbox,
+  LogOut,
+  MessageSquare,
+  User,
+} from "lucide-react";
 
-export function Navbar({ user }: { user: { email: string; role: string } | null }) {
-  const { signOut } = useSession();
+type NavUser = {
+  email: string;
+  role: "STUDENT" | "TUTOR";
+};
+
+type NavItem = {
+  href: string;
+  label: string;
+  shortLabel?: string;
+  icon: ComponentType<{ className?: string }>;
+  matchPrefix?: boolean;
+};
+
+export function Navbar({ user }: { user: NavUser | null }) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const items: NavItem[] = [
+    { href: "/courses", label: "Courses", icon: BookOpen, matchPrefix: true },
+  ];
+
+  if (user) {
+    items.push(
+      { href: "/progress", label: "Progress", icon: BarChart3 },
+      {
+        href: user.role === "TUTOR" ? "/tutor/queue" : "/tutor/chat",
+        label: user.role === "TUTOR" ? "Tutor queue" : "Tutor help",
+        shortLabel: user.role === "TUTOR" ? "Queue" : "Tutor",
+        icon: user.role === "TUTOR" ? Inbox : MessageSquare,
+        matchPrefix: user.role === "TUTOR",
+      },
+      { href: "/sessions", label: "Sessions", icon: History, matchPrefix: true },
+    );
+
+    if (user.role === "TUTOR") {
+      items.push({ href: "/tutor/chat", label: "Chat", icon: MessageSquare });
+    }
+  }
+
+  async function signOut() {
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } finally {
+      setSigningOut(false);
+    }
+  }
+
+  function isCurrent(item: NavItem) {
+    return item.matchPrefix
+      ? pathname === item.href || pathname.startsWith(`${item.href}/`)
+      : pathname === item.href;
+  }
 
   return (
-    <nav className="border-b border-background bg-background px-4 flex h-16 items-center justify-between sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between w-full">
-        <Link href="/" className="flex items-center gap-2">
-          <MousePointer2 className="h-6 w-6" />
-          <span className="font-bold text-lg tracking-tight">netSensei</span>
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6 lg:px-8">
+        <Link
+          href={user ? "/courses" : "/"}
+          className="flex shrink-0 items-center gap-2 text-heading"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Code2 className="h-4 w-4" />
+          </span>
+          <span className="text-lg font-semibold tracking-tight">netSensei</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-6">
-          <Link href="/courses" className="text-sm font-medium hover:text-primary">
-            Courses
-          </Link>
-          {user && (
-            <>
-              <Link href="/progress" className="text-sm font-medium hover:text-primary">
-                Progress
+        <nav
+          aria-label="Main navigation"
+          className="hidden flex-1 items-center gap-1 md:flex"
+        >
+          {items.map((item) => {
+            const active = isCurrent(item);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href + item.label}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-heading"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {item.label}
               </Link>
-              {user.role === "TUTOR" && (
-                <Link href="/tutor/queue" className="text-sm font-medium hover:text-primary">
-                  Tutor Queue
-                </Link>
-              )}
-            </>
-          )}
-        </div>
+            );
+          })}
+        </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-2 md:ml-0">
           {user ? (
-            <div className="flex items-center gap-3 px-3 py-1.5 rounded-full border bg-muted text-muted-foreground text-sm">
-              <User className="h-4 w-4" />
-              <span>{user.email}</span>
+            <div className="flex items-center gap-1 rounded-full border border-border bg-muted/60 py-1 pl-3 pr-1">
+              <User className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <span className="hidden max-w-[180px] truncate text-sm text-foreground sm:inline">
+                {user.email}
+              </span>
+              <span className="hidden rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground lg:inline">
+                {user.role === "TUTOR" ? "Tutor" : "Student"}
+              </span>
               <button
+                type="button"
                 onClick={signOut}
-                className="flex items-center gap-1 p-1.5 hover:bg-accent rounded-md"
+                disabled={signingOut}
+                className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-background hover:text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                aria-label="Sign out"
                 title="Sign out"
               >
                 <LogOut className="h-4 w-4" />
@@ -48,19 +132,47 @@ export function Navbar({ user }: { user: { email: string; role: string } | null 
             </div>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium hover:text-primary">
+              <Link
+                href="/login"
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-heading"
+              >
                 Sign in
               </Link>
               <Link
                 href="/register"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-primary px-3 text-primary-foreground text-sm font-medium shadow-sm"
+                className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
-                <User className="h-4 w-4" />
+                Create account
               </Link>
             </>
           )}
         </div>
       </div>
-    </nav>
+
+      <nav
+        aria-label="Main navigation"
+        className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
+      >
+        {items.map((item) => {
+          const active = isCurrent(item);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href + item.label}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                active
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-heading"
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {item.shortLabel ?? item.label}
+            </Link>
+          );
+        })}
+      </nav>
+    </header>
   );
 }

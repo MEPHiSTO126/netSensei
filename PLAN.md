@@ -1,182 +1,138 @@
 # netSensei — Project Plan
 
-**Project:** netSensei  
-**Parent folder:** `C:\Users\OLA\Documents\GnidoC\netSensei`  
-**Product:** Frontend tutoring / general learning platform (frontend course only, v1)  
-**Status:** Planned — ready for worktree movement into this folder  
-**Reference:** Handwritten plan (course → modules → phases → stages; snippet tests; tutor chat)
+**Product:** A frontend-development course with AI-graded phase quizzes and a live tutor loop.
+**Status:** Content complete; app shell, progress tracking, and the tutor session loop are built. Deployment readiness is the next milestone.
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Prisma 6 + SQLite · custom JWT auth · Groq (free tier) with a deterministic fallback grader.
 
 ---
 
-## 1. Product Vision
+## 1. What the product does
 
-netSensei is a general learning website that will initially host one course: **Frontend Development**. The goal is immersive, tutor-connected learning where students work through structured course content (modules → phases → stages), take retakable quizzes after each phase, write code in a live snippet environment with AI-powered semantic grading, and can request live tutor help when a tutor is online.
+A student works through a course in small stages (text and charts), takes a retakable quiz after every phase, and can ask a tutor about the stage they are stuck on. A tutor sees the request in a queue, opens a live chat, replies with text or a highlighted stage link, and ends the session. The conversation is kept as a read-only record.
+
+Completion is calculated from passed phase quizzes only: `passed phases / total phases`. A phase passes at 70%; a failed attempt can be retaken and the best score counts.
 
 ---
 
-## 2. Core Domain Model (from handwritten plan)
+## 2. What is built
+
+### Student
+
+- Course → module → phase → stage navigation with per-phase progress and a next-step path.
+- Stage renderer for plain text with inline code, fenced code blocks, images, and simple process charts.
+- One NORMAL quiz per phase, retakable, 70% pass threshold, per-question feedback and scores.
+- Answer grading through Groq `llama-3.1-8b-instant`, with a rule-based fallback when there is no key, a timeout, or rate limiting.
+- Progress page with overall percentage, passed phases, and recent attempts.
+- "Request tutor help" on every stage, with the real number of online tutors.
+- Tutor chat with 5-second refresh, stage highlights that link back to the exact stage, and an ended state that becomes read-only.
+- Session history (`/sessions`) and a saved record per session (`/sessions/[sessionId]`).
+
+### Tutor
+
+- Invite-only tutor registration (`TUTOR_SIGNUP_CODE`); the seeded tutor still works.
+- Tutor queue with the student, stage, question, and wait time.
+- Presence heartbeat every 25 seconds; a tutor counts as online only while `lastSeen` is under 2 minutes old.
+- Claiming an unassigned session, blocking another tutor's active session, marking the originating request answered.
+- Replying with plain text or a stage highlight chosen from the student's requested stages.
+- Ending a session; the record stays available to both participants.
+
+### Content
+
+| Item | Count |
+|------|-------|
+| Modules | 12 |
+| Phases | 56 |
+| Stages | 245 (221 text, 24 charts) |
+| Quiz questions | 211 (181 text, 30 snippet) |
+| Quizzes | 56, all NORMAL, 70% threshold |
+
+Curriculum order is Web platform (workshop, HTTP, browser internals, HTML, CSS) → JavaScript → React. Content is seeded from `prisma/seed.ts`; there is no authoring UI yet.
+
+---
+
+## 3. Architecture
 
 ```
-Course
-├─ Modules (ordered)
-│   └─ Phases
-│       └─ Stages
-│           ├─ Text
-│           ├─ Images
-│           └─ Charts
-│           └─ Quiz (after each phase)
-│               ├─ Normal mode
-│               └─ Pro mode (branching)
-│               ├─ Full goals (predefined)
-│               ├─ Type into prompt (predefined)
-│               ├─ (i) Dynamic Snippets — AI powered semantic code checker
-│               └─ (ii) AI powered grading system
-│           └─ Tutor interaction layer
-│               ├─ Live chat (only shows if tutor is online)
-│               ├─ Live + recorded session (saved as a 'record'/log)
-│               ├─ Tag answer stage to request tutor access
-│               ├─ Tutor can highlight a stage as part of a response (for reference)
-│               └─ Follow-up challenge session created per question asked
+Browser
+  ├─ Server Components: course, stage, quiz, progress, sessions, queue
+  ├─ Client Components: quiz answers, tutor composer, presence heartbeat, polling refresh
+  └─ Route handlers: auth, quiz submit, tutor request/messages/end/heartbeat
+        │
+        ├─ Prisma → SQLite (prisma/dev.db)
+        ├─ jose JWT in an httpOnly cookie + bcryptjs hashes
+        └─ Groq API (optional) → rule-based grader fallback
 ```
 
-**Completion rules:**
-- Courses have % completion based on after-phase quizzes
-- All tests can be retaken
-- Stages can be tagged to a question/answer for tutor follow-up
+- **Auth:** custom session cookie (`netSensei_session`), role `STUDENT | TUTOR`, `getCurrentUser` / `requireTutor` guards on pages and route handlers.
+- **Grading:** `src/lib/ai.ts` scores answers against a full goal, expected answer, and rubric; the fallback uses keyword coverage, structure, and length so the quiz never depends on the network.
+- **Tutor channel:** REST writes plus polling reads. `src/app/api/tutor/stream/route.ts` is an unused SSE draft; it is not part of the live path.
+- **Presence:** `src/lib/presence.ts` centralizes the online window so queue, stage pages, and chat agree.
+- **Design:** one accent (`#1f6ae1`), heading colour `#0f2a44`, Lucide line icons, no gradients.
+
+### Routes
+
+| Route | Purpose |
+|-------|---------|
+| `/` | Marketing page, redirects signed-in users to `/courses` |
+| `/courses`, `/courses/[courseId]` | Course catalogue and module/phase overview |
+| `/courses/.../[phaseId]` | Phase overview and quiz entry |
+| `/courses/.../[stageId]` | Stage content, tutor request |
+| `/courses/.../quiz` | Quiz attempt |
+| `/progress` | Student completion and attempts |
+| `/tutor/queue` | Tutor inbox and presence |
+| `/tutor/chat` | Live or ended session |
+| `/sessions`, `/sessions/[sessionId]` | History and saved records |
+| `/login`, `/register` | Auth, including tutor access code |
 
 ---
 
-## 3. Feature Map
+## 4. Milestones
 
-| Area | Feature | Priority | Notes |
-|------|---------|----------|-------|
-| **Course structure** | Modules → Phases → Stages hierarchy | P0 | 8 completions based on after-phase quiz endings |
-| **Content** | Text + Images + Charts per phase | P0 | Broken down into equal number of stages |
-| **Quizzes** | After each phase; retakable | P0 | Normal → Pro branching |
-| **Snippet tester** | Dynamic Snippets — AI semantic code checker | P1 | Type into prompt, predefined full goals |
-| **AI grading** | AI powered grading system | P1 | For non-code answers |
-| **Tutor access** | Live chat only when tutor online | P0 | Tag answer stage to request access |
-| **Session records** | Live + recorded sessions saved | P0 | Student can check late when answered |
-| **Tutor highlights** | Tutor highlights a stage as part of response | P1 | For reference |
-| **Follow-up** | Challenge session created per question | P1 | Enables follow-up challenge |
-| **Progress** | % completion tracked | P0 | Based on quiz endings |
+### Done
 
----
+- [x] P0 — Course hierarchy, seeded Frontend Development course.
+- [x] P0 — Text/chart/image stage renderer.
+- [x] P0 — Phase quizzes, retakes, 70% threshold, AI + fallback grading.
+- [x] P0 — Progress tracking by passed phases.
+- [x] P0 — Auth with student/tutor roles; invite-only tutors.
+- [x] P0 — Tutor requests tied to stages, queue, live presence.
+- [x] P0 — Live chat, stage highlights, session end, saved records.
+- [x] P0 — Responsive app shell and navigation.
 
-## 4. Suggested Tech Stack
+### Next
 
-| Layer | Choice | Rationale |
-|-------|--------|-----------|
-| Framework | Next.js 14+ (App Router) | Consistent with existing OpenCode project skills |
-| Styling | Tailwind CSS | Matches existing design rules ([R0]–[R12]) |
-| Language | TypeScript | Type safety |
-| State | React Server Components + Client Components | SSR-first, interactive where needed |
-| Snippet runner | Client-side iframe / Web Worker | Safe sandbox for frontend snippets (HTML/CSS/JS) |
-| AI grading | LLM API (semantic checker + dynamic snippets) | For code + free-form answers |
-| Real-time | WebSockets / SSE | Tutor live chat & online status |
-| Auth | NextAuth / custom | Student + tutor roles |
-| DB | Postgres + Prisma | Courses, modules, phases, stages, quizzes, session records, answers |
-| Storage | S3 / local | Uploaded images/charts/audio answers |
-| Deploy | Vercel / Docker | Simple deployment |
+- [ ] **P1 — Deployment readiness.** Replace SQLite on Vercel Hobby with Turso/libSQL or a free Postgres (Neon/Supabase), add migrations, set production secrets, and verify writes survive a redeploy. SQLite on the Hobby filesystem loses writes between invocations.
+- [ ] **P2 — Snippet runner.** Sandboxed HTML/CSS/JS execution in an iframe or Web Worker, wired to SNIPPET questions. Today those 30 questions are answered as text and graded semantically; the code never runs.
+- [ ] **P3 — Follow-up challenge sessions.** Create a challenge per answered question, with its own short path and record.
+- [ ] **P4 — Quiz depth.** PRO branching mode (currently schema-only: all 56 quizzes are NORMAL), AUDIO answers, and image-based questions.
+- [ ] **P5 — Quality and operations.** Automated tests for grading and session access, rate limiting on requests/messages, pagination beyond the current 50-session cap, password reset.
+- [ ] **P6 — Authoring.** Admin UI for courses, stages, media uploads, and quizzes; content is seed-only today.
 
 ---
 
-## 5. Suggested Folder Structure
+## 5. Known gaps and risks
 
+- SQLite is a single-writer database and is not durable on Vercel's filesystem. This blocks a real deployment, not a demo.
+- `/progress` still hardcodes `course-frontend-v1`; multi-course support would need the id passed or selected.
+- No upload endpoint or admin authoring; IMAGE stages render from `imageUrl` but no content uses them.
+- No rate limiting on tutor requests, messages, or snippet checks.
+- The SSE route is unused; chat freshness depends on 5-second polling and a visible tab.
+- No automated test suite yet. `tsc`, ESLint, and a production build are the current gates.
+- `prisma/dev.db` is tracked in git with the seeded content and demo accounts, so a reseed changes stage ids. Fine for development; not a production pattern.
+- Tutor registration is closed unless `TUTOR_SIGNUP_CODE` is set.
+
+---
+
+## 6. Local development
+
+See `README.md` for installation, environment variables, demo accounts, and commands.
+
+Short version:
+
+```bash
+npm install
+npx prisma generate
+npx prisma db push
+npm run db:seed
+npm run dev
 ```
-netSensei/
-├── README.md
-├── PLAN.md                 (this file)
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-├── next.config.js
-├── prisma/
-│   └── schema.prisma
-├── src/
-│   ├── app/                (Next.js App Router)
-│   │   ├── (auth)/
-│   │   ├── courses/
-│   │   │   └── [courseId]/
-│   │   │       ├── [moduleId]/
-│   │   │       │   └── [phaseId]/
-│   │   │       │       └── [stageId]/
-│   │   │       │           └── page.tsx
-│   │   ├── snippets/
-│   │   │   └── [snippetId]/
-│   │   ├── tutor/
-│   │   │   └── chat/
-│   │   └── sessions/
-│   │       └── [sessionId]/
-│   ├── components/
-│   │   ├── ui/             (shadcn-style, customized)
-│   │   ├── course/         (stage renderer, media, quiz)
-│   │   ├── snippet/        (code editor, runner, AI feedback)
-│   │   └── tutor/          (chat widget, online status, highlight)
-│   ├── lib/
-│   │   ├── ai.ts           (semantic checker + AI grader)
-│   │   ├── db.ts           (Prisma client)
-│   │   └── auth.ts
-│   └── types/
-├── public/
-└── tests/
-```
-
----
-
-## 6. Build Order (Suggested)
-
-| Phase | Work | Deliverable |
-|-------|------|-------------|
-| **P1** | Repo init, auth, DB schema, course CMS (modules/phases/stages) | A student can browse course content |
-| **P2** | Stage renderer (text, images, charts), quiz after each phase | Student can progress and take quizzes |
-| **P3** | Snippet editor + runner (HTML/CSS/JS), semantic AI checker | Student writes code, gets AI feedback |
-| **P4** | AI powered grading for free-form answers | Quiz auto-grades text/audio answers |
-| **P5** | Tutor online status, live chat widget, tag-to-request-access | Student can flag a stage for tutor help |
-| **P6** | Live + recorded sessions, tutor highlight of stage, follow-up challenge sessions | Full tutor-student loop |
-| **P7** | % completion tracking, retakable tests, UI polish | Complete frontend course experience |
-
----
-
-## 7. Design Principles (from existing OpenCode rules, adapted)
-
-- **One flat accent** — no purple-blue gradients, no gradient hero text
-- **Cards** `#ffffff` radius 10, CTA `#1f6ae1` radius 12
-- **Text** headings `#0f2a44`, body `#000000`, muted `#667085`
-- **Lucide icons only**, 16/20/24px, no emoji
-- **₦ amounts + realistic names** where applicable (Nigerian context)
-- **Mobile-first**, touch targets ≥ 44px
-- **All six data states** per view: empty, loading (skeleton), partial, offline, error, stale
-- **No backend internals in UI** — plain sentence + retry on error
-- **One fixed primary action** per flow
-- **Skeleton loaders**, not bare spinners; every tap acknowledged within ~100ms
-
----
-
-## 8. Database Schema Sketch (Prisma)
-
-```prisma
-model User { id, email, role (STUDENT|TUTOR), isOnline, lastSeen }
-model Course { id, title, description, modules Module[] }
-model Module { id, courseId, title, order, phases Phase[] }
-model Phase { id, moduleId, title, order, stages Stage[], quiz Quiz }
-model Stage { id, phaseId, title, type (TEXT|IMAGE|CHART), content, order }
-model Quiz { id, phaseId, mode (NORMAL|PRO), questions Question[] }
-model Question { id, quizId, type (SNIPPET|TEXT|AUDIO), fullGoal, answer }
-model Snippet { id, questionId, code, language, aiFeedback, score }
-model Session { id, studentId, tutorId, mode (LIVE|RECORDED), status, createdAt }
-model Message { id, sessionId, senderId, content, type (TEXT|AUDIO|HIGHLIGHT), stageId }
-model AnswerRecord { id, studentId, stageId, questionId, content, score, createdAt }
-```
-
----
-
-## 9. Immediate Next Step
-
-1. Create the worktree from this `netSensei` folder (via `session.moveToWorktree` in OpenChamber, carrying this `PLAN.md` if desired).
-2. Run `git init` + initial commit inside `netSensei`.
-3. Begin Phase P1: repo init, auth, DB schema, course CMS.
-
----
-
-**Files to carry when moving the session:** `PLAN.md` (this file). The teaching-kit materials from the earlier frontend curriculum can serve as reference for UI patterns but are not part of netSensei proper.

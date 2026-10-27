@@ -30,8 +30,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted px-4">
-      <Card className="w-full max-w-md elevated">
+    <div className="flex min-h-[calc(100dvh-12rem)] items-center justify-center px-0 py-10 sm:px-4">
+      <Card variant="elevated" className="w-full max-w-md">
         <div className="p-8">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold text-heading">Welcome back</h1>
@@ -50,6 +50,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
+                aria-label="Email address"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -62,6 +63,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                aria-label="Password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

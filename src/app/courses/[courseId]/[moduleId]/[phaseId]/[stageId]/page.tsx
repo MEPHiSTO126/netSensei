@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronRight, FileText, Image as ImageIcon, BarChart3, Play } from "lucide-react";
 import { TutorRequestButton } from "@/components/tutor/TutorRequestButton";
 import { StageContent } from "@/components/course/StageContent";
+import { getOnlineTutorCount } from "@/lib/presence";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function StagePage({
       : null;
 
   const canTakeQuiz = !!stage.phase.quiz;
+  const onlineTutorCount = await getOnlineTutorCount();
 
   return (
     <div className="space-y-6">
@@ -154,7 +156,11 @@ export default async function StagePage({
             />
           </div>
 
-          <TutorRequestButton stageId={stage.id} stageTitle={stage.title} />
+          <TutorRequestButton
+            stageId={stage.id}
+            stageTitle={stage.title}
+            onlineTutorCount={onlineTutorCount}
+          />
 
           <div className="mt-10 flex justify-between items-center pt-6 border-t border-border">
             {prevStage && (

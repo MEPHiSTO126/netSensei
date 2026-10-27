@@ -7,12 +7,26 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   role: z.enum(["STUDENT", "TUTOR"]).default("STUDENT"),
+  tutorCode: z.string().optional(),
 });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, password, role } = schema.parse(body);
+    const { email, password, role, tutorCode } = schema.parse(body);
+
+    if (role === "TUTOR") {
+      const expectedCode = process.env.TUTOR_SIGNUP_CODE?.trim();
+      if (!expectedCode || tutorCode !== expectedCode) {
+        return NextResponse.json(
+          {
+            error:
+              "Tutor registration is closed. Ask an administrator for an access code.",
+          },
+          { status: 403 },
+        );
+      }
+    }
 
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {

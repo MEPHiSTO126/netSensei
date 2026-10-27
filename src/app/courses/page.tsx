@@ -43,7 +43,13 @@ export default async function CoursesPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => (
+          {courses.map((course) => {
+            const phaseCount = course.modules.reduce(
+              (sum, module) => sum + module.phases.length,
+              0,
+            );
+
+            return (
             <Card
               key={course.id}
               className="group hover:border-primary/50 transition-colors"
@@ -66,7 +72,7 @@ export default async function CoursesPage() {
                   </span>
                   <span className="mx-1">•</span>
                   <span>
-                    {course.modules.reduce((sum, m) => sum + m.phases.length, 0)} phase
+                    {phaseCount} phase{phaseCount !== 1 ? "s" : ""}
                   </span>
                 </div>
                 <Link
@@ -77,7 +83,8 @@ export default async function CoursesPage() {
                 </Link>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

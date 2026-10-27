@@ -56,18 +56,33 @@ export function useSession() {
     if (!res.ok) throw new Error("Invalid email or password");
     await loadUser();
     router.push("/courses");
+    router.refresh();
   }, [loadUser, router]);
 
   const signUp = useCallback(
-    async (email: string, password: string, role: "STUDENT" | "TUTOR" = "STUDENT") => {
+    async (
+      email: string,
+      password: string,
+      role: "STUDENT" | "TUTOR" = "STUDENT",
+      tutorCode?: string,
+    ) => {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({
+          email,
+          password,
+          role,
+          ...(role === "TUTOR" ? { tutorCode } : {}),
+        }),
       });
-      if (!res.ok) throw new Error("Registration failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Registration failed");
+      }
       await loadUser();
       router.push("/courses");
+      router.refresh();
     },
     [loadUser, router]
   );

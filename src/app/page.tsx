@@ -25,7 +25,7 @@ export default async function HomePage() {
           </h1>
           <p className="text-lg text-muted-foreground mb-8 max-w-lg mx-auto">
             Work through structured lessons, take retakable quizzes, write code
-            in a live sandbox, and get help from tutors when they&apos;re online.
+            and get feedback, and ask a tutor when you get stuck.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

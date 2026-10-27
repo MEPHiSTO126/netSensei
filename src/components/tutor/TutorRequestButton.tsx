@@ -8,11 +8,13 @@ import { useSession } from "@/hooks/useSession";
 type TutorRequestButtonProps = {
   stageId: string;
   stageTitle: string;
+  onlineTutorCount: number;
 };
 
 export function TutorRequestButton({
   stageId,
   stageTitle,
+  onlineTutorCount,
 }: TutorRequestButtonProps) {
   const { user, loading } = useSession();
   const [question, setQuestion] = useState("");
@@ -50,9 +52,12 @@ export function TutorRequestButton({
     return (
       <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
         <p className="text-sm font-medium text-heading">Tutor help requested</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          A tutor will pick up your request from the queue when they are online.
-          Meanwhile, re-read the stage and try the phase quiz.
+        <p className="mt-1 text-xs text-muted-foreground">
+          Your question is in the queue.{" "}
+          {onlineTutorCount > 0
+            ? "A tutor is online now."
+            : "No tutor is online right now, so expect a reply when one opens the queue."}{" "}
+          You can also continue the conversation in chat.
         </p>
         <Link
           href="/tutor/chat"
@@ -66,17 +71,30 @@ export function TutorRequestButton({
 
   return (
     <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
-      <h3 className="text-sm font-medium text-heading mb-1">
-        Stuck on this stage?
-      </h3>
-      <p className="text-xs text-muted-foreground mb-3">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-medium text-heading">
+          Stuck on this stage?
+        </h3>
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              onlineTutorCount > 0 ? "bg-emerald-600" : "bg-muted-foreground"
+            }`}
+          />
+          {onlineTutorCount > 0
+            ? `${onlineTutorCount} tutor${onlineTutorCount === 1 ? "" : "s"} online`
+            : "No tutor online"}
+        </span>
+      </div>
+      <p className="mb-3 text-xs text-muted-foreground">
         Tag this stage and send a tutor a question. Tutors see requests in their
-        queue and can highlight the stage in live chat.
+        queue and can reply with a direct link back to this stage.
       </p>
       <form onSubmit={handleSubmit} className="space-y-2">
         <textarea
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
+          aria-label={`Question about ${stageTitle}`}
           placeholder={`What are you stuck on in "${stageTitle}"?`}
           className="w-full min-h-[80px] rounded-lg border border-input bg-background p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
         />
