@@ -4,67 +4,96 @@
   color-scheme: light;
 }
 
-@theme {
-  --color-background: #ffffff;
-  --color-foreground: #000000;
+.dark {
+  color-scheme: dark;
+}
 
-  /* Design tokens from netSensei zero-budget plan */
-  --color-primary: #1f6ae1;
-  --color-primary-foreground: #ffffff;
+.dark html {
+  color-scheme: dark;
+}
+
+@theme {
+  /* Light — warm, readable surfaces */
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
+
   --color-card: #ffffff;
-  --color-card-foreground: #000000;
-  --color-muted: #f3f4f6;
-  --color-muted-foreground: #667085;
-  --color-border: #e5e7eb;
-  --color-input: #d0d5dd;
+  --color-card-foreground: #0f172a;
+
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #475569;
+
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
   --color-ring: #1f6ae1;
-  --color-secondary: #f3f4f6;
-  --color-secondary-foreground: #0f2a44;
-  --color-accent: #eef4ff;
+
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+
+  --color-accent: #eff6ff;
   --color-accent-foreground: #0f2a44;
+
   --color-destructive: #b42318;
   --color-destructive-foreground: #ffffff;
 
-  /* Semantic headings color */
-  --color-heading: #0f2a44;
+  --color-primary: #1f6ae1;
+  --color-primary-foreground: #ffffff;
 
-  /* Radius */
-  --radius: 0.625rem; /* 10px */
+  --color-heading: #0f172a;
 
+  --radius: 0.75rem;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 .dark {
-  color-scheme: dark;
-}
-.dark html {
-  color-scheme: dark;
-}
-.dark body {
-  background: #0b0f19;
-  color: #f1f5f9;
-}
-.dark :root {
   --color-background: #0b0f19;
-  --color-foreground: #f1f5f9;
+  --color-foreground: #f8fafc;
+
   --color-card: #111827;
-  --color-card-foreground: #f1f5f9;
+  --color-card-foreground: #f8fafc;
+
   --color-muted: #1e293b;
   --color-muted-foreground: #94a3b8;
+
   --color-border: #334155;
   --color-input: #1e293b;
   --color-ring: #3b82f6;
+
   --color-secondary: #1e293b;
-  --color-secondary-foreground: #e2e8f0;
+  --color-secondary-foreground: #f8fafc;
+
   --color-accent: #172554;
   --color-accent-foreground: #e2e8f0;
+
   --color-destructive: #ef4444;
-  --color-heading: #e2e8f0;
+  --color-destructive-foreground: #ffffff;
+
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+
+  --color-heading: #f1f5f9;
+}
+
+.dark body {
+  background: var(--color-background);
+  color: var(--color-foreground);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(31, 106, 225, 0.18);
+  color: inherit;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }

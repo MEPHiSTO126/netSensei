@@ -41,7 +41,7 @@ export default async function RootLayout({
         <Navbar
           user={user ? { email: user.email, role: user.role } : null}
         />
-        <main className="flex-1">
+        <main className="flex-1 animate-[fadeIn_0.4s_ease-out_both]">
           <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
             {children}
           </div>
