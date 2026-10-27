@@ -37,6 +37,11 @@ yarn-error.log*
 .env*
 !.env.example
 
+# local sqlite (replaced by Postgres)
+prisma/dev.db
+*.db
+*.db-journal
+
 # vercel
 .vercel
 

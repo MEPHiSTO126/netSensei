@@ -13,6 +13,7 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type NavUser = {
   email: string;
@@ -146,6 +147,7 @@ export function Navbar({ user }: { user: NavUser | null }) {
               </Link>
             </>
           )}
+          <ThemeToggle />
         </div>
       </div>
 

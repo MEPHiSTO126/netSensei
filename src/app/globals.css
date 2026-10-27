@@ -35,6 +35,34 @@
   --font-mono: var(--font-geist-mono);
 }
 
+.dark {
+  color-scheme: dark;
+}
+.dark html {
+  color-scheme: dark;
+}
+.dark body {
+  background: #0b0f19;
+  color: #f1f5f9;
+}
+.dark :root {
+  --color-background: #0b0f19;
+  --color-foreground: #f1f5f9;
+  --color-card: #111827;
+  --color-card-foreground: #f1f5f9;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #334155;
+  --color-input: #1e293b;
+  --color-ring: #3b82f6;
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #e2e8f0;
+  --color-accent: #172554;
+  --color-accent-foreground: #e2e8f0;
+  --color-destructive: #ef4444;
+  --color-heading: #e2e8f0;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);

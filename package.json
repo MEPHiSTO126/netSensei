@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:content-only": "tsx prisma/seed.ts --no-demo-users",
+    "db:seed:production": "tsx prisma/seed.ts --production",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate",
     "content:css": "node scripts/build-css-extra.mjs"
   },
   "dependencies": {

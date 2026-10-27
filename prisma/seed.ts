@@ -2,6 +2,10 @@ import { db } from "../src/lib/db";
 import { hashPassword } from "../src/lib/auth";
 import { cssExtraPhases } from "./css-extra-phases";
 
+const isProductionSeed = process.argv.includes("--production");
+const includeDemoUsers =
+  !isProductionSeed && !process.argv.includes("--no-demo-users");
+
 type StageSeed = {
   title: string;
   type: "TEXT" | "IMAGE" | "CHART";
@@ -1158,17 +1162,41 @@ const modules: ModuleSeed[] = [
 async function main() {
   console.log("🌱 Seeding frontend course content...");
 
-  const tutor = await db.user.upsert({
-    where: { email: "tutor@netsensei.local" },
-    update: {},
-    create: { email: "tutor@netsensei.local", passwordHash: await hashPassword("tutor123"), role: "TUTOR" },
-  });
+  if (isProductionSeed) {
+    const learnerData =
+      (await db.progressRecord.count()) +
+      (await db.answerRecord.count()) +
+      (await db.snippetAttempt.count()) +
+      (await db.tutorRequest.count());
 
-  const student = await db.user.upsert({
-    where: { email: "student@netsensei.local" },
-    update: {},
-    create: { email: "student@netsensei.local", passwordHash: await hashPassword("student123"), role: "STUDENT" },
-  });
+    if (learnerData > 0) {
+      throw new Error(
+        "Refusing to reseed: learner records already exist. This seed rebuilds course content and deletes progress. Back up the database first or remove the learner records deliberately."
+      );
+    }
+  }
+
+  let tutorEmail: string | null = null;
+  let studentEmail: string | null = null;
+
+  if (includeDemoUsers) {
+    const tutor = await db.user.upsert({
+      where: { email: "tutor@netsensei.local" },
+      update: {},
+      create: { email: "tutor@netsensei.local", passwordHash: await hashPassword("tutor123"), role: "TUTOR" },
+    });
+
+    const student = await db.user.upsert({
+      where: { email: "student@netsensei.local" },
+      update: {},
+      create: { email: "student@netsensei.local", passwordHash: await hashPassword("student123"), role: "STUDENT" },
+    });
+
+    tutorEmail = tutor.email;
+    studentEmail = student.email;
+  } else {
+    console.log("   Demo users skipped.");
+  }
 
   const course = await db.course.upsert({
     where: { id: "course-frontend-v1" },
@@ -1250,8 +1278,8 @@ async function main() {
   }
 
   console.log("✅ Frontend course content seeded");
-  console.log(`   Tutor:    ${tutor.email} / tutor123`);
-  console.log(`   Student:  ${student.email} / student123`);
+  if (tutorEmail) console.log(`   Tutor:    ${tutorEmail} / tutor123`);
+  if (studentEmail) console.log(`   Student:  ${studentEmail} / student123`);
   console.log(`   Modules:  ${modules.length}`);
 }
 

@@ -18,7 +18,7 @@ Students move through small stages, take a retakable quiz after every phase, and
 |-------|--------|
 | Framework | Next.js 16 (App Router), React 19, TypeScript |
 | Styling | Tailwind CSS 4, Lucide icons |
-| Database | Prisma 6 + SQLite |
+| Database | Prisma 6 + Neon Postgres (pooled DATABASE_URL + direct DIRECT_URL) |
 | Auth | `jose` JWT in an httpOnly cookie, `bcryptjs` |
 | Grading | Groq `llama-3.1-8b-instant` when `GROQ_API_KEY` is set, deterministic fallback otherwise |
 | Live chat | REST writes + 5-second polling; no external realtime service |

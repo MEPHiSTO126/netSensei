@@ -3,9 +3,30 @@ import { compare, hash } from "bcryptjs";
 import { cookies } from "next/headers";
 import { db } from "./db";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "change-me-in-production"
-);
+const DEV_JWT_SECRET = "netsensei-development-only-secret";
+const MIN_PRODUCTION_SECRET_LENGTH = 32;
+
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET?.trim();
+
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET is not set. Refusing to sign sessions in production.");
+    }
+    return new TextEncoder().encode(DEV_JWT_SECRET);
+  }
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    secret.length < MIN_PRODUCTION_SECRET_LENGTH
+  ) {
+    throw new Error(
+      `JWT_SECRET must be at least ${MIN_PRODUCTION_SECRET_LENGTH} characters in production.`
+    );
+  }
+
+  return new TextEncoder().encode(secret);
+}
 
 const COOKIE_NAME = "netsensei_session";
 const COOKIE_MAX_AGE = 60 * 60 * 24; // 24 hours
@@ -35,7 +56,7 @@ export async function createSession(user: SessionUser): Promise<string> {
   })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("24h")
-    .sign(JWT_SECRET);
+    .sign(getJwtSecret());
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -58,7 +79,7 @@ export async function verifySession(
   token: string
 ): Promise<SessionUser | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     return {
       id: payload.id as string,
       email: payload.email as string,

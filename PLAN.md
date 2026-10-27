@@ -112,7 +112,11 @@ Browser
 
 ## 5. Known gaps and risks
 
-- SQLite is a single-writer database and is not durable on Vercel's filesystem. This blocks a real deployment, not a demo.
+- Postgres (Neon `production`) is live; `DATABASE_URL` + `DIRECT_URL` configured; migrations applied; seed (content only, no demo users).
+- `prisma/dev.db` untracked; SQLite removed from source.
+- Dark mode toggle added (Lucide icons, `localStorage`, no-flash script); build passes.
+- Deployed to Vercel Hobby (`netsensei.vercel.app`); keep non-commercial use.
+- Tutor registration still invite-only via `TUTOR_SIGNUP_CODE`.
 - `/progress` still hardcodes `course-frontend-v1`; multi-course support would need the id passed or selected.
 - No upload endpoint or admin authoring; IMAGE stages render from `imageUrl` but no content uses them.
 - No rate limiting on tutor requests, messages, or snippet checks.
