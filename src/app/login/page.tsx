@@ -70,7 +70,21 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 leftIcon={<Lock className="h-4 w-4 text-muted-foreground" />}
-                rightIcon={<button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="focus:outline-none" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}</button>}
+                rightIcon={
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="focus:outline-none cursor-pointer hover:text-foreground transition-colors p-1"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    )}
+                  </button>
+                }
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>

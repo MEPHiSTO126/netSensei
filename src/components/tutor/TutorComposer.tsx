@@ -69,6 +69,13 @@ export function TutorComposer({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void handleSend(e);
+    }
+  };
+
   return (
     <form onSubmit={handleSend} className="space-y-2 border-t border-border p-4">
       {canHighlight && (
@@ -135,26 +142,38 @@ export function TutorComposer({
         </p>
       )}
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          aria-label={
-            activeType === "HIGHLIGHT"
-              ? "Highlight message"
-              : "Chat message"
-          }
-          placeholder={
-            activeType === "HIGHLIGHT"
-              ? "What should the student look at on this stage?"
-              : "Type a message..."
-          }
-          className="flex-1 rounded-lg border border-input bg-background px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        <Button type="submit" disabled={sending || !content.trim()}>
+      <div className="flex items-end gap-2">
+        <div className="relative flex-1">
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={1}
+            aria-label={
+              activeType === "HIGHLIGHT"
+                ? "Highlight message"
+                : "Chat message"
+            }
+            placeholder={
+              activeType === "HIGHLIGHT"
+                ? "What should the student look at on this stage?"
+                : "Type a message... (Shift+Enter for newline)"
+            }
+            className="w-full min-h-[44px] max-h-36 rounded-lg border border-input bg-background px-4 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none leading-relaxed"
+          />
+        </div>
+        <Button
+          type="submit"
+          disabled={sending || !content.trim()}
+          className="shrink-0 h-[44px]"
+        >
           {sending ? "Sending..." : "Send"}
         </Button>
+      </div>
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+        <span>
+          Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Enter</kbd> to send, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Shift+Enter</kbd> for newline
+        </span>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </form>

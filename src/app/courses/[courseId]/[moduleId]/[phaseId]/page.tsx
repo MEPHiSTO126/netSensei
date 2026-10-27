@@ -91,20 +91,28 @@ export default async function PhasePage({
 
   return (
     <div className="space-y-8">
-      <nav className="flex flex-col gap-3 text-sm md:flex-row md:items-center">
+      {/* ── Breadcrumb chip trail ───────────────────────────── */}
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 flex-wrap rounded-lg bg-muted/50 px-4 py-2.5 text-sm"
+      >
         <Link
           href={`/courses/${courseId}`}
-          className="text-muted-foreground hover:text-primary hover:underline"
+          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
         >
-          ← {phase.module.course.title}
+          {phase.module.course.title}
         </Link>
+        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
         <Link
-          href={`/courses/${courseId}/${moduleId}`}
-          className="text-muted-foreground hover:text-primary hover:underline"
+          href={`/courses/${courseId}#module-${moduleId}`}
+          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
         >
           {phase.module.title}
         </Link>
-        <span className="font-medium text-heading">{phase.title}</span>
+        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
+        <span className="font-semibold text-heading truncate max-w-[180px]">
+          {phase.title}
+        </span>
       </nav>
 
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">

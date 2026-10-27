@@ -32,7 +32,12 @@ export default async function ProgressPage() {
     orderBy: { completedAt: "desc" },
   });
 
-  const courseId = "course-frontend-v1";
+  const firstCourse = await db.course.findFirst({
+    where: { isPublished: true },
+    orderBy: { order: "asc" },
+  });
+  const courseId = firstCourse?.id ?? "course-frontend-v1";
+  const courseTitle = firstCourse?.title ?? "Course";
   const progress = await getCourseProgress(user.id, courseId);
 
   return (
@@ -42,12 +47,12 @@ export default async function ProgressPage() {
         <p className="text-muted-foreground">Track your learning journey</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
         <Card>
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Course Completion</p>
+                <p className="text-sm text-muted-foreground">{courseTitle} Completion</p>
                 <div className="text-3xl font-bold text-heading">{progress.percentage}%</div>
               </div>
               <div className="w-16 h-16 rounded-full border-4 border-primary/20 flex items-center justify-center">

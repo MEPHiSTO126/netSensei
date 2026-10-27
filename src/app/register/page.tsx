@@ -73,7 +73,21 @@ export default function RegisterPage() {
                 required
                 minLength={8}
                 leftIcon={<Lock className="h-4 w-4 text-muted-foreground" />}
-                rightIcon={<button type="button" tabIndex={-1} onClick={() => setShowRegPassword((v) => !v)} className="focus:outline-none" aria-label={showRegPassword ? "Hide" : "Show"}>{showRegPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}</button>}
+                rightIcon={
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowRegPassword((v) => !v)}
+                    className="focus:outline-none cursor-pointer hover:text-foreground transition-colors p-1"
+                    aria-label={showRegPassword ? "Hide password" : "Show password"}
+                  >
+                    {showRegPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                    )}
+                  </button>
+                }
               />
             </div>
             <div className="space-y-2">

@@ -100,7 +100,7 @@ export default async function CoursePage({
 
       <div className="space-y-4">
         {course.modules.map((module) => (
-          <Card key={module.id}>
+          <Card key={module.id} id={`module-${module.id}`}>
             <div className="p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">

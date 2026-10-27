@@ -13,6 +13,7 @@ import {
 import { TutorThreadRefresh } from "@/components/tutor/TutorThreadRefresh";
 import { TutorPresence } from "@/components/tutor/TutorPresence";
 import { EndSessionButton } from "@/components/tutor/EndSessionButton";
+import { ChatScrollAnchor } from "@/components/tutor/ChatScrollAnchor";
 
 export const dynamic = "force-dynamic";
 
@@ -374,6 +375,7 @@ export default async function TutorChatPage({
             </div>
           );
         })}
+        <ChatScrollAnchor messageCount={session.messages.length} />
       </div>
 
       {isActive ? (

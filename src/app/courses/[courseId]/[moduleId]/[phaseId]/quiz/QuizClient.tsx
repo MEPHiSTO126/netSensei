@@ -98,17 +98,27 @@ export function QuizClient({ phaseId }: QuizClientProps) {
     );
   }
 
+  const handleRetake = () => {
+    setResult(null);
+    setAnswers({});
+    setError("");
+  };
+
   if (result) {
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
-        <Card className={`p-8 text-center ${
-          result.passed
-            ? "border-primary/20 bg-primary/5"
-            : "border-destructive/20 bg-destructive/5"
-        }`}>
-          <div className={`flex items-center justify-center gap-3 mb-4 ${
-            result.passed ? "text-primary" : "text-destructive"
-          }`}>
+        <Card
+          className={`p-8 text-center ${
+            result.passed
+              ? "border-primary/20 bg-primary/5"
+              : "border-destructive/20 bg-destructive/5"
+          }`}
+        >
+          <div
+            className={`flex items-center justify-center gap-3 mb-4 ${
+              result.passed ? "text-primary" : "text-destructive"
+            }`}
+          >
             {result.passed ? (
               <CheckCircle2 className="h-10 w-10" />
             ) : (
@@ -121,29 +131,67 @@ export function QuizClient({ phaseId }: QuizClientProps) {
           <p className="text-lg text-muted-foreground mb-6">
             Score: {result.percentage}% (need {result.passThreshold}% to pass)
           </p>
-          <Button onClick={() => window.location.reload()} className="w-full">
-            Retake Quiz
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button onClick={handleRetake} className="flex-1">
+              Retake Quiz
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => window.history.back()}
+              className="flex-1"
+            >
+              Back to Phase
+            </Button>
+          </div>
         </Card>
 
-        <div className="space-y-3">
-          {result.results.map((r) => (
-            <Card key={r.questionId} className="p-4">
-              <div className="flex items-start gap-3">
-                <Badge
-                  variant={r.score >= 70 ? "default" : "outline"}
-                  className="text-xs mt-0.5"
-                >
-                  {r.score}%
-                </Badge>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground mb-1">
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-heading">Question Feedback</h2>
+          {result.results.map((r, idx) => {
+            const q = questions.find((item) => item.id === r.questionId);
+            const studentAnswer = answers[r.questionId];
+
+            return (
+              <Card key={r.questionId} className="p-5 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block mb-1">
+                      Question {idx + 1} · {q?.type ?? "QUESTION"}
+                    </span>
+                    <p className="font-semibold text-foreground text-sm">
+                      {q?.prompt ?? "Question"}
+                    </p>
+                  </div>
+                  <Badge
+                    variant={r.score >= 70 ? "default" : "outline"}
+                    className="text-xs shrink-0 font-bold"
+                  >
+                    {r.score}%
+                  </Badge>
+                </div>
+
+                {studentAnswer && (
+                  <div className="rounded-lg bg-muted/60 p-3 text-xs border border-border/50">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide block mb-1">
+                      Your answer
+                    </span>
+                    <pre className="font-mono whitespace-pre-wrap text-foreground">
+                      {studentAnswer}
+                    </pre>
+                  </div>
+                )}
+
+                <div className="rounded-lg bg-primary/[0.06] border border-primary/15 p-3 text-xs">
+                  <span className="text-[10px] uppercase font-bold text-primary tracking-wide block mb-1">
+                    Feedback
+                  </span>
+                  <p className="text-sm text-foreground leading-relaxed">
                     {r.feedback}
                   </p>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       </div>
     );
@@ -171,12 +219,24 @@ export function QuizClient({ phaseId }: QuizClientProps) {
     );
   }
 
+  const answeredCount = questions.filter(
+    (q) => answers[q.id]?.trim()
+  ).length;
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-heading">Phase Quiz</h1>
-        <Badge variant="outline">
-          {questions.length} question{questions.length !== 1 ? "s" : ""}
+        <div>
+          <h1 className="text-2xl font-bold text-heading">Phase Quiz</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Answer the questions below to evaluate your understanding
+          </p>
+        </div>
+        <Badge
+          variant={answeredCount === questions.length ? "default" : "outline"}
+          className="text-xs font-medium"
+        >
+          {answeredCount}/{questions.length} answered
         </Badge>
       </div>
 
@@ -214,8 +274,16 @@ export function QuizClient({ phaseId }: QuizClientProps) {
             )}
           </Card>
         ))}
-        <Button type="submit" className="w-full" disabled={submitting}>
-          {submitting ? "Submitting..." : "Submit Quiz"}
+        <Button
+          type="submit"
+          className="w-full h-11 text-base font-medium"
+          disabled={submitting}
+        >
+          {submitting
+            ? "Evaluating your answers with AI..."
+            : answeredCount === questions.length
+              ? "Submit Quiz"
+              : `Submit Quiz (${questions.length - answeredCount} unanswered)`}
         </Button>
       </form>
 
