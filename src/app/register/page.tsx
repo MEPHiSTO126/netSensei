@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TUTOR">("STUDENT");
   const [tutorCode, setTutorCode] = useState("");
+  const [showRegPassword, setShowRegPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signUp } = useSession();
@@ -64,7 +65,7 @@ export default function RegisterPage() {
               <Label htmlFor="password">Password (8+ chars)</Label>
               <Input
                 id="password"
-                type="password"
+                type={showRegPassword ? "text" : "password"}
                 aria-label="Password"
                 placeholder="••••••••"
                 value={password}
@@ -72,6 +73,7 @@ export default function RegisterPage() {
                 required
                 minLength={8}
                 leftIcon={<Lock className="h-4 w-4 text-muted-foreground" />}
+                rightIcon={<button type="button" tabIndex={-1} onClick={() => setShowRegPassword((v) => !v)} className="focus:outline-none" aria-label={showRegPassword ? "Hide" : "Show"}>{showRegPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}</button>}
               />
             </div>
             <div className="space-y-2">

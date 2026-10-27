@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn } = useSession();
@@ -62,13 +63,14 @@ export default function LoginPage() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 aria-label="Password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 leftIcon={<Lock className="h-4 w-4 text-muted-foreground" />}
+                rightIcon={<button type="button" tabIndex={-1} onClick={() => setShowPassword((v) => !v)} className="focus:outline-none" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}</button>}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
@@ -82,12 +84,7 @@ export default function LoginPage() {
               Create one
             </Link>
           </p>
-          <p className="mt-2 text-center text-xs text-muted-foreground">
-            Demo: student@netsensei.local / student123
-          </p>
-          <p className="text-center text-xs text-muted-foreground">
-            Demo tutor: tutor@netsensei.local / tutor123
-          </p>
+
         </div>
       </Card>
     </div>
