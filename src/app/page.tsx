@@ -8,7 +8,7 @@ export default async function HomePage() {
   const user = await getCurrentUser();
 
   if (user) {
-    redirect("/courses");
+    redirect(user.role === "TUTOR" ? "/tutor" : "/courses");
   }
 
   return (

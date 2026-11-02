@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { getCurrentUser } from "@/lib/auth";
-import { Navbar } from "@/components/ui/navbar";
+import { AppChrome } from "@/components/app-chrome";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -38,7 +38,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <Navbar
+        <AppChrome
           user={user ? { email: user.email, role: user.role } : null}
         />
         <main className="flex-1 animate-[fadeIn_0.4s_ease-out_both]">

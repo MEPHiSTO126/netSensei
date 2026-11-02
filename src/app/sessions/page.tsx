@@ -13,14 +13,13 @@ export default async function SessionsPage() {
   if (!user) {
     redirect("/login");
   }
+  if (user.role === "TUTOR") {
+    redirect("/tutor/sessions");
+  }
 
-  const isTutor = user.role === "TUTOR";
   const sessions = await db.tutorSession.findMany({
-    where: isTutor
-      ? { tutorId: user.id }
-      : { studentId: user.id },
+    where: { studentId: user.id },
     include: {
-      student: { select: { id: true, email: true } },
       tutor: { select: { id: true, email: true } },
       _count: { select: { messages: true } },
     },
@@ -37,23 +36,13 @@ export default async function SessionsPage() {
             Live conversations and the records they leave behind.
           </p>
         </div>
-        {isTutor ? (
-          <Link
-            href="/tutor/queue"
-            className="inline-flex items-center gap-2 rounded-md border border-input px-3 py-2 text-sm font-medium hover:bg-muted"
-          >
-            <MessageSquare className="h-4 w-4" />
-            Tutor queue
-          </Link>
-        ) : (
-          <Link
-            href="/tutor/chat"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            <MessageSquare className="h-4 w-4" />
-            Open tutor chat
-          </Link>
-        )}
+        <Link
+          href="/tutor/chat"
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          <MessageSquare className="h-4 w-4" />
+          Open tutor chat
+        </Link>
       </div>
 
       {sessions.length === 0 ? (
@@ -64,16 +53,13 @@ export default async function SessionsPage() {
             </div>
             <h2 className="font-semibold text-heading">No sessions yet</h2>
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
-              {isTutor
-                ? "When you answer a student request, the conversation appears here with a saved record."
-                : "Ask a tutor about a stage and your conversation will appear here."}
+              Ask a tutor about a stage and your conversation will appear here.
             </p>
           </div>
         </Card>
       ) : (
         <div className="space-y-3">
           {sessions.map((session) => {
-            const partner = isTutor ? session.student : session.tutor;
             const active = session.status === "ACTIVE";
 
             return (
@@ -82,7 +68,7 @@ export default async function SessionsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="truncate font-semibold text-heading">
-                        {partner?.email ?? "Unassigned tutor"}
+                        {session.tutor?.email ?? "Unassigned tutor"}
                       </h2>
                       <Badge variant={active ? "default" : "outline"}>
                         {active ? "Active" : "Ended"}

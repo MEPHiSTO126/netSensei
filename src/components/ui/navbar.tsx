@@ -8,7 +8,6 @@ import {
   BookOpen,
   Code2,
   History,
-  Inbox,
   LogOut,
   MessageSquare,
   User,
@@ -32,27 +31,23 @@ export function Navbar({ user }: { user: NavUser | null }) {
   const pathname = usePathname();
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const isTutor = user?.role === "TUTOR";
 
-  const items: NavItem[] = [
-    { href: "/courses", label: "Courses", icon: BookOpen, matchPrefix: true },
-  ];
+  const items: NavItem[] = isTutor
+    ? []
+    : [{ href: "/courses", label: "Courses", icon: BookOpen, matchPrefix: true }];
 
-  if (user) {
+  if (user && !isTutor) {
     items.push(
       { href: "/progress", label: "Progress", icon: BarChart3 },
       {
-        href: user.role === "TUTOR" ? "/tutor/queue" : "/tutor/chat",
-        label: user.role === "TUTOR" ? "Tutor queue" : "Tutor help",
-        shortLabel: user.role === "TUTOR" ? "Queue" : "Tutor",
-        icon: user.role === "TUTOR" ? Inbox : MessageSquare,
-        matchPrefix: user.role === "TUTOR",
+        href: "/tutor/chat",
+        label: "Tutor help",
+        shortLabel: "Tutor",
+        icon: MessageSquare,
       },
       { href: "/sessions", label: "Sessions", icon: History, matchPrefix: true },
     );
-
-    if (user.role === "TUTOR") {
-      items.push({ href: "/tutor/chat", label: "Chat", icon: MessageSquare });
-    }
   }
 
   async function signOut() {
@@ -76,7 +71,7 @@ export function Navbar({ user }: { user: NavUser | null }) {
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70 transition-colors">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link
-          href={user ? "/courses" : "/"}
+          href={user ? (isTutor ? "/tutor" : "/courses") : "/"}
           className="flex shrink-0 items-center gap-2 text-heading"
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -151,10 +146,11 @@ export function Navbar({ user }: { user: NavUser | null }) {
         </div>
       </div>
 
-      <nav
-        aria-label="Main navigation"
-        className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
-      >
+      {items.length > 0 && (
+        <nav
+          aria-label="Main navigation"
+          className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
+        >
         {items.map((item) => {
           const active = isCurrent(item);
           const Icon = item.icon;
@@ -174,7 +170,8 @@ export function Navbar({ user }: { user: NavUser | null }) {
             </Link>
           );
         })}
-      </nav>
+        </nav>
+      )}
     </header>
   );
 }

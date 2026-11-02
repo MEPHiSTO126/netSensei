@@ -5,7 +5,7 @@ import { getOnlineTutorCount, isTutorOnline } from "@/lib/presence";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Clock, User } from "lucide-react";
+import { Clock, LayoutDashboard, User } from "lucide-react";
 import {
   TutorComposer,
   type StageOption,
@@ -14,6 +14,7 @@ import { TutorThreadRefresh } from "@/components/tutor/TutorThreadRefresh";
 import { TutorPresence } from "@/components/tutor/TutorPresence";
 import { EndSessionButton } from "@/components/tutor/EndSessionButton";
 import { ChatScrollAnchor } from "@/components/tutor/ChatScrollAnchor";
+import { summariseProgress } from "@/lib/tutor";
 
 export const dynamic = "force-dynamic";
 
@@ -198,6 +199,41 @@ export default async function TutorChatPage({
     ? session.student
     : session.tutor ?? { email: "Unassigned tutor" };
 
+  let studentContext: {
+    percentage: number;
+    passed: number;
+    totalPhases: number;
+    average: number;
+    pending: number;
+  } | null = null;
+
+  if (isTutor) {
+    const [records, totalPhases, pending] = await Promise.all([
+      db.progressRecord.findMany({
+        where: { studentId: session.studentId },
+        select: { phaseId: true, passed: true, score: true },
+      }),
+      db.phase.count({
+        where: { module: { course: { isPublished: true } } },
+      }),
+      db.tutorRequest.count({
+        where: { studentId: session.studentId, status: "PENDING" },
+      }),
+    ]);
+    const summary = summariseProgress(records);
+
+    studentContext = {
+      percentage:
+        totalPhases > 0
+          ? Math.round((summary.passed / totalPhases) * 100)
+          : 0,
+      passed: summary.passed,
+      totalPhases,
+      average: summary.average,
+      pending,
+    };
+  }
+
   const tutorOnline =
     isTutor || !isActive
       ? false
@@ -267,7 +303,16 @@ export default async function TutorChatPage({
           </div>
           <div className="min-w-0">
             <h1 className="truncate font-semibold text-heading">
-              {otherUser.email}
+              {isTutor ? (
+                <Link
+                  href={`/tutor/students/${session.studentId}`}
+                  className="hover:text-primary hover:underline"
+                >
+                  {otherUser.email}
+                </Link>
+              ) : (
+                otherUser.email
+              )}
             </h1>
             <div className="mt-0.5 flex flex-wrap items-center gap-2">
               <Badge variant={isTutor ? "outline" : "secondary"}>
@@ -295,6 +340,15 @@ export default async function TutorChatPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          {isTutor && (
+            <Link
+              href="/tutor"
+              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-heading"
+            >
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              Desk
+            </Link>
+          )}
           <Link
             href={`/sessions/${session.id}`}
             className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-heading"
@@ -305,6 +359,30 @@ export default async function TutorChatPage({
           {isActive && <EndSessionButton sessionId={session.id} />}
         </div>
       </div>
+
+      {isTutor && studentContext && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-border bg-muted/30 px-4 py-2 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">
+            {studentContext.percentage}% complete
+          </span>
+          <span>
+            {studentContext.passed}/{studentContext.totalPhases} phases passed
+          </span>
+          <span>Avg best {studentContext.average}%</span>
+          {studentContext.pending > 0 && (
+            <span className="text-amber-700 dark:text-amber-300">
+              {studentContext.pending} pending request
+              {studentContext.pending === 1 ? "" : "s"}
+            </span>
+          )}
+          <Link
+            href={`/tutor/students/${session.studentId}`}
+            className="ml-auto font-medium text-primary hover:underline"
+          >
+            Student progress
+          </Link>
+        </div>
+      )}
 
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {session.messages.length === 0 && (

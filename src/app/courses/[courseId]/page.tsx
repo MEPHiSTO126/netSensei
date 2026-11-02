@@ -4,7 +4,7 @@ import { getCourseProgress } from "@/lib/progress";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, LayoutList, Play } from "lucide-react";
+import { CheckCircle2, Eye, LayoutList, Play } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +52,11 @@ export default async function CoursePage({
     (sum, m) => sum + m.phases.length,
     0
   );
-  const progress = await getCourseProgress(user?.id ?? null, courseId);
+  const isTutor = user?.role === "TUTOR";
+  const progress = await getCourseProgress(
+    isTutor ? null : (user?.id ?? null),
+    courseId,
+  );
 
   return (
     <div className="space-y-8">
@@ -69,6 +73,16 @@ export default async function CoursePage({
         </Link>
       </div>
 
+      {isTutor && (
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+          <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-sm text-muted-foreground">
+            Tutor preview. Open any phase to read its stages and quiz. Nothing
+            here changes student progress.
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <div className="p-6">
@@ -84,7 +98,7 @@ export default async function CoursePage({
             <p className="text-sm text-muted-foreground">Modules</p>
           </div>
         </Card>
-        {user && (
+        {user && !isTutor && (
           <Card>
             <div className="p-6">
             <div className="text-2xl font-bold text-heading">
@@ -93,6 +107,19 @@ export default async function CoursePage({
             <p className="text-sm text-muted-foreground">
               {progress.passedPhases} of {progress.totalPhases} phases passed
             </p>
+            </div>
+          </Card>
+        )}
+        {isTutor && (
+          <Card>
+            <div className="p-6">
+              <div className="flex items-center gap-2 text-2xl font-bold text-heading">
+                <Eye className="h-5 w-5 text-primary" />
+                Read-only
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Tutor preview, no enrollment
+              </p>
             </div>
           </Card>
         )}
@@ -123,7 +150,11 @@ export default async function CoursePage({
                       className="flex items-center justify-between px-3 py-2 rounded-md text-sm hover:bg-muted transition-colors group"
                     >
                       <div className="flex items-center gap-3">
-                        <Play className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {isTutor ? (
+                          <Eye className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        ) : (
+                          <Play className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
                         <span className="font-medium">{phase.title}</span>
                         {phase._count.stages > 0 && (
                           <span className="text-xs text-muted-foreground">

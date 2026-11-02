@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +65,9 @@ export default async function StagePage({
       : null;
 
   const canTakeQuiz = !!stage.phase.quiz;
-  const onlineTutorCount = await getOnlineTutorCount();
+  const user = await getCurrentUser();
+  const isTutor = user?.role === "TUTOR";
+  const onlineTutorCount = isTutor ? 0 : await getOnlineTutorCount();
 
   return (
     <div className="space-y-6">
@@ -145,8 +148,8 @@ export default async function StagePage({
           {/* quiz card */}
           {stage.phase.quiz && (
             <div className="relative rounded-xl border border-primary/20 bg-card overflow-hidden shadow-sm">
-              {/* shimmer accent */}
-              <div className="h-0.5 w-full bg-gradient-to-r from-primary via-ring to-primary/60" />
+              {/* accent bar */}
+              <div className="h-0.5 w-full bg-primary/30" />
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
@@ -164,7 +167,8 @@ export default async function StagePage({
                     href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
                   >
-                    Take quiz <ChevronRight className="h-3 w-3" />
+                    {isTutor ? "Preview quiz" : "Take quiz"}{" "}
+                    <ChevronRight className="h-3 w-3" />
                   </Link>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -176,10 +180,10 @@ export default async function StagePage({
           )}
         </aside>
 
-        {/* ── Glassmorphic content card ─────────────────────── */}
+        {/* ── Content card ─────────────────────────────────── */}
         <Card className="lg:w-3/4 overflow-hidden relative hover:shadow-lg hover:-translate-y-0">
-          {/* gradient accent bar */}
-          <div className="h-1 w-full bg-gradient-to-r from-primary via-ring to-primary/60" />
+          {/* accent bar */}
+          <div className="h-1 w-full bg-primary/20" />
 
           <div className="p-6 md:p-8">
             {/* title + badge */}
@@ -199,11 +203,13 @@ export default async function StagePage({
               />
             </div>
 
-            <TutorRequestButton
-              stageId={stage.id}
-              stageTitle={stage.title}
-              onlineTutorCount={onlineTutorCount}
-            />
+            {!isTutor && (
+              <TutorRequestButton
+                stageId={stage.id}
+                stageTitle={stage.title}
+                onlineTutorCount={onlineTutorCount}
+              />
+            )}
 
             {/* ── Card-based prev/next navigation ────────────── */}
             <div className="mt-10 pt-6 border-t border-border">

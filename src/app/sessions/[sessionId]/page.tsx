@@ -17,6 +17,7 @@ export default async function SessionPage({
   if (!user) {
     redirect("/login");
   }
+  const isTutor = user.role === "TUTOR";
 
   const { sessionId } = await params;
 
@@ -75,11 +76,11 @@ export default async function SessionPage({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <Link
-        href="/sessions"
+        href={isTutor ? "/tutor/sessions" : "/sessions"}
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary hover:underline"
       >
         <ChevronLeft className="h-4 w-4" />
-        All sessions
+        {isTutor ? "Tutor sessions" : "All sessions"}
       </Link>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -97,6 +98,14 @@ export default async function SessionPage({
           <Badge variant="secondary">
             {session.mode === "LIVE" ? "Live session" : "Recorded"}
           </Badge>
+          {isTutor && (
+            <Link
+              href={`/tutor/students/${session.studentId}`}
+              className="rounded-md border border-input px-3 py-2 text-sm font-medium hover:bg-muted"
+            >
+              Student progress
+            </Link>
+          )}
           {active && (
             <Link
               href={`/tutor/chat?sessionId=${session.id}`}

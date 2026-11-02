@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { compare, hash } from "bcryptjs";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { db } from "./db";
 
 const DEV_JWT_SECRET = "netsensei-development-only-secret";
@@ -109,6 +110,18 @@ export async function requireTutor(): Promise<SessionUser> {
   if (user.role !== "TUTOR") {
     throw new Error("Tutor access required");
   }
+  return user;
+}
+
+/**
+ * Page-level tutor gate: sends guests to sign in and students back to their
+ * course list. Use in the tutor layout and in each tutor page so a page never
+ * renders its data without a confirmed tutor session.
+ */
+export async function requireTutorPage(): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  if (user.role !== "TUTOR") redirect("/courses");
   return user;
 }
 

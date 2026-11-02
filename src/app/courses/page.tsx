@@ -2,10 +2,11 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Users, Play } from "lucide-react";
+import { BookOpen, Users, Play, Eye } from "lucide-react";
 
 export default async function CoursesPage() {
   const user = await getCurrentUser();
+  const isTutor = user?.role === "TUTOR";
   const courses = await db.course.findMany({
     where: { isPublished: true },
     include: {
@@ -25,7 +26,9 @@ export default async function CoursesPage() {
         <div>
           <h1 className="text-2xl font-bold text-heading">Courses</h1>
           <p className="text-muted-foreground">
-            Browse available courses and start learning
+            {isTutor
+              ? "Review the curriculum students work through. Preview only."
+              : "Browse available courses and start learning"}
           </p>
         </div>
         {!user && (
@@ -34,6 +37,16 @@ export default async function CoursesPage() {
           </Link>
         )}
       </div>
+
+      {isTutor && (
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+          <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <p className="text-sm text-muted-foreground">
+            You are previewing the course as a tutor. Enrollment, progress, and
+            quizzes are student-only.
+          </p>
+        </div>
+      )}
 
       {courses.length === 0 ? (
         <Card className="border-dashed">
@@ -79,7 +92,15 @@ export default async function CoursesPage() {
                   href={`/courses/${course.id}`}
                   className="flex items-center gap-2 w-fit px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
                 >
-                  <Play className="h-4 w-4" /> Start learning
+                  {isTutor ? (
+                    <>
+                      <Eye className="h-4 w-4" /> Preview course
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" /> Start learning
+                    </>
+                  )}
                 </Link>
               </div>
             </Card>

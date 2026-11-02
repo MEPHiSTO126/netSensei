@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { getCurrentUser } from "@/lib/auth";
 import { QuizClient } from "./QuizClient";
 
 export default async function QuizPage({
@@ -12,5 +13,7 @@ export default async function QuizPage({
   }>;
 }) {
   const { phaseId } = await params;
-  return <QuizClient phaseId={phaseId} />;
+  const user = await getCurrentUser();
+
+  return <QuizClient phaseId={phaseId} readOnly={user?.role === "TUTOR"} />;
 }

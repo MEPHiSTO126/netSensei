@@ -29,8 +29,10 @@ export function useSession() {
   const router = useRouter();
 
   const loadUser = useCallback(async () => {
-    setUser(await fetchSessionUser());
+    const sessionUser = await fetchSessionUser();
+    setUser(sessionUser);
     setLoading(false);
+    return sessionUser;
   }, []);
 
   useEffect(() => {
@@ -54,8 +56,8 @@ export function useSession() {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) throw new Error("Invalid email or password");
-    await loadUser();
-    router.push("/courses");
+    const sessionUser = await loadUser();
+    router.push(sessionUser?.role === "TUTOR" ? "/tutor" : "/courses");
     router.refresh();
   }, [loadUser, router]);
 
@@ -80,8 +82,8 @@ export function useSession() {
         const data = await res.json().catch(() => null);
         throw new Error(data?.error || "Registration failed");
       }
-      await loadUser();
-      router.push("/courses");
+      const sessionUser = await loadUser();
+      router.push(sessionUser?.role === "TUTOR" ? "/tutor" : "/courses");
       router.refresh();
     },
     [loadUser, router]

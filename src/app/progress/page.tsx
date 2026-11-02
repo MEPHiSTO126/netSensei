@@ -4,6 +4,7 @@ import { getCourseProgress } from "@/lib/progress";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Clock, CheckCircle2 } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,10 @@ export default async function ProgressPage() {
         <p className="text-muted-foreground mb-4">Please sign in to view your progress.</p>
       </div>
     );
+  }
+
+  if (user.role === "TUTOR") {
+    redirect("/tutor/students");
   }
 
   const progressRecords = await db.progressRecord.findMany({

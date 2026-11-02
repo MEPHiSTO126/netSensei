@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Eye, EyeOff } from "lucide-react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: React.ReactNode;

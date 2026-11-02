@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock3,
+  Eye,
   FileText,
   Image as ImageIcon,
   Play,
@@ -59,12 +60,14 @@ export default async function PhasePage({
   }
 
   const user = await getCurrentUser();
-  const progress = user
-    ? await db.progressRecord.findFirst({
-        where: { studentId: user.id, courseId, phaseId },
-        orderBy: { attemptNumber: "desc" },
-      })
-    : null;
+  const isTutor = user?.role === "TUTOR";
+  const progress =
+    user && !isTutor
+      ? await db.progressRecord.findFirst({
+          where: { studentId: user.id, courseId, phaseId },
+          orderBy: { attemptNumber: "desc" },
+        })
+      : null;
 
   const allPhases = await db.phase.findMany({
     where: { moduleId },
@@ -83,11 +86,13 @@ export default async function PhasePage({
     : phase.quiz
       ? `/courses/${courseId}/${moduleId}/${phaseId}/quiz`
       : null;
-  const ctaLabel = progress?.passed
-    ? "Review phase"
-    : progress
-      ? "Continue phase"
-      : "Start phase";
+  const ctaLabel = isTutor
+    ? "Preview phase"
+    : progress?.passed
+      ? "Review phase"
+      : progress
+        ? "Continue phase"
+        : "Start phase";
 
   return (
     <div className="space-y-8">
@@ -137,11 +142,17 @@ export default async function PhasePage({
               </span>
             )}
             {progress && <span>Attempt {progress.attemptNumber}</span>}
+            {isTutor && <span>Tutor preview · read only</span>}
           </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-start gap-3">
-          {progress?.passed ? (
+          {isTutor ? (
+            <Badge variant="secondary" className="gap-1.5">
+              <Eye className="h-3.5 w-3.5" />
+              Tutor preview
+            </Badge>
+          ) : progress?.passed ? (
             <Badge className="gap-1.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Passed · {progress.score}%
@@ -212,13 +223,18 @@ export default async function PhasePage({
                 {phase.quiz.questions.length !== 1 ? "s" : ""} ·{" "}
                 {phase.quiz.passThreshold}% to pass
                 {progress ? ` · Best ${progress.score}%` : ""}
+                {isTutor ? " · Preview only" : ""}
               </p>
             </div>
             <Link
               href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
               className="inline-flex w-fit items-center gap-1.5 rounded-md border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
             >
-              {progress ? "Retake quiz" : "Take quiz"}
+              {isTutor
+                ? "Preview quiz"
+                : progress
+                  ? "Retake quiz"
+                  : "Take quiz"}
               <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>

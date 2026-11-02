@@ -17,6 +17,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthenticated" }, { status: 401 });
     }
 
+    if (user.role !== "STUDENT") {
+      return NextResponse.json(
+        { error: "Tutor accounts cannot submit snippet answers." },
+        { status: 403 },
+      );
+    }
+
     const body = await req.json();
     const { questionId, code, language } = schema.parse(body);
 

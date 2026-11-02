@@ -5,7 +5,7 @@ import { useSession } from "@/hooks/useSession";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Eye, Loader2, XCircle } from "lucide-react";
 
 type Question = {
   id: string;
@@ -28,9 +28,10 @@ type QuizResult = {
 
 type QuizClientProps = {
   phaseId: string;
+  readOnly?: boolean;
 };
 
-export function QuizClient({ phaseId }: QuizClientProps) {
+export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
   const { user } = useSession();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -103,6 +104,72 @@ export function QuizClient({ phaseId }: QuizClientProps) {
     setAnswers({});
     setError("");
   };
+
+  if (readOnly) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+          <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <div>
+            <p className="text-sm font-medium text-heading">Tutor preview</p>
+            <p className="text-sm text-muted-foreground">
+              You can read the quiz questions, but only students can submit
+              answers.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-heading">Phase Quiz</h1>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {questions.length} question
+              {questions.length !== 1 ? "s" : ""} · read-only preview
+            </p>
+          </div>
+          <Badge variant="outline">Preview</Badge>
+        </div>
+
+        {questions.length === 0 ? (
+          <Card>
+            <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+              This phase has no quiz questions yet.
+            </p>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {questions.map((q, index) => (
+              <Card key={q.id} className="p-5">
+                <div className="flex items-start gap-3">
+                  <Badge variant="outline" className="mt-0.5 shrink-0">
+                    {index + 1}
+                  </Badge>
+                  <div className="min-w-0">
+                    <Badge variant="secondary" className="text-[10px]">
+                      {q.type === "SNIPPET"
+                        ? `SNIPPET · ${q.language.toUpperCase()}`
+                        : q.type}
+                    </Badge>
+                    <p className="mt-2 font-medium text-foreground">
+                      {q.prompt}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        <Button
+          variant="outline"
+          onClick={() => window.history.back()}
+          className="w-full sm:w-auto"
+        >
+          Back to phase
+        </Button>
+      </div>
+    );
+  }
 
   if (result) {
     return (

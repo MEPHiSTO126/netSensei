@@ -156,7 +156,7 @@ function InlineFormattedText({ text }: { text: string }) {
 
 function RichText({ content }: { content: string }) {
   const blocks = parseContentBlocks(content);
-  let isFirstTextBlock = true;
+  const firstTextIndex = blocks.findIndex((block) => block.kind !== "code");
 
   return (
     <div className="mt-6 text-[1.0625rem] leading-[1.8] text-foreground space-y-5">
@@ -189,8 +189,7 @@ function RichText({ content }: { content: string }) {
         }
         if (current.length) paragraphs.push(current);
 
-        const showDropCap = isFirstTextBlock;
-        if (isFirstTextBlock) isFirstTextBlock = false;
+        const showDropCap = idx === firstTextIndex;
 
         return (
           <div
