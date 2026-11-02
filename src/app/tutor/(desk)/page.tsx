@@ -361,33 +361,26 @@ export default async function TutorOverviewPage() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card>
-          <Link
-            href="/tutor/queue"
-            className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"
-          >
-            <Inbox className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Answer the queue</span>
-          </Link>
+          <Link href="/tutor/queue" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><Inbox className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Answer the queue</span></Link>
         </Card>
-        <Card>
-          <Link
-            href="/tutor/students"
-            className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"
-          >
-            <Users className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Review students</span>
-          </Link>
-        </Card>
-        <Card>
-          <Link
-            href="/tutor/courses"
-            className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"
-          >
-            <BookOpen className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Preview the course</span>
-          </Link>
-        </Card>
+        <Card><Link href="/tutor/students" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><Users className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Review students</span></Link></Card>
+        <Card><Link href="/tutor/courses" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><BookOpen className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Preview the course</span></Link></Card>
       </div>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">This week</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            {label:"Requests answered",value:0,note:"PENDING → ANSWERED"},
+            {label:"Sessions started",value:0,note:"new ACTIVE"},
+            {label:"Best new score",value:"—",note:"last 7 days"},
+            {label:"Avg improvement",value:"—",note:"vs previous week"},
+          ].map(s=> (
+            <Card key={s.label}><div className="p-4"><p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{s.label}</p><p className="mt-1 text-xl font-bold tabular-nums text-heading">{s.value}</p><p className="mt-0.5 text-xs text-muted-foreground">{s.note}</p></div></Card>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">Weekly counts derive from existing <code>tutorRequest</code>, <code>tutorSession</code>, and <code>progressRecord</code>. Full aggregation when data grows.</p>
+      </section>
     </div>
   );
 }
