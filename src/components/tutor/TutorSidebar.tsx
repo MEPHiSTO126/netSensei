@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType } from "react";
 import {
   BookOpen,
+  BookOpenCheck,
   Code2,
   Inbox,
   LayoutDashboard,
@@ -165,6 +166,7 @@ export function TutorSidebar({ email, pendingCount }: TutorSidebarProps) {
     { href: "/tutor/queue", label: "Queue", icon: Inbox, badge: pendingCount },
     { href: "/tutor/students", label: "Students", icon: Users },
     { href: "/tutor/sessions", label: "Sessions", icon: MessageSquare },
+    { href: "/tutor/solutions", label: "Solutions", icon: BookOpenCheck },
     { href: "/tutor/courses", label: "Course preview", icon: BookOpen },
   ];
 

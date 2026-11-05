@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useSession } from "@/hooks/useSession";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,9 @@ type Question = {
   language: string;
   prompt: string;
   fullGoal: string | null;
+  /** Tutor-only fields; absent for students. */
+  expectedAnswer?: string | null;
+  rubric?: string | null;
 };
 
 type QuizResult = {
@@ -28,10 +32,17 @@ type QuizResult = {
 
 type QuizClientProps = {
   phaseId: string;
+  courseId?: string;
+  moduleId?: string;
   readOnly?: boolean;
 };
 
-export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
+export function QuizClient({
+  phaseId,
+  courseId,
+  moduleId,
+  readOnly = false,
+}: QuizClientProps) {
   const { user } = useSession();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -39,6 +50,11 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<QuizResult | null>(null);
   const [error, setError] = useState("");
+
+  const phaseUrl =
+    courseId && moduleId
+      ? `/courses/${courseId}/${moduleId}/${phaseId}`
+      : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +84,44 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
 
   const handleChange = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
+  };
+
+  const handleSnippetKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    questionId: string,
+  ) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const textarea = e.currentTarget;
+      const { selectionStart, selectionEnd, value } = textarea;
+
+      if (e.shiftKey) {
+        // Shift+Tab: unindent 2 spaces if line starts with 2 spaces
+        const beforeCursor = value.substring(0, selectionStart);
+        const lineStart = beforeCursor.lastIndexOf("\n") + 1;
+        const linePrefix = value.substring(lineStart, lineStart + 2);
+        if (linePrefix === "  ") {
+          const newValue =
+            value.substring(0, lineStart) + value.substring(lineStart + 2);
+          handleChange(questionId, newValue);
+          requestAnimationFrame(() => {
+            textarea.selectionStart = Math.max(lineStart, selectionStart - 2);
+            textarea.selectionEnd = Math.max(lineStart, selectionEnd - 2);
+          });
+        }
+      } else {
+        // Tab: insert 2 spaces
+        const newValue =
+          value.substring(0, selectionStart) +
+          "  " +
+          value.substring(selectionEnd);
+        handleChange(questionId, newValue);
+        requestAnimationFrame(() => {
+          textarea.selectionStart = selectionStart + 2;
+          textarea.selectionEnd = selectionStart + 2;
+        });
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -153,6 +207,24 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
                     <p className="mt-2 font-medium text-foreground">
                       {q.prompt}
                     </p>
+
+                    {q.expectedAnswer && (
+                      <div className="mt-3 rounded-lg border border-primary/20 bg-primary/[0.06] p-3">
+                        <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-primary">
+                          Solution
+                        </span>
+                        <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground">
+                          {q.expectedAnswer}
+                        </pre>
+                      </div>
+                    )}
+
+                    {(q.fullGoal || q.rubric) && (
+                      <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                        {q.fullGoal && <p>Goal: {q.fullGoal}</p>}
+                        {q.rubric && <p>Rubric: {q.rubric}</p>}
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -160,13 +232,22 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
           </div>
         )}
 
-        <Button
-          variant="outline"
-          onClick={() => window.history.back()}
-          className="w-full sm:w-auto"
-        >
-          Back to phase
-        </Button>
+        {phaseUrl ? (
+          <Link
+            href={phaseUrl}
+            className="inline-flex items-center justify-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-muted transition-colors w-full sm:w-auto"
+          >
+            Back to phase
+          </Link>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={() => window.history.back()}
+            className="w-full sm:w-auto"
+          >
+            Back to phase
+          </Button>
+        )}
       </div>
     );
   }
@@ -199,15 +280,32 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
             Score: {result.percentage}% (need {result.passThreshold}% to pass)
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button onClick={handleRetake} className="flex-1">
-              Retake Quiz
-            </Button>
+            {phaseUrl ? (
+              <Link
+                href={phaseUrl}
+                className={`flex-1 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
+                  result.passed
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "border border-input hover:bg-muted text-foreground"
+                }`}
+              >
+                {result.passed ? "Back to Phase Overview →" : "Back to Phase"}
+              </Link>
+            ) : (
+              <Button
+                variant={result.passed ? "default" : "outline"}
+                onClick={() => window.history.back()}
+                className="flex-1"
+              >
+                {result.passed ? "Back to Phase Overview →" : "Back to Phase"}
+              </Button>
+            )}
             <Button
-              variant="outline"
-              onClick={() => window.history.back()}
+              onClick={handleRetake}
+              variant={result.passed ? "outline" : "default"}
               className="flex-1"
             >
-              Back to Phase
+              Retake Quiz
             </Button>
           </div>
         </Card>
@@ -321,12 +419,18 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
             {q.type === "SNIPPET" ? (
               <div className="space-y-2">
                 <textarea
-                  className="w-full min-h-[200px] font-mono text-sm rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  className="w-full min-h-[200px] font-mono text-sm rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none leading-relaxed"
                   aria-label={q.prompt}
                   value={answers[q.id] || ""}
                   onChange={(e) => handleChange(q.id, e.target.value)}
+                  onKeyDown={(e) => handleSnippetKeyDown(e, q.id)}
                   placeholder={`Write your ${q.language.toUpperCase()} here...`}
                 />
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+                  <span>
+                    Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Tab</kbd> to indent, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Shift+Tab</kbd> to unindent
+                  </span>
+                </div>
               </div>
             ) : (
               <div className="space-y-2">
@@ -343,14 +447,19 @@ export function QuizClient({ phaseId, readOnly = false }: QuizClientProps) {
         ))}
         <Button
           type="submit"
-          className="w-full h-11 text-base font-medium"
+          className="w-full h-11 text-base font-medium flex items-center justify-center gap-2"
           disabled={submitting}
         >
-          {submitting
-            ? "Evaluating your answers with AI..."
-            : answeredCount === questions.length
-              ? "Submit Quiz"
-              : `Submit Quiz (${questions.length - answeredCount} unanswered)`}
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+              <span>Evaluating your answers with AI...</span>
+            </>
+          ) : answeredCount === questions.length ? (
+            "Submit Quiz"
+          ) : (
+            `Submit Quiz (${questions.length - answeredCount} unanswered)`
+          )}
         </Button>
       </form>
 

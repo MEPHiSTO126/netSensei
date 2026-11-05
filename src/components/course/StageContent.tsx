@@ -129,11 +129,33 @@ function InlineText({ text }: { text: string }) {
 }
 
 function InlineFormattedText({ text }: { text: string }) {
-  // Parse **bold** and *italic*
-  const tokens = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  // Parse links [text](url), **bold**, *italic*
+  const tokens = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*)/g);
   return (
     <>
       {tokens.map((token, i) => {
+        if (
+          token.startsWith("[") &&
+          token.includes("](") &&
+          token.endsWith(")")
+        ) {
+          const closeBracket = token.indexOf("](");
+          const label = token.slice(1, closeBracket);
+          const href = token.slice(closeBracket + 2, -1);
+          const isExternal =
+            href.startsWith("http://") || href.startsWith("https://");
+          return (
+            <a
+              key={i}
+              href={href}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noopener noreferrer" : undefined}
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+            >
+              {label}
+            </a>
+          );
+        }
         if (token.startsWith("**") && token.endsWith("**")) {
           return (
             <strong key={i} className="font-semibold text-heading">
@@ -201,13 +223,80 @@ function RichText({ content }: { content: string }) {
           >
             {paragraphs.map((p, j) => {
               const text = p.join("\n");
+
+              // Headings
+              if (text.startsWith("### ")) {
+                return (
+                  <h4 key={j} className="text-lg font-bold text-heading pt-2">
+                    <InlineText text={text.slice(4)} />
+                  </h4>
+                );
+              }
+              if (text.startsWith("## ")) {
+                return (
+                  <h3 key={j} className="text-xl font-bold text-heading pt-3">
+                    <InlineText text={text.slice(3)} />
+                  </h3>
+                );
+              }
+
+              // Blockquotes
+              if (text.startsWith("> ")) {
+                return (
+                  <blockquote
+                    key={j}
+                    className="border-l-4 border-primary/40 bg-muted/30 px-4 py-2.5 rounded-r-lg italic text-muted-foreground my-2"
+                  >
+                    <InlineText text={text.slice(2)} />
+                  </blockquote>
+                );
+              }
+
+              // Unordered lists
+              if (
+                p.length > 0 &&
+                p.every((line) => line.startsWith("- ") || line.startsWith("* "))
+              ) {
+                return (
+                  <ul
+                    key={j}
+                    className="list-disc pl-5 space-y-1.5 my-2 text-foreground"
+                  >
+                    {p.map((line, lIdx) => (
+                      <li key={lIdx}>
+                        <InlineText text={line.slice(2)} />
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              // Ordered lists
+              if (p.length > 0 && p.every((line) => /^\d+\.\s/.test(line))) {
+                return (
+                  <ol
+                    key={j}
+                    className="list-decimal pl-5 space-y-1.5 my-2 text-foreground"
+                  >
+                    {p.map((line, lIdx) => (
+                      <li key={lIdx}>
+                        <InlineText text={line.replace(/^\d+\.\s/, "")} />
+                      </li>
+                    ))}
+                  </ol>
+                );
+              }
+
               const canDropCap =
-                showDropCap && j === 0 && text.length > 20 && /^[a-zA-Z]/.test(text);
+                showDropCap &&
+                j === 0 &&
+                text.length > 20 &&
+                /^[a-zA-Z]/.test(text);
 
               if (canDropCap) {
                 return (
                   <p key={j} className="whitespace-pre-line">
-                    <span className="float-left text-4xl font-bold text-primary leading-[0.85] mr-2 mt-1 select-none">
+                    <span className="float-left text-4xl font-bold text-primary leading-[0.85] mr-2 mt-1">
                       {text[0]}
                     </span>
                     <InlineText text={text.slice(1)} />
@@ -228,6 +317,116 @@ function RichText({ content }: { content: string }) {
 }
 
 /* ─── Code block ────────────────────────────────────────────────── */
+
+function highlightCode(code: string, lang: string): React.ReactNode {
+  const language = (lang || "").toLowerCase();
+  if (!code) return null;
+
+  const lines = code.split("\n");
+
+  const tokenRegex =
+    /(\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`|<\/?[a-zA-Z0-9_-]+|\b(?:const|let|var|function|return|import|export|from|default|async|await|if|else|for|while|class|new|this|type|interface|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b)/g;
+
+  return lines.map((line, lineIdx) => {
+    if (!line) {
+      return <div key={lineIdx}>{"\n"}</div>;
+    }
+
+    const parts = line.split(tokenRegex);
+
+    return (
+      <div key={lineIdx} className="leading-relaxed">
+        {parts.map((part, partIdx) => {
+          if (!part) return null;
+
+          // Comments
+          if (
+            part.startsWith("//") ||
+            part.startsWith("/*") ||
+            part.startsWith("<!--")
+          ) {
+            return (
+              <span
+                key={partIdx}
+                className="text-muted-foreground/80 italic font-mono"
+              >
+                {part}
+              </span>
+            );
+          }
+
+          // Strings
+          if (
+            (part.startsWith('"') && part.endsWith('"')) ||
+            (part.startsWith("'") && part.endsWith("'")) ||
+            (part.startsWith("`") && part.endsWith("`"))
+          ) {
+            return (
+              <span
+                key={partIdx}
+                className="text-emerald-600 dark:text-emerald-400 font-mono"
+              >
+                {part}
+              </span>
+            );
+          }
+
+          // HTML Tags
+          if (
+            part.startsWith("<") &&
+            (language.includes("html") ||
+              language.includes("jsx") ||
+              language.includes("tsx") ||
+              language.includes("xml"))
+          ) {
+            return (
+              <span
+                key={partIdx}
+                className="text-blue-600 dark:text-blue-400 font-semibold font-mono"
+              >
+                {part}
+              </span>
+            );
+          }
+
+          // JS/TS Keywords
+          if (
+            /^(const|let|var|function|return|import|export|from|default|async|await|if|else|for|while|class|new|this|type|interface|true|false|null|undefined)$/.test(
+              part
+            )
+          ) {
+            return (
+              <span
+                key={partIdx}
+                className="text-purple-600 dark:text-purple-400 font-semibold font-mono"
+              >
+                {part}
+              </span>
+            );
+          }
+
+          // Numbers
+          if (/^\d+(\.\d+)?$/.test(part)) {
+            return (
+              <span
+                key={partIdx}
+                className="text-amber-600 dark:text-amber-400 font-mono"
+              >
+                {part}
+              </span>
+            );
+          }
+
+          return (
+            <span key={partIdx} className="text-foreground font-mono">
+              {part}
+            </span>
+          );
+        })}
+      </div>
+    );
+  });
+}
 
 function CodeBlock({ lang, code }: { lang: string; code: string }) {
   const [copied, setCopied] = useState(false);
@@ -257,7 +456,7 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer"
           aria-label="Copy code"
         >
           {copied ? (
@@ -274,10 +473,8 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
         </button>
       </div>
       {/* Code content */}
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-        <code className="font-mono text-foreground whitespace-pre">
-          {code}
-        </code>
+      <pre className="overflow-x-auto p-4 text-sm leading-relaxed font-mono">
+        <code>{highlightCode(code, lang)}</code>
       </pre>
     </div>
   );
@@ -286,7 +483,8 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
 /* ─── Chart / flow diagram ──────────────────────────────────────── */
 
 function ChartDiagram({ content }: { content: string }) {
-  const steps = content
+  const normalized = content.replace(/-->|->/g, "→");
+  const steps = normalized
     .split("→")
     .map((s) => s.trim())
     .filter(Boolean)

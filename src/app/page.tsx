@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { MousePointer2, Play, Users, BarChart3 } from "lucide-react";
 
 export default async function HomePage() {
@@ -28,18 +29,12 @@ export default async function HomePage() {
             and get feedback, and ask a tutor when you get stuck.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/login"
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-md text-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Get started
-            </Link>
-            <Link
-              href="/courses"
-              className="px-8 py-3 border border-input rounded-md text-lg font-medium hover:bg-muted transition-colors"
-            >
-              Browse courses
-            </Link>
+            <Button asChild size="lg" className="px-8 text-base font-semibold">
+              <Link href="/login">Get started</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="px-8 text-base font-medium">
+              <Link href="/courses">Browse courses</Link>
+            </Button>
           </div>
         </div>
       </section>

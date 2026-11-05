@@ -12,8 +12,15 @@ export default async function QuizPage({
     phaseId: string;
   }>;
 }) {
-  const { phaseId } = await params;
+  const { courseId, moduleId, phaseId } = await params;
   const user = await getCurrentUser();
 
-  return <QuizClient phaseId={phaseId} readOnly={user?.role === "TUTOR"} />;
+  return (
+    <QuizClient
+      phaseId={phaseId}
+      courseId={courseId}
+      moduleId={moduleId}
+      readOnly={user?.role === "TUTOR"}
+    />
+  );
 }

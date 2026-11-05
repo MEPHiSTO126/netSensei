@@ -8,6 +8,7 @@ import {
   BookOpen,
   Code2,
   History,
+  LayoutDashboard,
   LogOut,
   MessageSquare,
   User,
@@ -34,7 +35,11 @@ export function Navbar({ user }: { user: NavUser | null }) {
   const isTutor = user?.role === "TUTOR";
 
   const items: NavItem[] = isTutor
-    ? []
+    ? [
+        { href: "/tutor", label: "Tutor Desk", icon: LayoutDashboard },
+        { href: "/courses", label: "Course Preview", icon: BookOpen, matchPrefix: true },
+        { href: "/tutor/sessions", label: "Sessions", icon: History, matchPrefix: true },
+      ]
     : [{ href: "/courses", label: "Courses", icon: BookOpen, matchPrefix: true }];
 
   if (user && !isTutor) {

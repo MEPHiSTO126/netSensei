@@ -73,15 +73,14 @@ export default function LoginPage() {
                 rightIcon={
                   <button
                     type="button"
-                    tabIndex={-1}
                     onClick={() => setShowPassword((v) => !v)}
-                    className="focus:outline-none cursor-pointer hover:text-foreground transition-colors p-1"
+                    className="cursor-pointer rounded p-1 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      <EyeOff className="h-4 w-4" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      <Eye className="h-4 w-4" />
                     )}
                   </button>
                 }

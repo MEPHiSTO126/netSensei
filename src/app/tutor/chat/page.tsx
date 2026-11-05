@@ -14,7 +14,7 @@ import { TutorThreadRefresh } from "@/components/tutor/TutorThreadRefresh";
 import { TutorPresence } from "@/components/tutor/TutorPresence";
 import { EndSessionButton } from "@/components/tutor/EndSessionButton";
 import { ChatScrollAnchor } from "@/components/tutor/ChatScrollAnchor";
-import { summariseProgress } from "@/lib/tutor";
+import { formatRelative, summariseProgress } from "@/lib/tutor";
 
 export const dynamic = "force-dynamic";
 
@@ -292,6 +292,45 @@ export default async function TutorChatPage({
     }
   }
 
+  const focusedRequest = requestId
+    ? await db.tutorRequest.findUnique({
+        where: { id: requestId },
+        include: {
+          stage: {
+            select: {
+              id: true,
+              title: true,
+              phaseId: true,
+              phase: {
+                select: {
+                  moduleId: true,
+                  module: { select: { courseId: true } },
+                },
+              },
+            },
+          },
+        },
+      })
+    : await db.tutorRequest.findFirst({
+        where: { studentId: session.studentId, status: "PENDING" },
+        include: {
+          stage: {
+            select: {
+              id: true,
+              title: true,
+              phaseId: true,
+              phase: {
+                select: {
+                  moduleId: true,
+                  module: { select: { courseId: true } },
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
   return (
     <div className="mx-auto flex h-[calc(100dvh-11rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card md:h-[calc(100dvh-9rem)]">
       {isTutor && <TutorPresence />}
@@ -384,13 +423,74 @@ export default async function TutorChatPage({
         </div>
       )}
 
+      {focusedRequest && (
+        <div className="border-b border-border bg-primary/[0.04] p-3.5 px-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  {isTutor ? "Student Help Request" : "Your Help Request in Queue"}
+                </span>
+                {focusedRequest.stage && (
+                  <Badge variant="outline" className="text-[10px]">
+                    {focusedRequest.stage.title}
+                  </Badge>
+                )}
+              </div>
+              <p className="mt-1.5 text-sm font-medium text-heading">
+                &ldquo;{focusedRequest.question}&rdquo;
+              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                <span>
+                  Submitted {formatRelative(focusedRequest.createdAt, new Date())}
+                </span>
+                {focusedRequest.stage && (
+                  <Link
+                    href={`/courses/${focusedRequest.stage.phase.module.courseId}/${focusedRequest.stage.phase.moduleId}/${focusedRequest.stage.phaseId}/${focusedRequest.stage.id}`}
+                    target="_blank"
+                    className="font-medium text-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    View stage ↗
+                  </Link>
+                )}
+              </div>
+            </div>
+            {!isTutor && (
+              <Badge variant="secondary" className="shrink-0 text-xs">
+                In queue
+              </Badge>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {session.messages.length === 0 && (
-          <p className="py-10 text-center text-sm text-muted-foreground">
-            No messages yet. {isTutor
-              ? "Answer the student's question to get started."
-              : "Send a message and a tutor will reply when they are online."}
-          </p>
+          <div className="py-10 text-center">
+            {focusedRequest ? (
+              <div className="max-w-md mx-auto space-y-2">
+                <p className="text-sm font-medium text-heading">
+                  {isTutor
+                    ? "Reply to the student's question above to start the conversation."
+                    : "Your question is waiting in the queue."}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isTutor
+                    ? "Type your guidance below. You can also use 'Highlight stage' to send a direct link to a lesson."
+                    : tutorOnline
+                      ? "A tutor is online now and will reply shortly."
+                      : "No tutor is currently online. A tutor will review your question when they log in."}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {isTutor
+                  ? "Answer the student's question to get started."
+                  : "Send a message and a tutor will reply when they are online."}
+              </p>
+            )}
+          </div>
         )}
 
         {session.messages.map((m) => {

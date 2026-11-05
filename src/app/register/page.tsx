@@ -76,15 +76,14 @@ export default function RegisterPage() {
                 rightIcon={
                   <button
                     type="button"
-                    tabIndex={-1}
                     onClick={() => setShowRegPassword((v) => !v)}
-                    className="focus:outline-none cursor-pointer hover:text-foreground transition-colors p-1"
+                    className="cursor-pointer rounded p-1 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={showRegPassword ? "Hide password" : "Show password"}
                   >
                     {showRegPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      <EyeOff className="h-4 w-4" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      <Eye className="h-4 w-4" />
                     )}
                   </button>
                 }
@@ -102,7 +101,7 @@ export default function RegisterPage() {
                     onChange={() => setRole("STUDENT")}
                     className="peer sr-only"
                   />
-                  <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground">
+                  <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2">
                     Student
                   </div>
                 </label>
@@ -115,7 +114,7 @@ export default function RegisterPage() {
                     onChange={() => setRole("TUTOR")}
                     className="peer sr-only"
                   />
-                  <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground">
+                  <div className="rounded-md border p-3 text-center text-sm font-medium transition-colors peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2">
                     Tutor
                   </div>
                 </label>
@@ -144,11 +143,18 @@ export default function RegisterPage() {
               <input
                 id="terms"
                 type="checkbox"
-                className="h-4 w-4 rounded border-input"
+                className="h-4 w-4 rounded border-input accent-primary cursor-pointer"
                 required
               />
-              <Label htmlFor="terms" className="text-sm">
-                I agree to the terms of service
+              <Label htmlFor="terms" className="text-sm font-normal cursor-pointer">
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+                >
+                  terms of service
+                </Link>
               </Label>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>

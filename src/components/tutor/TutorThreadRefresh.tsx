@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
  * but keeps the interval reasonable so each refresh (a full server render with
  * its own DB queries) does not compete with typing.
  */
-export function TutorThreadRefresh({ intervalMs = 15000 }: { intervalMs?: number }) {
+export function TutorThreadRefresh({ intervalMs = 10000 }: { intervalMs?: number }) {
   const router = useRouter();
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Play, Eye } from "lucide-react";
 
 export default async function CoursesPage() {
@@ -32,9 +33,11 @@ export default async function CoursesPage() {
           </p>
         </div>
         {!user && (
-          <Link href="/login" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-            Sign in to track progress
-          </Link>
+          <Button asChild size="sm">
+            <Link href="/login" className="gap-2">
+              Sign in to track progress
+            </Link>
+          </Button>
         )}
       </div>
 
@@ -88,20 +91,19 @@ export default async function CoursesPage() {
                     {phaseCount} phase{phaseCount !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <Link
-                  href={`/courses/${course.id}`}
-                  className="flex items-center gap-2 w-fit px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
-                >
-                  {isTutor ? (
-                    <>
-                      <Eye className="h-4 w-4" /> Preview course
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4" /> Start learning
-                    </>
-                  )}
-                </Link>
+                <Button asChild size="sm" className="w-fit gap-2">
+                  <Link href={`/courses/${course.id}`}>
+                    {isTutor ? (
+                      <>
+                        <Eye className="h-4 w-4" /> Preview course
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4" /> Start learning
+                      </>
+                    )}
+                  </Link>
+                </Button>
               </div>
             </Card>
             );

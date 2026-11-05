@@ -27,12 +27,21 @@ export async function GET(
       return NextResponse.json({ questions: [] });
     }
 
+    const isTutor = user.role === "TUTOR";
+
     const questions = phase.quiz.questions.map((q) => ({
       id: q.id,
       type: q.type,
       language: q.language,
       prompt: q.prompt,
       fullGoal: q.fullGoal,
+      // Answer keys are tutor-only. Students must never receive these fields.
+      ...(isTutor
+        ? {
+            expectedAnswer: q.expectedAnswer,
+            rubric: q.rubric,
+          }
+        : {}),
     }));
 
     return NextResponse.json({ questions });

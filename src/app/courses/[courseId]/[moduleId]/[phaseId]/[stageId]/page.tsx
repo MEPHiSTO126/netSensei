@@ -102,9 +102,54 @@ export default async function StagePage({
         </span>
       </nav>
 
+      {/* ── Mobile stage quick switcher (< lg) ───────────── */}
+      <div className="lg:hidden">
+        <details className="group rounded-xl border border-border bg-card p-3 shadow-sm">
+          <summary className="flex items-center justify-between cursor-pointer list-none text-sm font-semibold text-heading">
+            <span className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
+                {currentIndex + 1}
+              </span>
+              <span className="truncate">Stage {currentIndex + 1} of {stage.phase.stages.length}: {stage.title}</span>
+            </span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90 shrink-0 ml-2" />
+          </summary>
+          <div className="mt-3 pt-3 border-t border-border space-y-1">
+            {stage.phase.stages.map((s, idx) => {
+              const isActive = s.id === stageId;
+              return (
+                <Link
+                  key={s.id}
+                  href={`/courses/${courseId}/${moduleId}/${phaseId}/${s.id}`}
+                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${
+                    isActive
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-muted-foreground hover:bg-muted hover:text-heading"
+                  }`}
+                >
+                  <span className="truncate">{idx + 1}. {s.title}</span>
+                  {isActive && <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-2">Current</Badge>}
+                </Link>
+              );
+            })}
+            {stage.phase.quiz && (
+              <Link
+                href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
+                className="flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-primary font-medium hover:bg-primary/10 transition-colors mt-2 border-t border-border/50 pt-2"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Play className="h-3 w-3" /> Phase Quiz
+                </span>
+                <ChevronRight className="h-3 w-3" />
+              </Link>
+            )}
+          </div>
+        </details>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* ── Timeline sidebar ──────────────────────────────── */}
-        <aside className="lg:w-1/4 space-y-5">
+        {/* ── Timeline sidebar (left on desktop, below content on mobile) ── */}
+        <aside className="order-2 lg:order-1 lg:w-1/4 space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Stages in {stage.phase.title}
           </h2>
@@ -180,8 +225,8 @@ export default async function StagePage({
           )}
         </aside>
 
-        {/* ── Content card ─────────────────────────────────── */}
-        <Card className="lg:w-3/4 overflow-hidden relative hover:shadow-lg hover:-translate-y-0">
+        {/* ── Content card (renders top on mobile, right on desktop) ─── */}
+        <Card className="order-1 lg:order-2 lg:w-3/4 overflow-hidden relative transition-all duration-200 hover:shadow-md">
           {/* accent bar */}
           <div className="h-1 w-full bg-primary/20" />
 
@@ -243,8 +288,32 @@ export default async function StagePage({
                       {nextStage.title}
                     </span>
                   </Link>
+                ) : canTakeQuiz ? (
+                  <Link
+                    href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
+                    className="group flex flex-col items-end gap-1 rounded-xl border border-primary/40 bg-primary/[0.04] p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary text-right"
+                  >
+                    <span className="text-xs font-semibold text-primary flex items-center gap-1">
+                      {isTutor ? "Preview Quiz" : "Phase Complete"}
+                      <ChevronRight className="h-3 w-3" />
+                    </span>
+                    <span className="text-sm font-bold text-heading group-hover:text-primary transition-colors truncate">
+                      Take Phase Quiz →
+                    </span>
+                  </Link>
                 ) : (
-                  <div />
+                  <Link
+                    href={`/courses/${courseId}/${moduleId}/${phaseId}`}
+                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
+                  >
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      Phase Complete
+                      <ChevronRight className="h-3 w-3" />
+                    </span>
+                    <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
+                      Phase Overview →
+                    </span>
+                  </Link>
                 )}
               </div>
             </div>
