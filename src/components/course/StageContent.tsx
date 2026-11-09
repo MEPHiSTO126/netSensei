@@ -501,38 +501,46 @@ function ChartDiagram({ content }: { content: string }) {
 
   return (
     <div
-      className="mt-6 rounded-xl border border-border bg-card p-6 md:p-8 overflow-x-auto"
+      className="mt-6 rounded-xl border border-border bg-card p-5 md:p-8"
       style={{ animation: "fadeInScale 0.5s ease-out both" }}
     >
-      <div className="flex items-center justify-center gap-0 min-w-max">
+      <ol className="flex flex-col gap-3 md:flex-row md:items-center md:justify-center md:gap-0">
         {cleaned.map((step, idx) => (
-          <div
+          <li
             key={idx}
-            className="flex items-center gap-0"
+            className="flex flex-col md:contents"
             style={{
               animation: `slideUp 0.4s ease-out ${idx * 100}ms both`,
             }}
           >
             {idx > 0 && (
-              /* connector */
-              <div className="flex items-center mx-1">
-                <div className="w-6 md:w-10 h-0.5 bg-gradient-to-r from-primary/60 to-primary/30 rounded-full" />
-                <div className="w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[7px] border-l-primary/50" />
+              <div
+                aria-hidden="true"
+                className="mx-3 my-1 flex justify-center md:mx-1 md:my-0 md:flex-col md:items-center"
+              >
+                {/* vertical connector on mobile */}
+                <div className="h-4 w-0.5 rounded-full bg-gradient-to-b from-primary/60 to-primary/30 md:hidden" />
+                <div className="h-0 w-0 border-x-[5px] border-x-transparent border-t-[7px] border-t-primary/50 md:hidden" />
+                {/* horizontal connector on desktop */}
+                <div className="hidden items-center md:flex">
+                  <div className="h-0.5 w-6 rounded-full bg-gradient-to-r from-primary/60 to-primary/30 lg:w-10" />
+                  <div className="h-0 w-0 border-y-[5px] border-y-transparent border-l-[7px] border-l-primary/50" />
+                </div>
               </div>
             )}
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-3 md:flex-col">
               {/* numbered badge */}
-              <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-sm">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-sm">
                 {idx + 1}
               </span>
               {/* step card */}
-              <div className="px-4 py-2.5 rounded-lg border border-border bg-background text-sm font-medium text-foreground shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+              <div className="min-w-0 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:max-w-[180px] md:text-center">
                 {step}
               </div>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
 }

@@ -121,7 +121,7 @@ export default async function StagePage({
                 <Link
                   key={s.id}
                   href={`/courses/${courseId}/${moduleId}/${phaseId}/${s.id}`}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs transition-colors ${
+                  className={`flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
                     isActive
                       ? "bg-primary/10 text-primary font-semibold"
                       : "text-muted-foreground hover:bg-muted hover:text-heading"
@@ -135,12 +135,12 @@ export default async function StagePage({
             {stage.phase.quiz && (
               <Link
                 href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
-                className="flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-primary font-medium hover:bg-primary/10 transition-colors mt-2 border-t border-border/50 pt-2"
+                className="flex items-center justify-between px-3 py-2 rounded-md text-xs text-primary font-medium hover:bg-primary/10 transition-colors mt-2 border-t border-border/50 pt-2"
               >
                 <span className="flex items-center gap-1.5">
-                  <Play className="h-3.5 w-3.5" /> Phase Quiz
+                  <Play className="h-4 w-4" /> Phase Quiz
                 </span>
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-4 w-4" />
               </Link>
             )}
           </div>
