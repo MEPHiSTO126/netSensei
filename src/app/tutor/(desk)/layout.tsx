@@ -18,18 +18,18 @@ export default async function TutorDeskLayout({
   });
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] overflow-hidden rounded-xl border border-border bg-card shadow-sm md:grid md:grid-cols-[220px_minmax(0,1fr)]">
+    <div className="h-screen flex bg-background">
       <TutorPresence />
       <TutorSidebar email={user.email} pendingCount={pendingCount} />
 
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3 sm:px-6">
-          <span className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+        <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <span className="h-2 w-2 rounded-full bg-emerald-600" />
             Online for students
-          </span>
+          </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               {new Date().toLocaleDateString("en-GB", {
                 weekday: "short",
                 day: "numeric",
@@ -39,9 +39,11 @@ export default async function TutorDeskLayout({
             </span>
             <ThemeToggle />
           </div>
-        </div>
+        </header>
 
-        <div className="p-4 sm:p-6">{children}</div>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          {children}
+        </main>
       </div>
     </div>
   );

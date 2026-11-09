@@ -27,14 +27,14 @@ function StatCard({
 }) {
   return (
     <Card>
-      <div className="p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+      <div className="p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {label}
         </p>
-        <p className="mt-1 text-2xl font-bold tabular-nums text-heading">
+        <p className="mt-2 text-3xl font-bold tabular-nums text-heading">
           {value}
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{detail}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{detail}</p>
       </div>
     </Card>
   );

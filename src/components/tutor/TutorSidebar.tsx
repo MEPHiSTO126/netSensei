@@ -45,7 +45,7 @@ function NavList({
   onNavigate?: () => void;
 }) {
   return (
-    <nav aria-label="Tutor navigation" className="space-y-1">
+    <nav aria-label="Tutor navigation" className="space-y-0.5">
       {items.map((item) => {
         const active = isActive(pathname, item);
         const Icon = item.icon;
@@ -56,16 +56,16 @@ function NavList({
             href={item.href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               active
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-heading"
             }`}
           >
-            <Icon className="h-4 w-4 shrink-0" />
+            <Icon className="h-5 w-5 shrink-0" />
             <span className="truncate">{item.label}</span>
             {item.badge ? (
-              <span className="ml-auto rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold leading-none text-primary-foreground">
+              <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs font-bold leading-none text-primary-foreground">
                 {item.badge > 99 ? "99+" : item.badge}
               </span>
             ) : null}
@@ -91,8 +91,8 @@ function SidebarBody({
 }) {
   return (
     <>
-      <div className="px-2 pb-5 pt-1">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="px-3 pb-6 pt-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           Tutor
         </p>
       </div>
@@ -100,15 +100,15 @@ function SidebarBody({
       <NavList items={items} pathname={pathname} onNavigate={onNavigate} />
 
       <div className="mt-auto border-t border-border pt-3">
-        <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <Users className="h-4 w-4" />
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            <Users className="h-5 w-5" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-foreground">
+            <p className="truncate text-sm font-medium text-foreground">
               {email}
             </p>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Tutor
             </p>
           </div>
@@ -117,9 +117,9 @@ function SidebarBody({
             onClick={onSignOut}
             aria-label="Sign out"
             title="Sign out"
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-heading"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-heading"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -131,12 +131,12 @@ function Brand() {
   return (
     <Link
       href="/tutor"
-      className="flex items-center gap-2.5 px-2 pb-4 text-heading"
+      className="flex items-center gap-3 px-3 py-4 text-heading"
     >
-      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        <Code2 className="h-4 w-4" />
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Code2 className="h-5 w-5" />
       </span>
-      <span className="text-base font-semibold tracking-tight">netSensei</span>
+      <span className="text-lg font-semibold tracking-tight">netSensei</span>
     </Link>
   );
 }
@@ -174,12 +174,12 @@ export function TutorSidebar({ email, pendingCount }: TutorSidebarProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/30 px-4 py-3 md:hidden">
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 md:hidden">
         <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             Tutor desk
           </p>
-          <p className="truncate text-sm font-semibold text-heading">
+          <p className="truncate text-base font-semibold text-heading">
             {current?.label ?? "Overview"}
           </p>
         </div>
@@ -187,13 +187,13 @@ export function TutorSidebar({ email, pendingCount }: TutorSidebarProps) {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open tutor menu"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-heading"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:bg-muted hover:text-heading"
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </button>
       </div>
 
-      <aside className="hidden min-h-[560px] flex-col border-r border-border bg-muted/30 p-3 md:flex">
+      <aside className="hidden w-64 flex-col border-r border-border bg-background md:flex">
         <Brand />
         <SidebarBody
           items={items}
