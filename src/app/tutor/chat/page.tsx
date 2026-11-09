@@ -335,7 +335,7 @@ export default async function TutorChatPage({
     <div className="mx-auto flex h-[calc(100dvh-11rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card md:h-[calc(100dvh-9rem)]">
       {isTutor && <TutorPresence />}
 
-      <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
             <User className="h-4 w-4" />
@@ -433,7 +433,7 @@ export default async function TutorChatPage({
                   {isTutor ? "Student Help Request" : "Your Help Request in Queue"}
                 </span>
                 {focusedRequest.stage && (
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     {focusedRequest.stage.title}
                   </Badge>
                 )}
@@ -465,7 +465,7 @@ export default async function TutorChatPage({
         </div>
       )}
 
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-5">
         {session.messages.length === 0 && (
           <div className="py-10 text-center">
             {focusedRequest ? (
@@ -521,7 +521,7 @@ export default async function TutorChatPage({
                         : "Student"}
                   </span>
                   {m.type === "HIGHLIGHT" && (
-                    <span className="rounded-full bg-background/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                    <span className="rounded-full bg-background/20 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide">
                       Stage highlight
                     </span>
                   )}
@@ -538,7 +538,7 @@ export default async function TutorChatPage({
                   </Link>
                 )}
                 <span
-                  className={`mt-1 block text-[10px] ${
+                  className={`mt-1 block text-xs ${
                     mine
                       ? "text-primary-foreground/70"
                       : "text-muted-foreground"
@@ -567,7 +567,7 @@ export default async function TutorChatPage({
           <TutorThreadRefresh />
         </>
       ) : (
-        <div className="border-t border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+        <div className="border-t border-border bg-muted/40 p-5 text-sm text-muted-foreground">
           This session ended
           {session.endedAt
             ? ` on ${new Date(session.endedAt).toLocaleDateString(undefined, {

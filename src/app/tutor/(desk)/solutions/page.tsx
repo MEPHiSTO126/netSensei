@@ -86,9 +86,9 @@ export default async function TutorSolutionsPage() {
         <>
           <nav
             aria-label="Quiz index"
-            className="rounded-lg border border-border bg-muted/40 p-4"
+            className="rounded-lg border border-border bg-muted/40 p-5"
           >
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Jump to a quiz
             </p>
             <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
@@ -112,7 +112,7 @@ export default async function TutorSolutionsPage() {
           {courses.map((course) =>
             course.modules.map((module) =>
               module.phases.length === 0 ? null : (
-                <section key={module.id} className="space-y-3">
+                <section key={module.id} className="space-y-4">
                   <div className="flex items-center gap-2">
                     <BookOpenCheck className="h-4 w-4 text-primary" />
                     <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
@@ -126,7 +126,7 @@ export default async function TutorSolutionsPage() {
 
                     return (
                       <Card key={phase.id} id={phase.id}>
-                        <div className="p-5">
+                        <div className="p-6">
                           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                             <div>
                               <h3 className="font-semibold text-heading">
@@ -147,7 +147,7 @@ export default async function TutorSolutionsPage() {
                             {quiz.questions.map((question, index) => (
                               <li
                                 key={question.id}
-                                className="rounded-lg border border-border p-4"
+                                className="rounded-lg border border-border p-5"
                               >
                                 <div className="flex items-start gap-3">
                                   <Badge
@@ -159,7 +159,7 @@ export default async function TutorSolutionsPage() {
                                   <div className="min-w-0 flex-1">
                                     <Badge
                                       variant="secondary"
-                                      className="text-[10px]"
+                                      className="text-xs"
                                     >
                                       {question.type === "SNIPPET"
                                         ? `SNIPPET · ${question.language.toUpperCase()}`
@@ -171,7 +171,7 @@ export default async function TutorSolutionsPage() {
 
                                     {question.expectedAnswer && (
                                       <div className="mt-3 rounded-lg border border-primary/20 bg-primary/[0.06] p-3">
-                                        <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-primary">
+                                        <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-primary">
                                           Solution
                                         </span>
                                         <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground">

@@ -159,7 +159,7 @@ export default async function TutorStudentsPage({
               <Link
                 key={student.id}
                 href={`/tutor/students/${student.id}`}
-                className="group block p-4 transition-colors hover:bg-muted/40"
+                className="group block p-5 transition-colors hover:bg-muted/40"
               >
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -174,7 +174,7 @@ export default async function TutorStudentsPage({
                       {student.activeSession && (
                         <Badge
                           variant="outline"
-                          className="gap-1 border-emerald-600/30 text-[10px] text-emerald-700 dark:text-emerald-400"
+                          className="gap-1 border-emerald-600/30 text-xs text-emerald-700 dark:text-emerald-400"
                         >
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                           in session
@@ -183,9 +183,9 @@ export default async function TutorStudentsPage({
                       {student.pendingRequests > 0 && (
                         <Badge
                           variant="outline"
-                          className="gap-1 border-amber-500/40 text-[10px] text-amber-700 dark:text-amber-300"
+                          className="gap-1 border-amber-500/40 text-xs text-amber-700 dark:text-amber-300"
                         >
-                          <Inbox className="h-3 w-3" />
+                          <Inbox className="h-3.5 w-3.5" />
                           {student.pendingRequests} waiting
                         </Badge>
                       )}
@@ -203,7 +203,7 @@ export default async function TutorStudentsPage({
                         {student.summary.attempted === 1 ? "" : "s"} attempted
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
+                        <MessageSquare className="h-3.5 w-3.5" />
                         {student.tutorSessionsAsStudent.length} session
                         {student.tutorSessionsAsStudent.length === 1
                           ? ""

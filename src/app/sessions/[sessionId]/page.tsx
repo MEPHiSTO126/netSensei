@@ -119,7 +119,7 @@ export default async function SessionPage({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card>
-          <div className="p-4">
+          <div className="p-5">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{session.student.email}</span>
@@ -128,7 +128,7 @@ export default async function SessionPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
+          <div className="p-5">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">
@@ -139,7 +139,7 @@ export default async function SessionPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
+          <div className="p-5">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">
@@ -153,7 +153,7 @@ export default async function SessionPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
+          <div className="p-5">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">
@@ -173,7 +173,7 @@ export default async function SessionPage({
         </Card>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {session.messages.length === 0 ? (
           <Card>
             <p className="px-6 py-12 text-center text-sm text-muted-foreground">
@@ -188,7 +188,7 @@ export default async function SessionPage({
                 : undefined;
 
             return (
-              <Card key={m.id} className="p-4">
+              <Card key={m.id} className="p-5">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <span className="text-xs font-medium text-muted-foreground">
                     {m.sender.email}

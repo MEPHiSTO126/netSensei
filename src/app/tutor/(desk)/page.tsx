@@ -27,7 +27,7 @@ function StatCard({
 }) {
   return (
     <Card>
-      <div className="p-5">
+      <div className="p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {label}
         </p>
@@ -146,7 +146,7 @@ export default async function TutorOverviewPage() {
         />
       </div>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
             Waiting now
@@ -155,13 +155,13 @@ export default async function TutorOverviewPage() {
             href="/tutor/queue"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
           >
-            Open queue <ArrowRight className="h-3 w-3" />
+            Open queue <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {pending.length === 0 ? (
           <Card>
-            <div className="flex items-center gap-3 p-5">
+            <div className="flex items-center gap-3 p-6">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4" />
               </span>
@@ -188,7 +188,7 @@ export default async function TutorOverviewPage() {
                 return (
                   <div
                     key={request.id}
-                    className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="flex min-w-0 items-start gap-3">
                       <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
@@ -219,7 +219,7 @@ export default async function TutorOverviewPage() {
         )}
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
             Active sessions
@@ -228,13 +228,13 @@ export default async function TutorOverviewPage() {
             href="/tutor/sessions"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
           >
-            All sessions <ArrowRight className="h-3 w-3" />
+            All sessions <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {activeSessions.length === 0 ? (
           <Card>
-            <div className="flex items-center gap-3 p-5">
+            <div className="flex items-center gap-3 p-6">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <MessageSquare className="h-4 w-4" />
               </span>
@@ -257,7 +257,7 @@ export default async function TutorOverviewPage() {
                 return (
                   <div
                     key={session.id}
-                    className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -267,7 +267,7 @@ export default async function TutorOverviewPage() {
                         >
                           {session.student.email}
                         </Link>
-                        <Badge variant="outline" className="gap-1 text-[10px]">
+                        <Badge variant="outline" className="gap-1 text-xs">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                           live
                         </Badge>
@@ -277,7 +277,7 @@ export default async function TutorOverviewPage() {
                           ? `${lastMessage.content}`
                           : "No messages yet"}
                       </p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {session._count.messages} message
                         {session._count.messages === 1 ? "" : "s"}
                         {lastMessage
@@ -300,7 +300,7 @@ export default async function TutorOverviewPage() {
         )}
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
           Recent quiz activity
         </h2>
@@ -317,7 +317,7 @@ export default async function TutorOverviewPage() {
               {recentProgress.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-start gap-3 p-4"
+                  className="flex items-start gap-3 p-5"
                 >
                   <span
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -361,13 +361,13 @@ export default async function TutorOverviewPage() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card>
-          <Link href="/tutor/queue" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><Inbox className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Answer the queue</span></Link>
+          <Link href="/tutor/queue" className="flex items-center gap-3 p-5 transition-colors hover:bg-muted/50"><Inbox className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Answer the queue</span></Link>
         </Card>
-        <Card><Link href="/tutor/students" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><Users className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Review students</span></Link></Card>
-        <Card><Link href="/tutor/courses" className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/50"><BookOpen className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Preview the course</span></Link></Card>
+        <Card><Link href="/tutor/students" className="flex items-center gap-3 p-5 transition-colors hover:bg-muted/50"><Users className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Review students</span></Link></Card>
+        <Card><Link href="/tutor/courses" className="flex items-center gap-3 p-5 transition-colors hover:bg-muted/50"><BookOpen className="h-4 w-4 text-primary" /><span className="text-sm font-medium">Preview the course</span></Link></Card>
       </div>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">This week</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
@@ -376,7 +376,7 @@ export default async function TutorOverviewPage() {
             {label:"Best new score",value:"—",note:"last 7 days"},
             {label:"Avg improvement",value:"—",note:"vs previous week"},
           ].map(s=> (
-            <Card key={s.label}><div className="p-4"><p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">{s.label}</p><p className="mt-1 text-xl font-bold tabular-nums text-heading">{s.value}</p><p className="mt-0.5 text-xs text-muted-foreground">{s.note}</p></div></Card>
+            <Card key={s.label}><div className="p-6"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">{s.label}</p><p className="mt-2 text-2xl font-bold tabular-nums text-heading">{s.value}</p><p className="mt-1 text-sm text-muted-foreground">{s.note}</p></div></Card>
           ))}
         </div>
         <p className="text-xs text-muted-foreground">Weekly counts derive from existing <code>tutorRequest</code>, <code>tutorSession</code>, and <code>progressRecord</code>. Full aggregation when data grows.</p>

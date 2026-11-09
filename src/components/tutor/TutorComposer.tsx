@@ -77,7 +77,7 @@ export function TutorComposer({
   };
 
   return (
-    <form onSubmit={handleSend} className="space-y-2 border-t border-border p-4">
+    <form onSubmit={handleSend} className="space-y-2 border-t border-border p-5">
       {canHighlight && (
         <div className="flex flex-wrap items-center gap-2">
           <div
@@ -170,9 +170,9 @@ export function TutorComposer({
           {sending ? "Sending..." : "Send"}
         </Button>
       </div>
-      <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+      <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
         <span>
-          Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Enter</kbd> to send, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Shift+Enter</kbd> for newline
+          Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Enter</kbd> to send, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Shift+Enter</kbd> for newline
         </span>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}

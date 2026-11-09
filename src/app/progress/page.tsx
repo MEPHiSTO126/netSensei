@@ -175,14 +175,14 @@ export default async function ProgressPage({
             </div>
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {progressRecords.map((r) => (
               <Link
                 key={r.id}
                 href={`/courses/${r.phase.module.course.id}/${r.phase.module.id}/${r.phase.id}`}
                 className="block group"
               >
-                <Card className="p-4 transition-all duration-200 group-hover:border-primary/50 group-hover:shadow-sm">
+                <Card className="p-5 transition-all duration-200 group-hover:border-primary/50 group-hover:shadow-sm">
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
                       <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
@@ -199,11 +199,11 @@ export default async function ProgressPage({
                         </div>
                         <Badge
                           variant={r.passed ? "default" : "outline"}
-                          className="text-[10px]"
+                          className="text-xs"
                         >
                           {r.passed ? "Passed" : "Not passed"}
                         </Badge>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           Attempt {r.attemptNumber}
                         </p>
                       </div>

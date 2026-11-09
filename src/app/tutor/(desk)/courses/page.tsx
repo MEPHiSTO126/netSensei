@@ -48,10 +48,10 @@ export default async function TutorCoursesPage() {
 
             return (
               <Card key={course.id}>
-                <div className="flex h-full flex-col p-5">
+                <div className="flex h-full flex-col p-6">
                   <div className="mb-3 flex items-center gap-2">
                     <BookOpen className="h-4 w-4 text-primary" />
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                    <span className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
                       Course
                     </span>
                   </div>

@@ -62,7 +62,7 @@ export default async function TutorQueuePage() {
           </div>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {requests.map((request) => {
             const wait = formatWait(request.createdAt, now);
             const waitingLong =
@@ -76,7 +76,7 @@ export default async function TutorQueuePage() {
 
             return (
               <Card key={request.id}>
-                <div className="p-4">
+                <div className="p-5">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -87,7 +87,7 @@ export default async function TutorQueuePage() {
                         >
                           {request.student.email}
                         </Link>
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge variant="outline" className="text-xs">
                           {request.stage
                             ? request.stage.title
                             : "General question"}
@@ -108,7 +108,7 @@ export default async function TutorQueuePage() {
                           : "border-border text-muted-foreground"
                       }`}
                     >
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-3.5 w-3.5" />
                       waiting {wait}
                     </span>
                   </div>

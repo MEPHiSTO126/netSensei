@@ -162,7 +162,7 @@ export default async function TutorStudentPage({
                   variant="outline"
                   className="gap-1 border-amber-500/40 text-amber-700 dark:text-amber-300"
                 >
-                  <Inbox className="h-3 w-3" />
+                  <Inbox className="h-3.5 w-3.5" />
                   {pendingRequests} waiting
                 </Badge>
               )}
@@ -195,7 +195,7 @@ export default async function TutorStudentPage({
         </Link>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-5">
         <User className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <p className="text-sm text-muted-foreground">
           Read-only view. You can review progress and message the student;
@@ -205,8 +205,8 @@ export default async function TutorStudentPage({
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card>
-          <div className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Completion
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-heading">
@@ -218,8 +218,8 @@ export default async function TutorStudentPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Avg best score
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-heading">
@@ -232,8 +232,8 @@ export default async function TutorStudentPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Quiz answers
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-heading">
@@ -243,8 +243,8 @@ export default async function TutorStudentPage({
           </div>
         </Card>
         <Card>
-          <div className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+          <div className="p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Sessions
             </p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-heading">
@@ -260,7 +260,7 @@ export default async function TutorStudentPage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-6">
-          <section className="space-y-3">
+          <section className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Course progress
             </h2>
@@ -271,10 +271,10 @@ export default async function TutorStudentPage({
                 </p>
               </Card>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {courseProgress.map(({ course, progress }) => (
                   <Card key={course.id}>
-                    <div className="p-4">
+                    <div className="p-5">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-sm font-semibold text-heading">
                           {course.title}
@@ -302,7 +302,7 @@ export default async function TutorStudentPage({
             )}
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Phase history
             </h2>
@@ -318,7 +318,7 @@ export default async function TutorStudentPage({
                   {student.progressRecords.map((record) => (
                     <div
                       key={record.id}
-                      className="flex items-start gap-3 p-4"
+                      className="flex items-start gap-3 p-5"
                     >
                       <span
                         className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -346,10 +346,10 @@ export default async function TutorStudentPage({
                         <p className="text-sm font-semibold tabular-nums text-heading">
                           {record.score}%
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           attempt {record.attemptNumber}
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           {formatRelative(record.completedAt, now)}
                         </p>
                       </div>
@@ -360,7 +360,7 @@ export default async function TutorStudentPage({
             )}
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Recent quiz answers
             </h2>
@@ -374,19 +374,19 @@ export default async function TutorStudentPage({
               <Card>
                 <div className="divide-y divide-border">
                   {student.answerRecords.map((answer) => (
-                    <div key={answer.id} className="p-4">
+                    <div key={answer.id} className="p-5">
                       <div className="flex items-start justify-between gap-3">
                         <p className="min-w-0 text-sm text-foreground">
                           {answer.question.prompt}
                         </p>
                         <Badge
                           variant={answer.score != null && answer.score >= 70 ? "default" : "outline"}
-                          className="shrink-0 text-[10px] tabular-nums"
+                          className="shrink-0 text-xs tabular-nums"
                         >
                           {answer.score != null ? `${answer.score}%` : "—"}
                         </Badge>
                       </div>
-                      <p className="mt-1 text-[11px] text-muted-foreground">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         {answer.question.type} · attempt {answer.attemptNumber} ·{" "}
                         {formatRelative(answer.createdAt, now)}
                       </p>
@@ -405,7 +405,7 @@ export default async function TutorStudentPage({
 
         <aside className="space-y-4">
           <Card>
-            <div className="p-4">
+            <div className="p-5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Account
               </h2>
@@ -443,13 +443,13 @@ export default async function TutorStudentPage({
           </Card>
 
           <Card>
-            <div className="p-4">
+            <div className="p-5">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Sessions
                 </h2>
                 {activeSession && (
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     active
                   </Badge>
                 )}
@@ -459,7 +459,7 @@ export default async function TutorStudentPage({
                   No sessions with this student yet.
                 </p>
               ) : (
-                <ul className="mt-3 space-y-3">
+                <ul className="mt-3 space-y-4">
                   {student.tutorSessionsAsStudent.map((session) => (
                     <li key={session.id} className="text-xs">
                       <div className="flex items-center justify-between gap-2">
@@ -474,7 +474,7 @@ export default async function TutorStudentPage({
                           {session.status === "ACTIVE"
                             ? "Continue chat"
                             : "Open record"}
-                          <ChevronRight className="h-3 w-3" />
+                          <ChevronRight className="h-3.5 w-3.5" />
                         </Link>
                         <span className="text-muted-foreground">
                           {formatRelative(session.createdAt, now)}
@@ -494,7 +494,7 @@ export default async function TutorStudentPage({
           </Card>
 
           <Card>
-            <div className="p-4">
+            <div className="p-5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Help requests
               </h2>
@@ -503,7 +503,7 @@ export default async function TutorStudentPage({
                   No help requests from this student.
                 </p>
               ) : (
-                <ul className="mt-3 space-y-3">
+                <ul className="mt-3 space-y-4">
                   {student.tutorRequests.map((request) => (
                     <li key={request.id} className="text-xs">
                       <div className="flex items-center gap-2">
@@ -511,7 +511,7 @@ export default async function TutorStudentPage({
                           variant={
                             request.status === "PENDING" ? "outline" : "secondary"
                           }
-                          className={`text-[10px] ${
+                          className={`text-xs ${
                             request.status === "PENDING"
                               ? "border-amber-500/40 text-amber-700 dark:text-amber-300"
                               : ""
@@ -520,7 +520,7 @@ export default async function TutorStudentPage({
                           {request.status === "PENDING" ? "Waiting" : "Answered"}
                         </Badge>
                         <span className="inline-flex items-center gap-1 text-muted-foreground">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="h-3.5 w-3.5" />
                           {formatRelative(request.createdAt, now)}
                         </span>
                       </div>

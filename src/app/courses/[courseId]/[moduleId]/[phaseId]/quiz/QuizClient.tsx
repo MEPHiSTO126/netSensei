@@ -162,7 +162,7 @@ export function QuizClient({
   if (readOnly) {
     return (
       <div className="mx-auto max-w-2xl space-y-6">
-        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-5">
           <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
           <div>
             <p className="text-sm font-medium text-heading">Tutor preview</p>
@@ -193,13 +193,13 @@ export function QuizClient({
         ) : (
           <div className="space-y-4">
             {questions.map((q, index) => (
-              <Card key={q.id} className="p-5">
+              <Card key={q.id} className="p-6">
                 <div className="flex items-start gap-3">
                   <Badge variant="outline" className="mt-0.5 shrink-0">
                     {index + 1}
                   </Badge>
                   <div className="min-w-0">
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge variant="secondary" className="text-xs">
                       {q.type === "SNIPPET"
                         ? `SNIPPET · ${q.language.toUpperCase()}`
                         : q.type}
@@ -210,7 +210,7 @@ export function QuizClient({
 
                     {q.expectedAnswer && (
                       <div className="mt-3 rounded-lg border border-primary/20 bg-primary/[0.06] p-3">
-                        <span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-primary">
+                        <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-primary">
                           Solution
                         </span>
                         <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground">
@@ -317,7 +317,7 @@ export function QuizClient({
             const studentAnswer = answers[r.questionId];
 
             return (
-              <Card key={r.questionId} className="p-5 space-y-3">
+              <Card key={r.questionId} className="p-6 space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground block mb-1">
@@ -337,7 +337,7 @@ export function QuizClient({
 
                 {studentAnswer && (
                   <div className="rounded-lg bg-muted/60 p-3 text-xs border border-border/50">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wide block mb-1">
+                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wide block mb-1">
                       Your answer
                     </span>
                     <pre className="font-mono whitespace-pre-wrap text-foreground">
@@ -347,7 +347,7 @@ export function QuizClient({
                 )}
 
                 <div className="rounded-lg bg-primary/[0.06] border border-primary/15 p-3 text-xs">
-                  <span className="text-[10px] uppercase font-bold text-primary tracking-wide block mb-1">
+                  <span className="text-xs uppercase font-bold text-primary tracking-wide block mb-1">
                     Feedback
                   </span>
                   <p className="text-sm text-foreground leading-relaxed">
@@ -407,7 +407,7 @@ export function QuizClient({
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {questions.map((q) => (
-          <Card key={q.id} className="p-5">
+          <Card key={q.id} className="p-6">
             <div className="flex items-start gap-3 mb-4">
               <Badge variant="outline" className="text-xs mt-0.5">
                 {q.type === "SNIPPET"
@@ -426,9 +426,9 @@ export function QuizClient({
                   onKeyDown={(e) => handleSnippetKeyDown(e, q.id)}
                   placeholder={`Write your ${q.language.toUpperCase()} here...`}
                 />
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground px-1">
+                <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
                   <span>
-                    Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Tab</kbd> to indent, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-[10px]">Shift+Tab</kbd> to unindent
+                    Press <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Tab</kbd> to indent, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Shift+Tab</kbd> to unindent
                   </span>
                 </div>
               </div>

@@ -176,7 +176,7 @@ export default async function PhasePage({
         </div>
       </div>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
           Stages
         </h2>
@@ -184,7 +184,7 @@ export default async function PhasePage({
           <Link
             key={stage.id}
             href={`/courses/${courseId}/${moduleId}/${phaseId}/${stage.id}`}
-            className="group flex items-start gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50"
+            className="group flex items-start gap-4 rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50"
           >
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
               {STAGE_ICONS[stage.type] ?? <FileText className="h-4 w-4" />}
@@ -194,7 +194,7 @@ export default async function PhasePage({
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   Stage {stage.order}
                 </span>
-                <Badge variant="outline" className="text-[10px] uppercase">
+                <Badge variant="outline" className="text-xs uppercase">
                   {stage.type}
                 </Badge>
               </div>

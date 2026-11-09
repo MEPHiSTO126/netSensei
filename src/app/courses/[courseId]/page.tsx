@@ -74,7 +74,7 @@ export default async function CoursePage({
       </div>
 
       {isTutor && (
-        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-5">
           <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
           <p className="text-sm text-muted-foreground">
             Tutor preview. Open any phase to read its stages and quiz. Nothing

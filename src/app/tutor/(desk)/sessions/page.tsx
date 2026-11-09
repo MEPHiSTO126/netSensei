@@ -66,14 +66,14 @@ export default async function TutorSessionsPage() {
           </div>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {sessions.map((session) => {
             const active = session.status === "ACTIVE";
             const lastMessage = session.messages[0];
 
             return (
               <Card key={session.id}>
-                <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link

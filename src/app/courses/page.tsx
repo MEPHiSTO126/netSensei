@@ -42,7 +42,7 @@ export default async function CoursesPage() {
       </div>
 
       {isTutor && (
-        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4">
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-5">
           <Eye className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
           <p className="text-sm text-muted-foreground">
             You are previewing the course as a tutor. Enrollment, progress, and
@@ -82,7 +82,7 @@ export default async function CoursesPage() {
                   {course.description}
                 </p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                  <Users className="h-3 w-3" />
+                  <Users className="h-3.5 w-3.5" />
                   <span>
                     {course.modules.length} module{course.modules.length !== 1 ? "s" : ""}
                   </span>

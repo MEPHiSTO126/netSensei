@@ -25,7 +25,7 @@ export default function TermsPage() {
       </div>
 
       <Card className="p-6 md:p-8 space-y-6">
-        <section className="space-y-3">
+        <section className="space-y-4">
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-heading">
@@ -40,7 +40,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="space-y-3 border-t border-border pt-6">
+        <section className="space-y-4 border-t border-border pt-6">
           <div className="flex items-center gap-2">
             <UserCheck className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-heading">
@@ -58,7 +58,7 @@ export default function TermsPage() {
           </ul>
         </section>
 
-        <section className="space-y-3 border-t border-border pt-6">
+        <section className="space-y-4 border-t border-border pt-6">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-heading">

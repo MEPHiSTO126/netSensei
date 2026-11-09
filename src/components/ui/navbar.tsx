@@ -117,7 +117,7 @@ export function Navbar({ user }: { user: NavUser | null }) {
               <span className="hidden max-w-[180px] truncate text-sm text-foreground sm:inline">
                 {user.email}
               </span>
-              <span className="hidden rounded-full bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground lg:inline">
+              <span className="hidden rounded-full bg-background px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground lg:inline">
                 {user.role === "TUTOR" ? "Tutor" : "Student"}
               </span>
               <button

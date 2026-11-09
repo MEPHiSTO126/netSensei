@@ -50,7 +50,7 @@ export function TutorRequestButton({
 
   if (requested) {
     return (
-      <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
+      <div className="mt-6 rounded-lg border border-border bg-muted/30 p-5">
         <p className="text-sm font-medium text-heading">Tutor help requested</p>
         <p className="mt-1 text-xs text-muted-foreground">
           Your question is in the queue.{" "}
@@ -70,7 +70,7 @@ export function TutorRequestButton({
   }
 
   return (
-    <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4">
+    <div className="mt-6 rounded-lg border border-border bg-muted/30 p-5">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-heading">
           Stuck on this stage?

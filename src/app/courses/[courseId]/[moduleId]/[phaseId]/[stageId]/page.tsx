@@ -128,7 +128,7 @@ export default async function StagePage({
                   }`}
                 >
                   <span className="truncate">{idx + 1}. {s.title}</span>
-                  {isActive && <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-2">Current</Badge>}
+                  {isActive && <Badge variant="secondary" className="text-xs py-0 px-1 ml-2">Current</Badge>}
                 </Link>
               );
             })}
@@ -138,9 +138,9 @@ export default async function StagePage({
                 className="flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs text-primary font-medium hover:bg-primary/10 transition-colors mt-2 border-t border-border/50 pt-2"
               >
                 <span className="flex items-center gap-1.5">
-                  <Play className="h-3 w-3" /> Phase Quiz
+                  <Play className="h-3.5 w-3.5" /> Phase Quiz
                 </span>
-                <ChevronRight className="h-3 w-3" />
+                <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             )}
           </div>
@@ -195,7 +195,7 @@ export default async function StagePage({
             <div className="relative rounded-xl border border-primary/20 bg-card overflow-hidden shadow-sm">
               {/* accent bar */}
               <div className="h-0.5 w-full bg-primary/30" />
-              <div className="p-4">
+              <div className="p-5">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
                     <Play className="h-3.5 w-3.5 text-primary" />
@@ -213,11 +213,11 @@ export default async function StagePage({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
                   >
                     {isTutor ? "Preview quiz" : "Take quiz"}{" "}
-                    <ChevronRight className="h-3 w-3" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    Finish stages first <ChevronRight className="h-3 w-3" />
+                    Finish stages first <ChevronRight className="h-3.5 w-3.5" />
                   </span>
                 )}
               </div>
@@ -262,10 +262,10 @@ export default async function StagePage({
                 {prevStage ? (
                   <Link
                     href={`/courses/${courseId}/${moduleId}/${phaseId}/${prevStage.id}`}
-                    className="group flex flex-col gap-1 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30"
+                    className="group flex flex-col gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30"
                   >
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <ChevronRight className="h-3 w-3 rotate-180" />
+                      <ChevronRight className="h-3.5 w-3.5 rotate-180" />
                       Previous
                     </span>
                     <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
@@ -278,11 +278,11 @@ export default async function StagePage({
                 {nextStage ? (
                   <Link
                     href={`/courses/${courseId}/${moduleId}/${phaseId}/${nextStage.id}`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
+                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
                   >
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       Next
-                      <ChevronRight className="h-3 w-3" />
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                     <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
                       {nextStage.title}
@@ -291,11 +291,11 @@ export default async function StagePage({
                 ) : canTakeQuiz ? (
                   <Link
                     href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-primary/40 bg-primary/[0.04] p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary text-right"
+                    className="group flex flex-col items-end gap-1 rounded-xl border border-primary/40 bg-primary/[0.04] p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary text-right"
                   >
                     <span className="text-xs font-semibold text-primary flex items-center gap-1">
                       {isTutor ? "Preview Quiz" : "Phase Complete"}
-                      <ChevronRight className="h-3 w-3" />
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                     <span className="text-sm font-bold text-heading group-hover:text-primary transition-colors truncate">
                       Take Phase Quiz →
@@ -304,11 +304,11 @@ export default async function StagePage({
                 ) : (
                   <Link
                     href={`/courses/${courseId}/${moduleId}/${phaseId}`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
+                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
                   >
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       Phase Complete
-                      <ChevronRight className="h-3 w-3" />
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                     <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
                       Phase Overview →

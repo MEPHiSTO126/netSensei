@@ -116,7 +116,7 @@ function InlineText({ text }: { text: string }) {
         index % 2 === 1 ? (
           <code
             key={index}
-            className="rounded-md bg-primary/[0.08] text-primary border border-primary/15 px-1.5 py-0.5 font-mono text-[0.88em]"
+            className="rounded-md bg-primary/[0.08] text-primary border border-primary/15 px-1.5 py-0.5 font-mono text-xs"
           >
             {part}
           </code>
@@ -181,7 +181,7 @@ function RichText({ content }: { content: string }) {
   const firstTextIndex = blocks.findIndex((block) => block.kind !== "code");
 
   return (
-    <div className="mt-6 text-[1.0625rem] leading-[1.8] text-foreground space-y-5">
+    <div className="mt-6 text-base leading-[1.8] text-foreground space-y-5">
       {blocks.map((block, idx) => {
         if (block.kind === "code") {
           return (
@@ -216,7 +216,7 @@ function RichText({ content }: { content: string }) {
         return (
           <div
             key={idx}
-            className="space-y-3"
+            className="space-y-4"
             style={{
               animation: `slideUp 0.4s ease-out ${80 + idx * 60}ms both`,
             }}
@@ -473,7 +473,7 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
         </button>
       </div>
       {/* Code content */}
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed font-mono">
+      <pre className="overflow-x-auto p-5 text-sm leading-relaxed font-mono">
         <code>{highlightCode(code, lang)}</code>
       </pre>
     </div>
