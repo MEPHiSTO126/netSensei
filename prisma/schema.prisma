@@ -89,6 +89,12 @@ model Question {
   fullGoal    String?
   expectedAnswer String?
   rubric      String?
+  /** Multiple-choice options. Null means the question is open-ended. */
+  options     Json?
+  /** Index into `options` of the correct choice. */
+  correctIndex Int?
+  /** Why the correct answer is correct. Shown after a student submits. */
+  explanation String?
   order       Int      @default(0)
   points      Int      @default(1)
   answerRecords AnswerRecord[]

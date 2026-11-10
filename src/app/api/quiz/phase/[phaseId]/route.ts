@@ -35,11 +35,15 @@ export async function GET(
       language: q.language,
       prompt: q.prompt,
       fullGoal: q.fullGoal,
-      // Answer keys are tutor-only. Students must never receive these fields.
+      // Students get the choices they can pick from, but never the key.
+      options: (q.options as string[] | null) ?? undefined,
+      // Tutor-only fields: the answer key and the teaching explanation.
       ...(isTutor
         ? {
             expectedAnswer: q.expectedAnswer,
             rubric: q.rubric,
+            correctIndex: q.correctIndex,
+            explanation: q.explanation,
           }
         : {}),
     }));

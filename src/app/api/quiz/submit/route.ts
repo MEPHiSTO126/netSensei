@@ -49,25 +49,45 @@ export async function POST(req: Request) {
       questionId: string;
       score: number;
       feedback: string;
+      correctAnswer: string | null;
+      explanation: string | null;
     }> = [];
 
     for (const question of quiz.questions) {
       const answer = answers[question.id] ?? "";
+      const options = (question.options as string[] | null) ?? null;
+      const correctIndex = question.correctIndex;
 
-      const grade = await (question.type === "SNIPPET"
-        ? checkSnippet({
-            code: answer,
-            language: question.language,
-            fullGoal: question.fullGoal,
-            questionId: question.id,
-            studentId: user.id,
-          })
-        : gradeAnswer({
-            questionType: question.type as "SNIPPET" | "TEXT" | "AUDIO",
-            userAnswer: answer,
-            questionId: question.id,
-            studentId: user.id,
-          }));
+      let grade: { score: number; feedback: string };
+
+      if (options && correctIndex !== null && correctIndex !== undefined) {
+        // Multiple choice: grade deterministically. No AI call, no guesswork.
+        const correctOption = options[correctIndex] ?? "";
+        const isCorrect =
+          answer.trim().toLowerCase() === correctOption.trim().toLowerCase();
+
+        grade = {
+          score: isCorrect ? 100 : 0,
+          feedback: isCorrect
+            ? "Correct."
+            : `Not quite. The correct answer is: ${correctOption}`,
+        };
+      } else {
+        grade = await (question.type === "SNIPPET"
+          ? checkSnippet({
+              code: answer,
+              language: question.language,
+              fullGoal: question.fullGoal,
+              questionId: question.id,
+              studentId: user.id,
+            })
+          : gradeAnswer({
+              questionType: question.type as "SNIPPET" | "TEXT" | "AUDIO",
+              userAnswer: answer,
+              questionId: question.id,
+              studentId: user.id,
+            }));
+      }
 
       // Determine attempt number
       const existing = await db.answerRecord.findFirst({
@@ -96,6 +116,13 @@ export async function POST(req: Request) {
         questionId: question.id,
         score: grade.score,
         feedback: grade.feedback,
+        // For multiple choice the key is the exact option text the student
+        // picked from; for open questions it is the reference answer.
+        correctAnswer:
+          options && correctIndex !== null && correctIndex !== undefined
+            ? (options[correctIndex] ?? null)
+            : (question.expectedAnswer ?? null),
+        explanation: question.explanation ?? null,
       });
     }
 

@@ -1,6 +1,7 @@
 import { db } from "../src/lib/db";
 import { hashPassword } from "../src/lib/auth";
 import { cssExtraPhases } from "./css-extra-phases";
+import { questionContent } from "./quiz-content";
 
 const isProductionSeed = process.argv.includes("--production");
 const includeDemoUsers =
@@ -1259,6 +1260,7 @@ async function main() {
         });
 
         for (const [idx, q] of phase.quiz.questions.entries()) {
+          const content = questionContent[q.prompt];
           await db.question.create({
             data: {
               quizId: quiz.id,
@@ -1268,6 +1270,9 @@ async function main() {
               fullGoal: q.fullGoal ?? null,
               expectedAnswer: q.expectedAnswer ?? null,
               rubric: q.rubric ?? null,
+              options: (content?.options ?? null) as never,
+              correctIndex: content?.correctIndex ?? null,
+              explanation: content?.explanation ?? null,
               order: idx,
               points: q.points ?? 1,
             },

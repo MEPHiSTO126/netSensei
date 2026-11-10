@@ -1,4 +1,4 @@
-import { BookOpenCheck, KeyRound } from "lucide-react";
+import { BookOpenCheck, CheckCircle2, KeyRound } from "lucide-react";
 import { requireTutorPage } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card } from "@/components/ui/card";
@@ -144,11 +144,15 @@ export default async function TutorSolutionsPage() {
                           </div>
 
                           <ol className="space-y-4">
-                            {quiz.questions.map((question, index) => (
-                              <li
-                                key={question.id}
-                                className="rounded-lg border border-border p-5"
-                              >
+                            {quiz.questions.map((question, index) => {
+                              const options =
+                                (question.options as string[] | null) ?? null;
+
+                              return (
+                                <li
+                                  key={question.id}
+                                  className="rounded-lg border border-border p-5"
+                                >
                                 <div className="flex items-start gap-3">
                                   <Badge
                                     variant="outline"
@@ -169,6 +173,42 @@ export default async function TutorSolutionsPage() {
                                       {question.prompt}
                                     </p>
 
+                                    {options && options.length > 0 && (
+                                      <ul className="mt-3 space-y-1.5">
+                                        {options.map((option, optionIndex) => {
+                                          const isKey =
+                                            question.correctIndex === optionIndex;
+
+                                          return (
+                                            <li
+                                              key={option}
+                                              className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                                                isKey
+                                                  ? "border-emerald-600/40 bg-emerald-500/[0.08] text-foreground"
+                                                  : "border-border bg-background text-muted-foreground"
+                                              }`}
+                                            >
+                                              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center">
+                                                {isKey ? (
+                                                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                                ) : (
+                                                  <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                                                )}
+                                              </span>
+                                              <span className="min-w-0 leading-relaxed">
+                                                {option}
+                                              </span>
+                                              {isKey && (
+                                                <span className="ml-auto shrink-0 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                                                  Key
+                                                </span>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    )}
+
                                     {question.expectedAnswer && (
                                       <div className="mt-3 rounded-lg border border-primary/20 bg-primary/[0.06] p-3">
                                         <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-primary">
@@ -177,6 +217,17 @@ export default async function TutorSolutionsPage() {
                                         <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-foreground">
                                           {question.expectedAnswer}
                                         </pre>
+                                      </div>
+                                    )}
+
+                                    {question.explanation && (
+                                      <div className="mt-2 rounded-lg border border-border bg-muted/40 p-3">
+                                        <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                                          Shown to the student after the quiz
+                                        </span>
+                                        <p className="text-sm leading-relaxed text-foreground">
+                                          {question.explanation}
+                                        </p>
                                       </div>
                                     )}
 
@@ -193,7 +244,8 @@ export default async function TutorSolutionsPage() {
                                   </div>
                                 </div>
                               </li>
-                            ))}
+                              );
+                            })}
                           </ol>
                         </div>
                       </Card>

@@ -6,7 +6,7 @@ import { useSession } from "@/hooks/useSession";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Eye, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Eye, FileQuestion, Loader2, XCircle } from "lucide-react";
 
 type Question = {
   id: string;
@@ -14,9 +14,13 @@ type Question = {
   language: string;
   prompt: string;
   fullGoal: string | null;
+  /** Multiple-choice choices. Absent means the question is open-ended. */
+  options?: string[];
   /** Tutor-only fields; absent for students. */
   expectedAnswer?: string | null;
   rubric?: string | null;
+  correctIndex?: number | null;
+  explanation?: string | null;
 };
 
 type QuizResult = {
@@ -27,6 +31,8 @@ type QuizResult = {
     questionId: string;
     score: number;
     feedback: string;
+    correctAnswer: string | null;
+    explanation: string | null;
   }>;
 };
 
@@ -208,6 +214,41 @@ export function QuizClient({
                       {q.prompt}
                     </p>
 
+                    {q.options && q.options.length > 0 && (
+                      <ul className="mt-3 space-y-1.5">
+                        {q.options.map((option, optionIndex) => {
+                          const isKey = q.correctIndex === optionIndex;
+
+                          return (
+                            <li
+                              key={option}
+                              className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+                                isKey
+                                  ? "border-emerald-600/40 bg-emerald-500/[0.08] text-foreground"
+                                  : "border-border bg-background text-muted-foreground"
+                              }`}
+                            >
+                              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center">
+                                {isKey ? (
+                                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                ) : (
+                                  <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                                )}
+                              </span>
+                              <span className="min-w-0 leading-relaxed">
+                                {option}
+                              </span>
+                              {isKey && (
+                                <span className="ml-auto shrink-0 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                                  Key
+                                </span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+
                     {q.expectedAnswer && (
                       <div className="mt-3 rounded-lg border border-primary/20 bg-primary/[0.06] p-3">
                         <span className="mb-1 block text-xs font-bold uppercase tracking-wide text-primary">
@@ -346,6 +387,29 @@ export function QuizClient({
                   </div>
                 )}
 
+                {r.correctAnswer && (
+                  <div
+                    className={`rounded-lg border p-3 text-xs ${
+                      r.score >= 70
+                        ? "border-emerald-600/30 bg-emerald-500/[0.07]"
+                        : "border-primary/20 bg-primary/[0.06]"
+                    }`}
+                  >
+                    <span
+                      className={`text-xs uppercase font-bold tracking-wide block mb-1 ${
+                        r.score >= 70
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-primary"
+                      }`}
+                    >
+                      Correct answer
+                    </span>
+                    <pre className="font-mono whitespace-pre-wrap text-foreground">
+                      {r.correctAnswer}
+                    </pre>
+                  </div>
+                )}
+
                 <div className="rounded-lg bg-primary/[0.06] border border-primary/15 p-3 text-xs">
                   <span className="text-xs uppercase font-bold text-primary tracking-wide block mb-1">
                     Feedback
@@ -354,6 +418,17 @@ export function QuizClient({
                     {r.feedback}
                   </p>
                 </div>
+
+                {r.explanation && (
+                  <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
+                    <span className="text-xs uppercase font-bold text-muted-foreground tracking-wide block mb-1">
+                      Why
+                    </span>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {r.explanation}
+                    </p>
+                  </div>
+                )}
               </Card>
             );
           })}
@@ -375,11 +450,32 @@ export function QuizClient({
 
   if (questions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <h1 className="text-2xl font-bold text-heading">No questions found</h1>
-        <p className="text-muted-foreground mb-4">
-          This phase has no quiz yet.
-        </p>
+      <div className="mx-auto max-w-2xl space-y-4">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-16 text-center">
+          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
+            {error ? (
+              <XCircle className="h-5 w-5" />
+            ) : (
+              <FileQuestion className="h-5 w-5" />
+            )}
+          </div>
+          <h1 className="text-xl font-bold text-heading">
+            {error ? "The quiz could not be loaded" : "No questions found"}
+          </h1>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            {error
+              ? "Check your connection and try again."
+              : "This phase has no quiz yet."}
+          </p>
+          <Button variant="outline" className="mt-5" onClick={() => location.reload()}>
+            Try again
+          </Button>
+        </div>
+        {error && (
+          <p className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+            {error}
+          </p>
+        )}
       </div>
     );
   }
@@ -387,6 +483,9 @@ export function QuizClient({
   const answeredCount = questions.filter(
     (q) => answers[q.id]?.trim()
   ).length;
+  const allMultipleChoice = questions.every(
+    (q) => q.options && q.options.length > 0
+  );
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -394,7 +493,9 @@ export function QuizClient({
         <div>
           <h1 className="text-2xl font-bold text-heading">Phase Quiz</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Answer the questions below to evaluate your understanding
+            {allMultipleChoice
+              ? "Pick the answer that is correct. You will see the key and the reasoning after you submit."
+              : "Answer the questions below. You will see the key and the reasoning after you submit."}
           </p>
         </div>
         <Badge
@@ -416,7 +517,38 @@ export function QuizClient({
               </Badge>
               <p className="font-medium text-foreground">{q.prompt}</p>
             </div>
-            {q.type === "SNIPPET" ? (
+            {q.options && q.options.length > 0 ? (
+              <fieldset className="space-y-2">
+                <legend className="sr-only">{q.prompt}</legend>
+                {q.options.map((option, optionIndex) => {
+                  const selected = answers[q.id] === option;
+                  const optionId = `${q.id}-option-${optionIndex}`;
+
+                  return (
+                    <label
+                      key={option}
+                      htmlFor={optionId}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 text-sm transition-colors ${
+                        selected
+                          ? "border-primary bg-primary/[0.06] text-foreground"
+                          : "border-border bg-background text-foreground hover:border-primary/40 hover:bg-muted/40"
+                      }`}
+                    >
+                      <input
+                        id={optionId}
+                        type="radio"
+                        name={q.id}
+                        value={option}
+                        checked={selected}
+                        onChange={() => handleChange(q.id, option)}
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-primary)]"
+                      />
+                      <span className="min-w-0 leading-relaxed">{option}</span>
+                    </label>
+                  );
+                })}
+              </fieldset>
+            ) : q.type === "SNIPPET" ? (
               <div className="space-y-2">
                 <textarea
                   className="w-full min-h-[200px] font-mono text-sm rounded-lg border border-input bg-background p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none leading-relaxed"
@@ -453,7 +585,11 @@ export function QuizClient({
           {submitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-              <span>Evaluating your answers with AI...</span>
+              <span>
+                {allMultipleChoice
+                  ? "Checking your answers..."
+                  : "Evaluating your answers with AI..."}
+              </span>
             </>
           ) : answeredCount === questions.length ? (
             "Submit Quiz"
