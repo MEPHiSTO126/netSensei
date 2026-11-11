@@ -7,6 +7,7 @@ import {
   BarChart3,
   BookOpen,
   Code2,
+  FileText,
   History,
   LayoutDashboard,
   LogOut,
@@ -52,6 +53,7 @@ export function Navbar({ user }: { user: NavUser | null }) {
         icon: MessageSquare,
       },
       { href: "/sessions", label: "Sessions", icon: History, matchPrefix: true },
+      { href: "/syllabus", label: "Syllabus", icon: FileText },
     );
   }
 
