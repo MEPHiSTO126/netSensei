@@ -1,12 +1,9 @@
 import { db } from "../src/lib/db";
 
-const p = await db.phase.findFirstOrThrow({
-  where: { title: "Values and Types" },
-  select: {
-    id: true,
-    moduleId: true,
-    module: { select: { courseId: true } },
-  },
+const title = process.argv[2] ?? "Selecting";
+const phase = await db.phase.findFirstOrThrow({
+  where: { title },
+  select: { id: true, title: true },
 });
-console.log(`${p.module.courseId}|${p.moduleId}|${p.id}`);
+console.log(phase.id);
 await db.$disconnect();

@@ -658,4 +658,208 @@ export const questionContent: Record<string, QuestionContent> = {
     explanation:
       "A breakpoint stops the script at an exact line, with the scope panel showing every variable in view. A debugger statement does the same without opening DevTools, which helps when a bug only appears on a remote device.",
   },
+
+  /* ── The DOM Is an API: Selecting ──────────────────────────────────── */
+  "When should you use querySelector over getElementById?": {
+    options: [
+      "Use querySelector for CSS-selector-based or scoped queries; use getElementById for a simple unique id lookup.",
+      "Always use querySelector, because getElementById is deprecated in modern browsers.",
+      "Use getElementById for anything scoped to a container; use querySelector only for the document root.",
+      "They behave identically; querySelector is only slower because it parses a selector.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "getElementById is a fast, exact lookup of one id. querySelector takes a CSS selector, which is what you need for classes, attributes, or scoping to a container. Neither is deprecated, and the cost of parsing a selector is negligible next to the work you do with the result.",
+  },
+  "What is the difference between a static NodeList and a live HTMLCollection?": {
+    options: [
+      "A static NodeList snapshots matches; a live HTMLCollection updates as the DOM changes.",
+      "Both are live, but a NodeList only contains elements while an HTMLCollection can include text nodes.",
+      "A NodeList is always live and an HTMLCollection is always a snapshot taken at call time.",
+      "There is no difference; both collections update automatically when the DOM changes.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "getElementsByTagName and getElementsByClassName return a live HTMLCollection, so removing a node changes the collection while you are looping over it. querySelectorAll returns a static NodeList, which is why converting it with Array.from is safe.",
+  },
+  "querySelectorAll returns a NodeList. How do you use map on it?": {
+    options: [
+      "Array.from(nodes) or [...nodes], then call map.",
+      "Call nodes.map directly; NodeList inherits map from Array.",
+      "Use nodes.forEach((node) => node, index) to map the elements.",
+      "Call Array.prototype.map.call(nodes, fn), which is the only supported way.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A NodeList is iterable but does not have array methods, so it has no map. Spreading it into an array gives you one. Array.prototype.map.call works too, but it is much harder to read.",
+  },
+
+  /* ── The DOM Is an API: Creating and Updating ───────────────────────── */
+  "Why prefer textContent over innerHTML when inserting user-provided strings?": {
+    options: [
+      "textContent treats input as plain text; innerHTML parses it as markup, allowing XSS.",
+      "textContent is faster to render because it skips the HTML parser entirely.",
+      "innerHTML escapes angle brackets, so it is actually the safer choice for user text.",
+      "They are interchangeable, and the difference only matters for large strings.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "innerHTML hands the string to the HTML parser, so a value containing a script tag or an event handler attribute becomes live markup. textContent assigns a text node, so the same string is displayed and never executed.",
+  },
+  "How do you read data-item-id from an element?": {
+    options: [
+      "element.dataset.itemId, remembering the value is a string.",
+      "element.getAttribute('data-item-id'), which returns a typed value.",
+      "element.attributes.itemId, which is the camel-cased form of the attribute.",
+      "element.data.itemId, which reads the attribute directly.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The dataset object is the camel-cased view of the data-* attributes: data-item-id becomes dataset.itemId. Every dataset value is a string, so convert it with Number() when you need a number.",
+  },
+  "Why does setAttribute('disabled', 'false') still disable a button?": {
+    options: [
+      "Boolean attributes are true by presence; remove the attribute or set the property to false.",
+      "The value must be exactly 'true'; 'false' is parsed as an invalid boolean.",
+      "setAttribute only works for non-boolean attributes, so the call is ignored.",
+      "The browser disables it until the next repaint, then re-enables it.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "For boolean attributes such as disabled, checked, and hidden, the presence of the attribute is the value. 'false' is still a present attribute. Use removeAttribute('disabled') or set button.disabled = false.",
+  },
+  "Create a button with the text Click me and append it to the body.": {
+    explanation:
+      "A correct answer is `const btn = document.createElement('button'); btn.textContent = 'Click me'; document.body.appendChild(btn);`. createElement makes the node, textContent sets its content safely, and appendChild inserts it into the document.",
+  },
+
+  /* ── The DOM Is an API: Traversing and Safety ───────────────────────── */
+  "How do you move a node to a different parent safely?": {
+    options: [
+      "Append or insert it into the new parent; the DOM moves it rather than copying it.",
+      "Clone the node with cloneNode, append the clone, then remove the original.",
+      "Set the node's parent property directly to the new parent element.",
+      "Use innerHTML to rewrite the new parent with the node's markup.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Inserting a node that already exists in the document moves it: it is not copied, and any listeners attached to it come along. That is why you never need to clone and remove.",
+  },
+  "Why use a DocumentFragment when building a long list?": {
+    options: [
+      "It collects nodes off-document so one append attaches them all, reducing layout and paint work.",
+      "It lets you build the list without JavaScript, using markup declarations instead.",
+      "It converts the nodes into a single string that you insert with innerHTML.",
+      "It keeps the nodes alive after the page unloads, so the list can be restored.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Every insertion into the live document can trigger layout. Appending to a fragment, which is not in the document, does none of that work, and one final append attaches everything in a single pass.",
+  },
+  "What makes innerHTML dangerous with user input, and what should you use instead?": {
+    options: [
+      "It parses input as HTML, so scripts or handlers can execute; use textContent for untrusted text.",
+      "It strips the characters that HTML needs, so the text always renders incorrectly.",
+      "It is slow with long strings; use innerText, which parses input safely.",
+      "It encodes the input before parsing, so it is only unsafe when the value is not a string.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Any markup in the value becomes live DOM, including a script tag or an onerror handler, and it runs as soon as it is inserted. For untrusted text, assign textContent and keep the markup in your own template.",
+  },
+  "What is the difference between children and childNodes?": {
+    options: [
+      "children contains only element nodes; childNodes also includes text and comment nodes.",
+      "children is live while childNodes is a static snapshot of the same elements.",
+      "children includes text nodes but excludes comments; childNodes includes both.",
+      "They are aliases for the same collection with different iteration order.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "children is an HTMLCollection of elements only, which is usually what you want. childNodes is a NodeList that also contains the whitespace and comment nodes the parser leaves behind.",
+  },
+
+  /* ── Events: First Listeners ────────────────────────────────────────── */
+  "What is the difference between event.target and event.currentTarget?": {
+    options: [
+      "target is the element that received the event; currentTarget is the element whose listener is currently running.",
+      "target is the element whose listener is running; currentTarget is the original event source.",
+      "They are the same property, and currentTarget only differs during bubbling.",
+      "target is always the document and currentTarget is always the element clicked.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "target is where the event originated and stays the same through the whole capture and bubble path. currentTarget is the element whose listener is executing right now, so it changes at each step of the bubble.",
+  },
+  "Why does removeEventListener need the same function reference used in addEventListener?": {
+    options: [
+      "Listeners are identified by reference, so an inline arrow creates a different function that cannot be matched and removed.",
+      "removeEventListener requires the exact same string of source code as the original call.",
+      "Each call to addEventListener creates a private copy, so only the first one can be removed.",
+      "The listener is removed automatically when the element is garbage collected.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The browser matches listeners by the function reference, the capture flag, and the event type. Two arrows written in the same place are two different objects. Keep the handler in a named variable if you ever need to remove it.",
+  },
+  "Attach a click listener to a button that changes the button text when clicked.": {
+    explanation:
+      "A correct answer is `button.addEventListener('click', () => { button.textContent = 'Clicked!'; });`. addEventListener takes the event type and a callback, and the arrow body runs when the click happens.",
+  },
+
+  /* ── Events: Bubbling and Delegation ────────────────────────────────── */
+  "Why is event delegation useful?": {
+    options: [
+      "One listener on a common ancestor handles children; add/remove without re-binding.",
+      "It makes the events fire faster because the browser skips the target phase.",
+      "It lets you handle events on elements that do not exist yet in the DOM.",
+      "It removes the need for event listeners entirely on dynamic lists.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "With one listener on the container you can serve any number of children, including ones added later, and you never re-bind when the list changes. You find the actual item with event.target.closest(...).",
+  },
+  "When is stopPropagation appropriate, and what can it break?": {
+    options: [
+      "Appropriate when an ancestor must not react (for example a modal); it breaks delegation and ancestor listeners that rely on bubbling.",
+      "Never appropriate; the correct fix is to remove the ancestor's listener from the page.",
+      "Appropriate for any handler, because it also stops the browser from repainting.",
+      "Only appropriate inside a delegated listener, where it prevents double handling.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Stopping propagation is for the rare case where an ancestor must not see the event, such as a dialog inside a card. The cost is that it also stops any delegated handler further up. stopPropagation does not stop other listeners on the same element; stopImmediatePropagation does.",
+  },
+  "Rewrite a list of three buttons so clicking any of them is handled by a single delegated listener.": {
+    explanation:
+      "A correct answer attaches one listener to the container and finds the button with `event.target.closest('button')`. The listener lives on the parent, so buttons added later are handled too.",
+  },
+
+  /* ── Events: Forms and Keyboard ─────────────────────────────────────── */
+  "Why do you preventDefault on a form submit in an SPA?": {
+    options: [
+      "To stop native page navigation and handle submission via async logic.",
+      "To stop the browser from validating required fields before your code runs.",
+      "To prevent the form from sending its values to the server at all.",
+      "To make the submit event fire twice, once for validation and once for data.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A submit event means the browser is about to navigate and reload the page. In a single-page app you call preventDefault, run your own async logic, and update the UI without a reload. The values are still read from the form with FormData.",
+  },
+  "Which native elements give keyboard activation for free, and which keys activate them?": {
+    options: [
+      "Links with Enter; buttons with Enter and Space; checkboxes with Space.",
+      "Links with Enter and Space; buttons with Space only; checkboxes with Enter.",
+      "All of them respond to Enter, and only buttons respond to Space.",
+      "None of them; every element needs a keydown listener to be keyboard-usable.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The behaviour comes from the element's role: a link is an action on Enter, a button is an action on Enter or Space, and a checkbox toggles on Space. A div with a click handler has none of that, which is why it needs role, tabindex, and a key handler.",
+  },
+  "Write a submit handler that prevents the default page reload and logs the value of an input named email.": {
+    explanation:
+      "A correct answer calls event.preventDefault() first, then reads the field with new FormData(form).get('email'). FormData gives you the named values without reaching into the DOM.",
+  },
 };
