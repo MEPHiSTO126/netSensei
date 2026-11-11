@@ -43,6 +43,8 @@ function StatCard({
 export default async function TutorOverviewPage() {
   await requireTutorPage();
   const now = new Date();
+  const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const previousWeekStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
   const [
     pendingCount,
@@ -52,6 +54,10 @@ export default async function TutorOverviewPage() {
     studentCount,
     progressAggregate,
     recentProgress,
+    answeredThisWeek,
+    sessionsThisWeek,
+    thisWeekScores,
+    previousWeekScores,
   ] = await Promise.all([
     db.tutorRequest.count({ where: { status: "PENDING" } }),
     db.tutorRequest.findMany({
@@ -96,12 +102,62 @@ export default async function TutorOverviewPage() {
         },
       },
     }),
+    db.tutorRequest.count({
+      where: { status: "ANSWERED", answeredAt: { gte: weekStart } },
+    }),
+    db.tutorSession.count({ where: { createdAt: { gte: weekStart } } }),
+    db.progressRecord.aggregate({
+      where: { completedAt: { gte: weekStart } },
+      _avg: { score: true },
+      _max: { score: true },
+    }),
+    db.progressRecord.aggregate({
+      where: { completedAt: { gte: previousWeekStart, lt: weekStart } },
+      _avg: { score: true },
+    }),
   ]);
 
   const oldestWait = pending[0]
     ? formatWait(pending[0].createdAt, now)
     : null;
   const averageScore = Math.round(progressAggregate._avg.score ?? 0);
+
+  const weeklyAverage = thisWeekScores._avg.score ?? null;
+  const previousAverage = previousWeekScores._avg.score ?? null;
+  const scoreDelta =
+    weeklyAverage !== null && previousAverage !== null
+      ? Math.round(weeklyAverage - previousAverage)
+      : null;
+
+  const weeklyStats = [
+    {
+      label: "Requests answered",
+      value: answeredThisWeek,
+      note: "last 7 days",
+    },
+    {
+      label: "Sessions started",
+      value: sessionsThisWeek,
+      note: "last 7 days",
+    },
+    {
+      label: "Best new score",
+      value:
+        thisWeekScores._max.score !== null
+          ? `${thisWeekScores._max.score}%`
+          : "—",
+      note: "last 7 days",
+    },
+    {
+      label: "Avg score",
+      value:
+        weeklyAverage !== null ? `${Math.round(weeklyAverage)}%` : "—",
+      note:
+        scoreDelta !== null
+          ? `${scoreDelta >= 0 ? "+" : ""}${scoreDelta} pts vs last week`
+          : "no earlier week to compare",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -368,18 +424,28 @@ export default async function TutorOverviewPage() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">This week</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            {label:"Requests answered",value:0,note:"PENDING → ANSWERED"},
-            {label:"Sessions started",value:0,note:"new ACTIVE"},
-            {label:"Best new score",value:"—",note:"last 7 days"},
-            {label:"Avg improvement",value:"—",note:"vs previous week"},
-          ].map(s=> (
-            <Card key={s.label}><div className="p-6"><p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">{s.label}</p><p className="mt-2 text-2xl font-bold tabular-nums text-heading">{s.value}</p><p className="mt-1 text-sm text-muted-foreground">{s.note}</p></div></Card>
+        <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">
+          This week
+        </h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {weeklyStats.map((stat) => (
+            <Card key={stat.label}>
+              <div className="p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  {stat.label}
+                </p>
+                <p className="mt-2 text-2xl font-bold tabular-nums text-heading">
+                  {stat.value}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{stat.note}</p>
+              </div>
+            </Card>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">Weekly counts derive from existing <code>tutorRequest</code>, <code>tutorSession</code>, and <code>progressRecord</code>. Full aggregation when data grows.</p>
+        <p className="text-sm text-muted-foreground">
+          Counts cover the last seven days. The average compares this week with
+          the week before it, using the score recorded for each phase attempt.
+        </p>
       </section>
     </div>
   );
