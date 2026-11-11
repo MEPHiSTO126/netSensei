@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const stop = new Set([
   "the", "a", "an", "of", "and", "or", "to", "in", "is", "are", "what", "why",

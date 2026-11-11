@@ -4,6 +4,7 @@ import { getCourseProgress } from "@/lib/progress";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SectionTitle } from "@/components/ui/section-title";
 import { BarChart3, Clock, CheckCircle2, ChevronRight } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -163,7 +164,7 @@ export default async function ProgressPage({
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-heading">Phase History</h2>
+          <SectionTitle>Phase History</SectionTitle>
           <span className="text-xs text-muted-foreground">Click any item to review</span>
         </div>
         {progressRecords.length === 0 ? (

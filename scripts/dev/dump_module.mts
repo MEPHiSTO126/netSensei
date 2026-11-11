@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const moduleTitles = process.argv.slice(2);
 

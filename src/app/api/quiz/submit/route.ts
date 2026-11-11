@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { checkSnippet, gradeAnswer } from "@/lib/ai";
@@ -53,6 +54,25 @@ export async function POST(req: Request) {
       explanation: string | null;
     }> = [];
 
+    // Attempt numbers for every question in one query, instead of one per
+    // question inside the grading loop.
+    const questionIds = quiz.questions.map((question) => question.id);
+    const existingAttempts = questionIds.length
+      ? await db.answerRecord.groupBy({
+          by: ["questionId"],
+          where: {
+            questionId: { in: questionIds },
+            studentId: user.id,
+          },
+          _max: { attemptNumber: true },
+        })
+      : [];
+    const attemptByQuestion = new Map(
+      existingAttempts.map((row) => [row.questionId, row._max.attemptNumber ?? 0]),
+    );
+
+    const recordsToCreate: Prisma.AnswerRecordCreateManyInput[] = [];
+
     for (const question of quiz.questions) {
       const answer = answers[question.id] ?? "";
       const options = (question.options as string[] | null) ?? null;
@@ -89,26 +109,16 @@ export async function POST(req: Request) {
             }));
       }
 
-      // Determine attempt number
-      const existing = await db.answerRecord.findFirst({
-        where: {
-          questionId: question.id,
-          studentId: user.id,
-        },
-        orderBy: { attemptNumber: "desc" },
-      });
-      const attemptNumber = (existing?.attemptNumber ?? 0) + 1;
+      const attemptNumber = (attemptByQuestion.get(question.id) ?? 0) + 1;
 
-      await db.answerRecord.create({
-        data: {
-          questionId: question.id,
-          studentId: user.id,
-          content: answer,
-          type: question.type,
-          score: grade.score,
-          aiFeedback: grade.feedback,
-          attemptNumber,
-        },
+      recordsToCreate.push({
+        questionId: question.id,
+        studentId: user.id,
+        content: answer,
+        type: question.type,
+        score: grade.score,
+        aiFeedback: grade.feedback,
+        attemptNumber,
       });
 
       totalScore += grade.score;
@@ -128,6 +138,11 @@ export async function POST(req: Request) {
 
     const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
     const passedQuiz = percentage >= quiz.passThreshold;
+
+    // One batched insert instead of one write per question.
+    if (recordsToCreate.length > 0) {
+      await db.answerRecord.createMany({ data: recordsToCreate });
+    }
 
     // Update or create progress record
     const existingProgress = await db.progressRecord.findFirst({

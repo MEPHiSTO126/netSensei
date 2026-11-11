@@ -2,6 +2,7 @@ import { BookOpenCheck, CheckCircle2, KeyRound } from "lucide-react";
 import { requireTutorPage } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Card } from "@/components/ui/card";
+import { SectionTitle } from "@/components/ui/section-title";
 import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
@@ -115,9 +116,9 @@ export default async function TutorSolutionsPage() {
                 <section key={module.id} className="space-y-4">
                   <div className="flex items-center gap-2">
                     <BookOpenCheck className="h-4 w-4 text-primary" />
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                    <SectionTitle>
                       {module.title}
-                    </h2>
+                    </SectionTitle>
                   </div>
 
                   {module.phases.map((phase) => {

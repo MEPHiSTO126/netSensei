@@ -2,16 +2,17 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
-  "rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 ease-out",
+  "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
   {
     variants: {
       variant: {
         default: "bg-card",
         elevated: "bg-card shadow-md",
-        interactive: "bg-card hover:-translate-y-0.5 hover:shadow-md",
+        interactive:
+          "bg-card transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md",
       },
       interactive: {
-        true: "hover:-translate-y-0.5 hover:shadow-md",
+        true: "transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md",
         false: "",
       },
     },

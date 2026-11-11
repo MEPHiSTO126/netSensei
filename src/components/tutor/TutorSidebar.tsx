@@ -56,10 +56,10 @@ function NavList({
             href={item.href}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-3 rounded-r-lg border-l-2 py-2.5 pl-3 pr-3 text-sm font-medium transition-colors ${
               active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted hover:text-heading"
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-transparent text-muted-foreground hover:bg-muted hover:text-heading"
             }`}
           >
             <Icon className="h-5 w-5 shrink-0" />
@@ -131,7 +131,7 @@ function Brand() {
   return (
     <Link
       href="/tutor"
-      className="flex items-center gap-3 px-3 py-4 text-heading"
+      className="flex items-center gap-3 border-b border-border px-4 py-4 text-heading"
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <Code2 className="h-5 w-5" />
@@ -193,7 +193,7 @@ export function TutorSidebar({ email, pendingCount }: TutorSidebarProps) {
         </button>
       </div>
 
-      <aside className="hidden w-64 flex-col border-r border-border bg-background md:flex">
+      <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-border bg-background md:flex">
         <Brand />
         <SidebarBody
           items={items}

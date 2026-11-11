@@ -31,7 +31,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-12rem)] items-center justify-center px-0 py-10 sm:px-4">
+    <div className="flex min-h-[calc(100dvh-8rem)] items-center justify-center px-0 py-10 sm:px-4">
       <Card variant="elevated" className="w-full max-w-md">
         <div className="p-8">
           <div className="mb-8 text-center">
@@ -51,7 +51,6 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                aria-label="Email address"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -64,7 +63,6 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                aria-label="Password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

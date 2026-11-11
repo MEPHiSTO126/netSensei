@@ -332,7 +332,7 @@ export default async function TutorChatPage({
       });
 
   return (
-    <div className="mx-auto flex h-[calc(100dvh-11rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card md:h-[calc(100dvh-9rem)]">
+    <div className="mx-auto flex h-[calc(100dvh-8rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card">
       {isTutor && <TutorPresence />}
 
       <div className="flex flex-col gap-3 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -449,6 +449,7 @@ export default async function TutorChatPage({
                   <Link
                     href={`/courses/${focusedRequest.stage.phase.module.courseId}/${focusedRequest.stage.phase.moduleId}/${focusedRequest.stage.phaseId}/${focusedRequest.stage.id}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="font-medium text-primary hover:underline inline-flex items-center gap-1"
                   >
                     View stage ↗

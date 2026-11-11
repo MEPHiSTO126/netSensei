@@ -14,6 +14,7 @@ import { db } from "@/lib/db";
 import { getCourseProgress } from "@/lib/progress";
 import { formatRelative, latestDate, summariseProgress } from "@/lib/tutor";
 import { Card } from "@/components/ui/card";
+import { SectionTitle } from "@/components/ui/section-title";
 import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
@@ -261,9 +262,9 @@ export default async function TutorStudentPage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-6">
           <section className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <SectionTitle>
               Course progress
-            </h2>
+            </SectionTitle>
             {courseProgress.length === 0 ? (
               <Card>
                 <p className="px-5 py-8 text-center text-sm text-muted-foreground">
@@ -303,9 +304,9 @@ export default async function TutorStudentPage({
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <SectionTitle>
               Phase history
-            </h2>
+            </SectionTitle>
             {student.progressRecords.length === 0 ? (
               <Card>
                 <p className="px-5 py-8 text-center text-sm text-muted-foreground">
@@ -361,9 +362,9 @@ export default async function TutorStudentPage({
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            <SectionTitle>
               Recent quiz answers
-            </h2>
+            </SectionTitle>
             {student.answerRecords.length === 0 ? (
               <Card>
                 <p className="px-5 py-8 text-center text-sm text-muted-foreground">
@@ -406,9 +407,9 @@ export default async function TutorStudentPage({
         <aside className="space-y-4">
           <Card>
             <div className="p-5">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <SectionTitle>
                 Account
-              </h2>
+              </SectionTitle>
               <dl className="mt-3 space-y-2 text-sm">
                 <div className="flex justify-between gap-3">
                   <dt className="shrink-0 text-muted-foreground">Joined</dt>
@@ -445,9 +446,9 @@ export default async function TutorStudentPage({
           <Card>
             <div className="p-5">
               <div className="flex items-center justify-between gap-2">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <SectionTitle>
                   Sessions
-                </h2>
+                </SectionTitle>
                 {activeSession && (
                   <Badge variant="outline" className="text-xs">
                     active
@@ -495,9 +496,9 @@ export default async function TutorStudentPage({
 
           <Card>
             <div className="p-5">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <SectionTitle>
                 Help requests
-              </h2>
+              </SectionTitle>
               {student.tutorRequests.length === 0 ? (
                 <p className="mt-3 text-xs text-muted-foreground">
                   No help requests from this student.

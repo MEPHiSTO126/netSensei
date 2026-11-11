@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 import fs from "node:fs";
 
 const course = await db.course.findFirst({

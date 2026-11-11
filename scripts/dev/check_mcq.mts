@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const questions = await db.question.findMany({
   select: { id: true, prompt: true, quizId: true },

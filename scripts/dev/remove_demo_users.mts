@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const demoEmails = ["tutor@netsensei.local", "student@netsensei.local"];
 

@@ -10,7 +10,7 @@ function Bar({ className = "" }: { className?: string }) {
 export default function TutorChatLoading() {
   return (
     <div
-      className="mx-auto flex h-[calc(100dvh-11rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card"
+      className="mx-auto flex h-[calc(100dvh-8rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl border border-border bg-card"
       aria-busy="true"
       aria-label="Loading chat"
     >

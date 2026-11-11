@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import {
   ArrowRight,
   BookOpen,
@@ -11,10 +12,51 @@ import {
 import { db } from "@/lib/db";
 import { requireTutorPage } from "@/lib/auth";
 import { Card } from "@/components/ui/card";
+import { SectionTitle } from "@/components/ui/section-title";
 import { Badge } from "@/components/ui/badge";
 import { formatRelative, formatWait } from "@/lib/tutor";
 
 export const dynamic = "force-dynamic";
+
+type DeskStats = {
+  pending: number;
+  active: number;
+  students: number;
+  answeredThisWeek: number;
+  sessionsThisWeek: number;
+  avgScoreAll: number;
+  phasesAttemptedAll: number;
+  avgThisWeek: number;
+  maxThisWeek: number;
+  avgPrevWeek: number;
+};
+
+/**
+ * Every counter the desk shows, in one round trip. Doing this as separate
+ * Prisma calls meant a dozen sequential queries per render.
+ */
+async function loadDeskStats(weekStart: Date, previousWeekStart: Date) {
+  const rows = await db.$queryRaw<DeskStats[]>(Prisma.sql`
+    SELECT
+      (SELECT COUNT(*)::int FROM "TutorRequest" WHERE "status" = 'PENDING') AS pending,
+      (SELECT COUNT(*)::int FROM "TutorSession" WHERE "status" = 'ACTIVE') AS active,
+      (SELECT COUNT(*)::int FROM "User" WHERE "role" = 'STUDENT') AS students,
+      (SELECT COUNT(*)::int FROM "TutorRequest"
+         WHERE "status" = 'ANSWERED' AND "answeredAt" >= ${weekStart}) AS "answeredThisWeek",
+      (SELECT COUNT(*)::int FROM "TutorSession"
+         WHERE "createdAt" >= ${weekStart}) AS "sessionsThisWeek",
+      (SELECT COALESCE(AVG("score"), 0)::float FROM "ProgressRecord") AS "avgScoreAll",
+      (SELECT COUNT(*)::int FROM "ProgressRecord") AS "phasesAttemptedAll",
+      (SELECT COALESCE(AVG("score"), 0)::float FROM "ProgressRecord"
+         WHERE "completedAt" >= ${weekStart}) AS "avgThisWeek",
+      (SELECT COALESCE(MAX("score"), 0)::int FROM "ProgressRecord"
+         WHERE "completedAt" >= ${weekStart}) AS "maxThisWeek",
+      (SELECT COALESCE(AVG("score"), 0)::float FROM "ProgressRecord"
+         WHERE "completedAt" >= ${previousWeekStart} AND "completedAt" < ${weekStart}) AS "avgPrevWeek"
+  `);
+
+  return rows[0];
+}
 
 function StatCard({
   label,
@@ -27,7 +69,7 @@ function StatCard({
 }) {
   return (
     <Card>
-      <div className="p-6">
+      <div className="p-5">
         <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
           {label}
         </p>
@@ -46,20 +88,8 @@ export default async function TutorOverviewPage() {
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const previousWeekStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
-  const [
-    pendingCount,
-    pending,
-    activeCount,
-    activeSessions,
-    studentCount,
-    progressAggregate,
-    recentProgress,
-    answeredThisWeek,
-    sessionsThisWeek,
-    thisWeekScores,
-    previousWeekScores,
-  ] = await Promise.all([
-    db.tutorRequest.count({ where: { status: "PENDING" } }),
+  const [stats, pending, activeSessions, recentProgress] = await Promise.all([
+    loadDeskStats(weekStart, previousWeekStart),
     db.tutorRequest.findMany({
       where: { status: "PENDING" },
       include: {
@@ -69,7 +99,6 @@ export default async function TutorOverviewPage() {
       orderBy: { createdAt: "asc" },
       take: 5,
     }),
-    db.tutorSession.count({ where: { status: "ACTIVE" } }),
     db.tutorSession.findMany({
       where: { status: "ACTIVE" },
       include: {
@@ -84,11 +113,6 @@ export default async function TutorOverviewPage() {
       orderBy: { createdAt: "desc" },
       take: 4,
     }),
-    db.user.count({ where: { role: "STUDENT" } }),
-    db.progressRecord.aggregate({
-      _avg: { score: true },
-      _count: { _all: true },
-    }),
     db.progressRecord.findMany({
       orderBy: { completedAt: "desc" },
       take: 6,
@@ -102,31 +126,31 @@ export default async function TutorOverviewPage() {
         },
       },
     }),
-    db.tutorRequest.count({
-      where: { status: "ANSWERED", answeredAt: { gte: weekStart } },
-    }),
-    db.tutorSession.count({ where: { createdAt: { gte: weekStart } } }),
-    db.progressRecord.aggregate({
-      where: { completedAt: { gte: weekStart } },
-      _avg: { score: true },
-      _max: { score: true },
-    }),
-    db.progressRecord.aggregate({
-      where: { completedAt: { gte: previousWeekStart, lt: weekStart } },
-      _avg: { score: true },
-    }),
   ]);
+
+  const {
+    pending: pendingCount,
+    active: activeCount,
+    students: studentCount,
+    answeredThisWeek,
+    sessionsThisWeek,
+    avgScoreAll,
+    phasesAttemptedAll,
+    avgThisWeek,
+    maxThisWeek,
+    avgPrevWeek,
+  } = stats;
 
   const oldestWait = pending[0]
     ? formatWait(pending[0].createdAt, now)
     : null;
-  const averageScore = Math.round(progressAggregate._avg.score ?? 0);
+  const averageScore = Math.round(avgScoreAll);
 
-  const weeklyAverage = thisWeekScores._avg.score ?? null;
-  const previousAverage = previousWeekScores._avg.score ?? null;
+  const hasThisWeek = maxThisWeek > 0;
+  const hasPreviousWeek = avgPrevWeek > 0;
   const scoreDelta =
-    weeklyAverage !== null && previousAverage !== null
-      ? Math.round(weeklyAverage - previousAverage)
+    hasThisWeek && hasPreviousWeek
+      ? Math.round(avgThisWeek - avgPrevWeek)
       : null;
 
   const weeklyStats = [
@@ -142,16 +166,12 @@ export default async function TutorOverviewPage() {
     },
     {
       label: "Best new score",
-      value:
-        thisWeekScores._max.score !== null
-          ? `${thisWeekScores._max.score}%`
-          : "—",
+      value: hasThisWeek ? `${maxThisWeek}%` : "—",
       note: "last 7 days",
     },
     {
       label: "Avg score",
-      value:
-        weeklyAverage !== null ? `${Math.round(weeklyAverage)}%` : "—",
+      value: hasThisWeek ? `${Math.round(avgThisWeek)}%` : "—",
       note:
         scoreDelta !== null
           ? `${scoreDelta >= 0 ? "+" : ""}${scoreDelta} pts vs last week`
@@ -160,10 +180,10 @@ export default async function TutorOverviewPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-heading">Tutor desk</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-3xl font-bold text-heading">Tutor desk</h1>
+        <p className="mt-2 text-base text-muted-foreground">
           {pendingCount > 0
             ? `${pendingCount} student${pendingCount === 1 ? "" : "s"} waiting${
                 oldestWait ? ` · oldest ${oldestWait}` : ""
@@ -196,17 +216,17 @@ export default async function TutorOverviewPage() {
         <StatCard
           label="Avg score"
           value={`${averageScore}%`}
-          detail={`${progressAggregate._count._all} phase${
-            progressAggregate._count._all === 1 ? "" : "s"
+          detail={`${phasesAttemptedAll} phase${
+            phasesAttemptedAll === 1 ? "" : "s"
           } attempted`}
         />
       </div>
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <SectionTitle>
             Waiting now
-          </h2>
+          </SectionTitle>
           <Link
             href="/tutor/queue"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
@@ -277,9 +297,9 @@ export default async function TutorOverviewPage() {
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <SectionTitle>
             Active sessions
-          </h2>
+          </SectionTitle>
           <Link
             href="/tutor/sessions"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
@@ -357,9 +377,9 @@ export default async function TutorOverviewPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+        <SectionTitle>
           Recent quiz activity
-        </h2>
+        </SectionTitle>
 
         {recentProgress.length === 0 ? (
           <Card>
@@ -424,9 +444,9 @@ export default async function TutorOverviewPage() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">
+        <SectionTitle>
           This week
-        </h2>
+        </SectionTitle>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {weeklyStats.map((stat) => (
             <Card key={stat.label}>

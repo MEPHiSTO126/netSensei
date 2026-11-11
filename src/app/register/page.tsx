@@ -33,7 +33,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-12rem)] items-center justify-center px-0 py-10 sm:px-4">
+    <div className="flex min-h-[calc(100dvh-8rem)] items-center justify-center px-0 py-10 sm:px-4">
       <Card variant="elevated" className="w-full max-w-md">
         <div className="p-8">
           <div className="mb-8 text-center">
@@ -53,7 +53,6 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                aria-label="Email address"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -66,7 +65,6 @@ export default function RegisterPage() {
               <Input
                 id="password"
                 type={showRegPassword ? "text" : "password"}
-                aria-label="Password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -126,7 +124,6 @@ export default function RegisterPage() {
                 <Input
                   id="tutor-code"
                   type="password"
-                  aria-label="Tutor access code"
                   placeholder="Provided by an administrator"
                   value={tutorCode}
                   onChange={(e) => setTutorCode(e.target.value)}
@@ -151,6 +148,7 @@ export default function RegisterPage() {
                 <Link
                   href="/terms"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
                 >
                   terms of service

@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const temp = await db.user.findMany({
   where: { email: { startsWith: "e2e-" } },

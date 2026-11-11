@@ -1,4 +1,4 @@
-import { db } from "../src/lib/db";
+import { db } from "../../src/lib/db";
 
 const users = await db.user.findMany({
   select: { email: true, role: true, createdAt: true },

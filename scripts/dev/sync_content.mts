@@ -1,6 +1,6 @@
-import { db } from "../src/lib/db";
-import { modules } from "../prisma/seed";
-import { questionContent } from "../prisma/quiz-content";
+import { db } from "../../src/lib/db";
+import { modules } from "../../prisma/seed";
+import { questionContent } from "../../prisma/quiz-content";
 
 /**
  * Applies the seed curriculum to the live database without deleting anything.

@@ -15,6 +15,7 @@ import {
   User,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { RoleBadge } from "@/components/ui/role-badge";
 
 type NavUser = {
   email: string;
@@ -119,9 +120,10 @@ export function Navbar({ user }: { user: NavUser | null }) {
               <span className="hidden max-w-[180px] truncate text-sm text-foreground sm:inline">
                 {user.email}
               </span>
-              <span className="hidden rounded-full bg-background px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground lg:inline">
-                {user.role === "TUTOR" ? "Tutor" : "Student"}
-              </span>
+              <RoleBadge
+                role={user.role}
+                className="hidden lg:inline-flex"
+              />
               <button
                 type="button"
                 onClick={signOut}
@@ -155,8 +157,8 @@ export function Navbar({ user }: { user: NavUser | null }) {
 
       {items.length > 0 && (
         <nav
-          aria-label="Main navigation"
-          className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
+          aria-label="Mobile navigation"
+          className="flex items-center gap-1 overflow-x-auto border-t border-border px-3 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:hidden"
         >
         {items.map((item) => {
           const active = isCurrent(item);
@@ -166,7 +168,7 @@ export function Navbar({ user }: { user: NavUser | null }) {
               key={item.href + item.label}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 active
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-heading"

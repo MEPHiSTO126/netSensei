@@ -76,6 +76,13 @@ export function TutorComposer({
     }
   };
 
+  /** Lets the chat poll know the tutor is typing, so it does not re-render mid-sentence. */
+  const handleTyping = (active: boolean) => {
+    window.dispatchEvent(
+      new CustomEvent("netsensei:composing", { detail: { active } }),
+    );
+  };
+
   return (
     <form onSubmit={handleSend} className="space-y-2 border-t border-border p-5">
       {canHighlight && (
@@ -146,7 +153,11 @@ export function TutorComposer({
         <div className="relative flex-1">
           <textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              setContent(e.target.value);
+              handleTyping(e.target.value.trim().length > 0);
+            }}
+            onBlur={() => handleTyping(false)}
             onKeyDown={handleKeyDown}
             rows={1}
             aria-label={

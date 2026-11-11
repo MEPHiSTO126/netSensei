@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/hooks/useSession";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SectionTitle } from "@/components/ui/section-title";
 import { CheckCircle2, Eye, FileQuestion, Loader2, XCircle } from "lucide-react";
 
 type Question = {
@@ -41,6 +42,8 @@ type QuizClientProps = {
   courseId?: string;
   moduleId?: string;
   readOnly?: boolean;
+  /** Questions come from the server so the page renders without a second round trip. */
+  initialQuestions?: Question[];
 };
 
 export function QuizClient({
@@ -48,11 +51,12 @@ export function QuizClient({
   courseId,
   moduleId,
   readOnly = false,
+  initialQuestions,
 }: QuizClientProps) {
   const { user } = useSession();
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions] = useState<Question[]>(initialQuestions ?? []);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(initialQuestions === undefined);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<QuizResult | null>(null);
   const [error, setError] = useState("");
@@ -61,32 +65,6 @@ export function QuizClient({
     courseId && moduleId
       ? `/courses/${courseId}/${moduleId}/${phaseId}`
       : null;
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadQuiz() {
-      try {
-        const res = await fetch(`/api/quiz/phase/${phaseId}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) throw new Error("Failed to load quiz");
-        const data = await res.json();
-        if (!cancelled) setQuestions(data.questions ?? []);
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load quiz");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    loadQuiz();
-    return () => {
-      cancelled = true;
-    };
-  }, [phaseId]);
 
   const handleChange = (questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -297,6 +275,8 @@ export function QuizClient({
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <Card
+          role="status"
+          aria-live="polite"
           className={`p-8 text-center ${
             result.passed
               ? "border-primary/20 bg-primary/5"
@@ -352,7 +332,7 @@ export function QuizClient({
         </Card>
 
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-heading">Question Feedback</h2>
+          <SectionTitle>Question Feedback</SectionTitle>
           {result.results.map((r, idx) => {
             const q = questions.find((item) => item.id === r.questionId);
             const studentAnswer = answers[r.questionId];

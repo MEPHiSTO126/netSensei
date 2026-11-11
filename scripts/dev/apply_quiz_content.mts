@@ -1,5 +1,5 @@
-import { db } from "../src/lib/db";
-import { questionContent } from "../prisma/quiz-content";
+import { db } from "../../src/lib/db";
+import { questionContent } from "../../prisma/quiz-content";
 
 const questions = await db.question.findMany({
   include: { quiz: { select: { phase: { select: { title: true } } } } },

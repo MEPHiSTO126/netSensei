@@ -151,9 +151,9 @@ export default async function CoursePage({
                     >
                       <div className="flex items-center gap-3">
                         {isTutor ? (
-                          <Eye className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Eye className="h-4 w-4 text-primary opacity-60 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
                         ) : (
-                          <Play className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Play className="h-4 w-4 text-primary opacity-60 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
                         )}
                         <span className="font-medium">{phase.title}</span>
                         {phase._count.stages > 0 && (
