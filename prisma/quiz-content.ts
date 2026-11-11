@@ -464,4 +464,198 @@ export const questionContent: Record<string, QuestionContent> = {
     explanation:
       "A correct answer is `:root { --accent: #2563eb; } .button { background: var(--accent); }`. The property is declared on `:root` so it inherits everywhere, and `var(--accent)` consumes it in the background.",
   },
+
+  /* ── JavaScript Survival Kit: Values and Types ─────────────────────── */
+  "What does typeof null return, and how do you check for null correctly?": {
+    options: [
+      "'object' — it is a legacy bug, so compare with value === null instead.",
+      "'null' — typeof reports null values directly.",
+      "'undefined' — an unset value and null are reported the same way.",
+      "'object' — you must use typeof to test for null, because === never matches it.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "`typeof null` returns 'object' because of a bug from the first days of JavaScript that could never be fixed without breaking old sites. That makes typeof useless for detecting null, and `value === null` the correct check.",
+  },
+  "What is the difference between const and let?": {
+    options: [
+      "Both are block-scoped; const forbids reassigning the binding, while let allows it. const does not freeze objects.",
+      "const is function-scoped while let is block-scoped, and const makes its value immutable.",
+      "let creates a constant binding and const creates a variable that can be changed.",
+      "const freezes the object it points to, so its properties cannot change; let only rebinds the name.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "const protects the binding, not the value. `const user = { name: 'Ada' }` still allows `user.name = 'Grace'`. Freezing an object is a separate, explicit choice with Object.freeze.",
+  },
+  "Why is Number('') a risky conversion for a form field?": {
+    options: [
+      "It returns 0, so an empty field silently becomes zero; trim and validate before converting.",
+      "It returns NaN, so every empty field throws when you do arithmetic on it.",
+      "It returns the string's character length, which is 0 for any empty string.",
+      "It trims whitespace and returns 0 for blank input, but returns NaN for text.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "`Number('')` is 0, so an empty input quietly becomes zero and slips through a 'must be greater than zero' check. Validate the raw string first, then convert it.",
+  },
+  "Name the falsy values in JavaScript.": {
+    options: [
+      "false, 0, -0, 0n, '', null, undefined, and NaN.",
+      "false, 0, '', null, and undefined only; the rest are truthy.",
+      "false, 0, '', null, undefined, and empty arrays and objects.",
+      "Only false, null, undefined, 0, and '' are falsy; NaN and -0 are truthy.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "There are exactly eight falsy values. The two that surprise people are NaN, which is not equal to itself, and 0n, the BigInt zero. Note that [] and {} are truthy, so an empty array passes an `if` check.",
+  },
+
+  /* ── JavaScript Survival Kit: Functions and Control Flow ────────────── */
+  "Write a function that takes a number and returns true when the number is even.": {
+    explanation:
+      "A correct answer is `function isEven(n) { return n % 2 === 0; }`. The remainder operator % gives 0 for even numbers, and the strict comparison returns a real boolean rather than a number.",
+  },
+  "What does an arrow function with braces but no return statement return?": {
+    options: [
+      "undefined; braces require an explicit return, unlike a single-expression body.",
+      "The value of the last statement in the block, like a normal function body.",
+      "null, because a block with no return produces an empty value.",
+      "The function itself, since a braced body is treated as a class constructor.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A single-expression arrow body returns that expression: `const double = (n) => n * 2`. With braces you are writing a normal function body, and a function with no return statement returns undefined.",
+  },
+  "Why is if (items) a poor guard for an array that may be empty?": {
+    options: [
+      "An empty array is truthy, so the branch runs; check items.length > 0 instead.",
+      "An empty array is falsy in JavaScript, so the branch never runs.",
+      "Arrays have no truthiness, so if (items) throws a TypeError.",
+      "The branch always runs because arrays are objects and objects are always truthy.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Only eight values are falsy, and [] is not one of them. An empty array is truthy, so the guard passes and your code runs on nothing. Check the length instead.",
+  },
+  "Why does a switch case need break or return?": {
+    options: [
+      "Without break or return, execution falls through into the following cases; that is occasionally useful but usually a bug.",
+      "Without break or return, the case block is skipped entirely and the default runs.",
+      "break is only needed in loops; inside a switch each case is already isolated.",
+      "Without break or return, JavaScript throws a SyntaxError at parse time.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "switch creates no implicit boundary between cases. Each case runs until something exits it: break, return, or throw. Fallthrough can be deliberate when a case has no statements of its own, but it is usually an accident.",
+  },
+
+  /* ── JavaScript Survival Kit: Objects and Arrays ───────────────────── */
+  "Given const names = ['Ada', 'Grace', 'Linus']; what does names.forEach do?": {
+    options: [
+      "Runs the callback once per element in order, passing the element, index, and array; it returns undefined.",
+      "Returns a new array with the callback's return value for each element.",
+      "Runs the callback once per element but skips empty strings and null entries.",
+      "Returns a new array of the elements the callback changed to true.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "forEach is for side effects, not transformation: it always returns undefined, so you cannot assign its result. Use map when you want a new array and filter when you want a subset.",
+  },
+  "What is the difference between map and filter?": {
+    options: [
+      "map transforms every element into a new array of the same length; filter selects a subset and may return fewer elements.",
+      "map returns a new array and leaves the original untouched; filter mutates the original array in place.",
+      "map filters by a predicate; filter maps each element through a transform function.",
+      "They are aliases for the same operation and behave identically on arrays.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "map is one-in, one-out, so its result always has the same length as the input. filter keeps or drops each element, so its result can be shorter. Neither mutates the original array.",
+  },
+  "How do you turn an object into an array of key-value pairs?": {
+    options: [
+      "Object.entries(object).",
+      "Object.keys(object), which returns the pairs for each key.",
+      "Array.from(object), which iterates the values in key order.",
+      "object.map((key, value) => [key, value]), since objects support map.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "`Object.entries` returns an array of [key, value] pairs. Object.keys returns just the keys, Object.values just the values, and plain objects have no map method — arrays do.",
+  },
+  "Use map to turn an array of numbers into an array of their squares.": {
+    explanation:
+      "A correct answer is `numbers.map((n) => n * n)`. map calls the callback once per element and returns a new array holding each result, leaving the original array untouched.",
+  },
+
+  /* ── JavaScript Survival Kit: Scope and Hoisting ────────────────────── */
+  "What error do you get if you read a let variable before its declaration line has executed?": {
+    options: [
+      "ReferenceError, because let and const are hoisted but uninitialized until the declaration runs.",
+      "TypeError, because the variable holds no type until it is assigned.",
+      "undefined, because let is hoisted without a value like var.",
+      "No error — the variable exists but is empty until the declaration runs.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "let and const are hoisted to the top of their block but stay uninitialized. That gap is the temporal dead zone, and touching the name inside it throws a ReferenceError. var is hoisted and initialized to undefined instead.",
+  },
+  "How does var scoping differ from let and const?": {
+    options: [
+      "var is function-scoped and leaks out of blocks; let and const are block-scoped.",
+      "var is block-scoped like let and const, but it can be redeclared in the same scope.",
+      "var is global-scoped and always attaches to window; let and const are function-scoped.",
+      "There is no difference in scope; the only difference is that var can be reassigned.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A var declared inside an if block or a for loop is still visible after the block ends, because var is scoped to the enclosing function. let and const stop at the closing brace, which is what makes them predictable.",
+  },
+  "What is a closure in one sentence?": {
+    options: [
+      "A function that retains access to variables from its enclosing scope after that scope exits.",
+      "A function that captures a copy of its parameters so later changes are ignored.",
+      "A function that is defined inside another function and can only be called from it.",
+      "A function whose variables are all shared with the global scope.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A closure is a function together with the variables it was created with. The function keeps those variables alive even after the surrounding code has finished, which is what makes counters, caches, and private state possible.",
+  },
+
+  /* ── JavaScript Survival Kit: Errors and Debugger ───────────────────── */
+  "How should you handle an error you expect in user input?": {
+    options: [
+      "Validate before the risky operation, or wrap it in try/catch and show a clear message.",
+      "Let the error bubble up so the browser console shows exactly what happened.",
+      "Wrap every operation in try/catch and silently ignore anything that throws.",
+      "Retry the operation in a loop until it succeeds, since errors are usually temporary.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Expected errors should be prevented: check the input before you use it. try/catch is for the failure you genuinely cannot rule out, and the user should see a clear message rather than a stack trace. Swallowing errors hides bugs.",
+  },
+  "What does finally guarantee, and what belongs there?": {
+    options: [
+      "It always runs, whether the try succeeds or throws; cleanup such as timers, flags, and connections belongs there.",
+      "It runs only when the try block throws, which is why cleanup belongs in catch.",
+      "It runs after the try and catch blocks, but only if no error was rethrown.",
+      "It makes the error non-fatal: the function continues with an undefined result.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "finally runs on every path out of the try statement, which makes it the right place for cleanup: clearing a timer, resetting a loading flag, closing a connection. A return inside try still runs finally before the function returns.",
+  },
+  "How do you pause execution at a specific line in DevTools?": {
+    options: [
+      "Click the line number in Sources to set a breakpoint, or insert a debugger statement, then run the code.",
+      "Add a console.log before the line and read the value from the console output.",
+      "Open the Performance panel, record the interaction, and look for the line in the flame chart.",
+      "Set the breakpoint in the Network panel so the request pauses before it is sent.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A breakpoint stops the script at an exact line, with the scope panel showing every variable in view. A debugger statement does the same without opening DevTools, which helps when a bug only appears on a remote device.",
+  },
 };
