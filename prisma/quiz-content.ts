@@ -1488,4 +1488,705 @@ export const questionContent: Record<string, QuestionContent> = {
     explanation:
       "A correct answer is `.card { padding-inline: 16px; padding-block: 24px; }`. Logical properties follow the writing direction, so the padding stays on the correct sides in a right-to-left language.",
   },
+
+  /* ── JavaScript Core: Types and Coercion ───────────────────────────── */
+  'What does "2" + 2 evaluate to and why?': {
+    options: [
+      '"22" because + with strings concatenates.',
+      "4 because JavaScript converts the string to a number automatically.",
+      "NaN because you cannot add a string and a number.",
+      '"2 2" because + joins the two values with a space.',
+    ],
+    correctIndex: 0,
+    explanation:
+      "The + operator is overloaded: with two numbers it adds, with a string it concatenates. So '2' + 2 is '22' while 2 + 2 is 4. Use Number() or a template literal when you meant addition.",
+  },
+  "Name at least four falsy values in JavaScript.": {
+    options: [
+      "false, 0, '', null, undefined, NaN.",
+      "false, 0, '', null, undefined, and empty arrays and objects.",
+      "false, 0, '', and null only; the rest are truthy.",
+      "Only undefined and null are falsy; numbers and strings are always truthy.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The full list is false, 0, -0, 0n, '', null, undefined, and NaN. Empty arrays and objects are truthy, which is why an empty list still passes an if check.",
+  },
+  "What is the difference between ?? and || when providing a default?": {
+    options: [
+      "?? only falls back for null/undefined; || falls back for any falsy value such as 0 or ''.",
+      "There is no difference; ?? is only a shorter spelling of ||.",
+      "?? falls back for every falsy value, while || only falls back for undefined.",
+      "|| only works with numbers, while ?? works with objects and arrays.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "|| asks 'is this falsy?', so a legitimate 0 or empty string gets replaced by the default. ?? asks 'is this null or undefined?', so 0 and '' survive. For a default that must not eat real data, ?? is the right one.",
+  },
+
+  /* ── JavaScript Core: Scope and Functions ──────────────────────────── */
+  "What is a closure?": {
+    options: [
+      "A function that retains access to variables from its enclosing scope after that scope exits.",
+      "A function that captures a copy of its parameters so later changes are ignored.",
+      "A function that is defined inside another function and can only be called from it.",
+      "A function whose variables are all shared with the global scope.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A closure is a function together with the variables it was created with. The function keeps those variables alive even after the surrounding code has finished, which is what makes counters, caches, and private state possible.",
+  },
+  "When should you use an arrow function instead of a regular function?": {
+    options: [
+      "For callbacks that should keep the surrounding this; regular functions for object methods or dynamic this.",
+      "For object methods, because arrows are shorter to write than method syntax.",
+      "Never, because arrow functions do not have their own this and cannot use it.",
+      "Whenever the function needs its own this, since arrows bind it lexically.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "An arrow function has no this of its own, so it inherits the surrounding one, which is exactly what you want in a callback. A regular function gets its own this, which is what object methods and constructors need.",
+  },
+  "Write a function makeCounter that returns a function which increments and returns a private count.": {
+    explanation:
+      "A correct answer is `function makeCounter() { let count = 0; return () => ++count; }`. The count variable belongs to the enclosing scope and stays alive because the returned function closes over it.",
+  },
+
+  /* ── JavaScript Core: Arrays and Objects Toolkit ───────────────────── */
+  "Why is object spread considered a shallow copy?": {
+    options: [
+      "It copies only the top level; nested objects are still shared references.",
+      "Because it only copies enumerable own properties and skips inherited ones.",
+      "Because it copies the values at the moment of the spread and never updates.",
+      "Because spreading an object always produces a shallow JSON string first.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "{...user} gives you a new top-level object, but user.address is still the same object reference. Change address.street and the original changes too. For a deep copy you need structuredClone, or you rebuild the nested parts yourself.",
+  },
+  "Use reduce to sum the price field of an array of items.": {
+    explanation:
+      "A correct answer is `items.reduce((sum, item) => sum + item.price, 0)`. The second argument is the initial value, and passing 0 also guarantees a number when the array is empty.",
+  },
+  "What is the difference between some and every?": {
+    options: [
+      "some is true when at least one element passes; every is true only when all elements pass. Both short-circuit, and every returns true for an empty array.",
+      "some is true when all elements pass; every is true when at least one passes.",
+      "They behave the same on an empty array, returning false in both cases.",
+      "some skips falsy elements while every includes them in its check.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "some asks 'is there any?' and every asks 'are they all?'. The empty-array case catches people out: [].every(...) is true, because nothing fails. Guard it with a length check when you mean 'has at least one and all of them'.",
+  },
+  "Why does [10, 9, 1].sort() produce [1, 10, 9]?": {
+    options: [
+      "Without a comparator, sort converts elements to strings and compares them lexicographically, so '10' comes before '9'.",
+      "Because sort() sorts strings first and leaves numbers in their original order.",
+      "Because the default comparator subtracts the values and 10 - 9 is negative.",
+      "Because V8 sorts small arrays with insertion sort and produces that order.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The default comparator stringifies both values and compares them character by character, so '10' sorts before '9'. Pass a comparator, (a, b) => a - b, whenever you are sorting numbers.",
+  },
+  "What is the difference between slice and splice?": {
+    options: [
+      "slice returns a copy of a range and leaves the original alone; splice mutates the original and returns the removed elements.",
+      "slice mutates the array and returns the removed elements; splice returns a copy.",
+      "They are aliases, and both leave the original array untouched.",
+      "slice works on strings while splice only works on arrays.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "slice is the non-destructive one: it returns a new array. splice edits in place: it removes or inserts elements and returns what it removed. The similar names cause a lot of accidental mutation bugs.",
+  },
+
+  /* ── JavaScript Core: Strings and Patterns ─────────────────────────── */
+  "What does a template literal add over string concatenation?": {
+    options: [
+      "Interpolation with ${...}, multiline strings, and no need to escape quotes inside the text.",
+      "It makes the result a String object rather than a primitive string.",
+      "It escapes HTML automatically, so it is safe to render user input.",
+      "It concatenates faster because the browser compiles it at build time.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Backticks give you ${value} interpolation, real newlines without escaping, and quotes you do not have to escape. Note that it does not escape HTML, which is still the job of the DOM API or a sanitiser.",
+  },
+  "What does 'ada,grace'.split(',') return, and how do you turn it back into a string?": {
+    options: [
+      "It returns ['ada', 'grace']; use join(',') to turn the array back into text.",
+      "It returns ['ada', 'grace']; use JSON.stringify to turn it back into text.",
+      "It returns a string 'ada,grace'; use split again to reverse it.",
+      "It returns ['ada,grace']; use concat to turn the array back into text.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "split turns text into parts and join turns parts back into text, with the separator you choose. They are the two halves of the same operation and they pair up neatly.",
+  },
+  "Why does /^\\d{4}$/ differ from /\\d{4}/?": {
+    options: [
+      "The anchored version accepts exactly four digits; the unanchored one matches four digits anywhere in the text.",
+      "The anchored version is case-insensitive while the other is case-sensitive.",
+      "The anchored version matches digits only, while the other matches any characters.",
+      "There is no difference; the anchors are ignored by the regex engine.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "^ and $ anchor the pattern to the start and end of the string. Without them the pattern can match anywhere, so 'abc123def' passes. That is the classic way a validation regex lets bad input through.",
+  },
+  "Why is a single regex a poor way to validate email addresses?": {
+    options: [
+      "Email syntax is complex and a strict pattern rejects valid addresses; use a permissive client check plus server or email verification.",
+      "Because regex cannot match the @ symbol reliably in modern browsers.",
+      "Because email validation has to happen on the server for performance reasons.",
+      "Because the RFC specification allows too many formats for any pattern to cover.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Email has a famously complex specification, and any strict pattern either rejects valid addresses or accepts nonsense. Check for a plausible shape on the client, then confirm with a verification email. The real test of an address is whether mail reaches it.",
+  },
+
+  /* ── JavaScript Core: Numbers, Math, and Dates ─────────────────────── */
+  "Why is 0.1 + 0.2 not exactly 0.3, and what should you do about money?": {
+    options: [
+      "Numbers are binary floating point, so many decimals cannot be represented exactly; store money in integer cents or use a decimal library.",
+      "Because JavaScript rounds every sum to two decimal places by default.",
+      "Because 0.2 is stored as 0.19999999999999998 in the source code.",
+      "Because addition only works on integers, so the result is rounded down.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Binary floating point cannot represent 0.1 or 0.2 exactly, so the tiny error shows up. For money, store integer cents or use a decimal library, and round only for display.",
+  },
+  "What does (1.005).toFixed(2) return, and why is it not safe for arithmetic?": {
+    options: [
+      "It returns a string such as '1.00' or '1.01' depending on the binary value; toFixed is for display, so keep numbers for further calculation.",
+      "It returns the number 1.01, which is safe to keep calculating with.",
+      "It returns '1.00' because toFixed always rounds towards zero.",
+      "It throws a RangeError when the value cannot be represented exactly.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "toFixed returns a string, and it rounds whatever the binary value happens to be, which is why 1.005 can come out as '1.00'. Use it for display only and keep the number if you still need to calculate.",
+  },
+  "Why can new Date('2026-10-27') show the previous day for some users?": {
+    options: [
+      "A date-only string is parsed as UTC midnight, so users west of UTC see the previous local day; include an explicit time and offset or build a local date.",
+      "Because the string is parsed in the browser's local time and the browser is wrong.",
+      "Because Date only supports month and year, so the day is truncated.",
+      "Because the year 2026 is a leap year and the extra day is added.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A date-only string is defined as UTC midnight. In any timezone behind UTC that instant is the previous evening, so the formatted date reads a day earlier. Send a full timestamp with an offset, or build the date from year, month, and day numbers to keep it local.",
+  },
+  "How should timestamps be stored and displayed?": {
+    options: [
+      "Store UTC timestamps or ISO strings; format them in the user's locale and time zone with Intl at display time.",
+      "Store the formatted text, so no conversion is needed at display time.",
+      "Store local time strings, because the server and the user are usually in the same zone.",
+      "Store milliseconds since the epoch as a string, so it sorts lexicographically.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Storage should be unambiguous: UTC timestamps or ISO 8601 strings. The user's timezone and locale are display concerns, and Intl.DateTimeFormat handles them at the moment you render.",
+  },
+
+  /* ── JavaScript Core: Collections and Classes ──────────────────────── */
+  "How do you dedupe an array of primitives with a Set?": {
+    options: [
+      "[...new Set(items)] - construct a Set from the array and spread it back into an array.",
+      "items.filter((item, i) => items.indexOf(item) === i), which is the same but slower.",
+      "new Set(items).values(), which returns the deduped array directly.",
+      "Object.keys(new Set(items)), which returns the unique values as strings.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A Set keeps one entry per value, so building one from the array removes duplicates, and spreading it back gives you an array. The filter with indexOf works but is O(n squared) because it rescans for every element.",
+  },
+  "When is a Map a better choice than a plain object?": {
+    options: [
+      "When keys are not strings, when keys are dynamic object references, or when frequent add/delete and size matter.",
+      "Never, because a Map cannot be iterated or inspected.",
+      "When the keys are known at build time and will never change.",
+      "Whenever the values are objects, because objects cannot be stored in a plain object.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A Map accepts any value as a key, keeps insertion order, has a real size property, and handles frequent additions and removals cleanly. A plain object also coerces every key to a string, so a Map avoids surprises with numeric or object keys.",
+  },
+  "Why can a WeakMap not be iterated or measured with size?": {
+    options: [
+      "Its keys are weakly held and may be garbage-collected at any time; exposing entries or size would require strong references.",
+      "Because iteration order in a WeakMap is undefined, so it cannot be listed.",
+      "Because weak references are slower, so the API hides them for performance.",
+      "Because WeakMap only accepts string keys and cannot hold values.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A WeakMap holds its keys weakly: when the key object is no longer used elsewhere, it can be collected and the entry goes with it. Listing the entries or reporting a size would require keeping those keys alive, which is exactly what a WeakMap promises not to do.",
+  },
+  "Where does a class method live, and how does instanceof use it?": {
+    options: [
+      "Methods live on Class.prototype; instanceof walks the prototype chain to see whether the constructor's prototype appears.",
+      "Methods live on the instance itself, and instanceof compares the constructor names.",
+      "Methods live on the constructor function, and instanceof checks the property list.",
+      "Methods live in a hidden class registry that instanceof reads directly.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A class is mostly syntax over prototypes: the methods go on Class.prototype and instances inherit them. instanceof walks that prototype chain, which is why it answers 'was this object made by that class' rather than anything about the object's shape.",
+  },
+
+  /* ── JavaScript Core: JSON, Storage, and URLs ──────────────────────── */
+  "What happens to a Date and to an undefined property when JSON.stringify runs?": {
+    options: [
+      "The Date becomes an ISO string; the undefined property is omitted from the object (and becomes null inside an array).",
+      "The Date becomes a timestamp number, and the undefined property becomes null.",
+      "Both are dropped, because JSON has no representation for either.",
+      "The Date throws an error, and the undefined property is kept as the string 'undefined'.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "JSON has no Date type, so a Date is serialised as its ISO string. undefined has no JSON representation either: in an object the key is omitted, and in an array the slot becomes null. That asymmetry is worth remembering when you round-trip data.",
+  },
+  "Why wrap JSON.parse of localStorage data in try/catch and validate the shape?": {
+    options: [
+      "Stored text can be corrupt or from an older app version; parse can throw and the parsed value may not match the expected shape.",
+      "Because localStorage is shared with other sites on the same origin.",
+      "Because JSON.parse is slower than a direct object read from storage.",
+      "Because localStorage values are always strings and never valid JSON.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Stored data can be truncated, hand-edited, or left over from an older version of your app. parse throws on malformed text, and even valid JSON can have the wrong shape. try/catch plus a shape check turns a crash into a graceful reset.",
+  },
+  "Why use URLSearchParams instead of concatenating query strings by hand?": {
+    options: [
+      "It encodes special characters and handles repeated keys, avoiding broken or injected query strings.",
+      "Because it compresses the query string, so the URL stays short.",
+      "Because it sorts the parameters, which makes URLs cache better.",
+      "Because it converts the query string into a JSON object automatically.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "URLSearchParams encodes values for you, so a space or an & inside a value cannot break the query string. It also models repeated keys correctly instead of collapsing them, and it gives you get, set, and delete instead of string surgery.",
+  },
+  "Which browser storage should hold a shareable filter state, and which should hold an auth token?": {
+    options: [
+      "The URL holds the shareable filter; an auth token belongs in an HttpOnly cookie set by the server, not localStorage.",
+      "The URL holds the auth token, and localStorage holds the shareable filter.",
+      "Both belong in localStorage, because it survives the browser closing.",
+      "Both belong in sessionStorage, because it is cleared when the tab closes.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Anything in the URL can be shared, bookmarked, and sent to the server, which is exactly right for a filter and wrong for a secret. A token in localStorage is readable by any script on the page, so it belongs in an HttpOnly cookie that JavaScript cannot touch.",
+  },
+
+  /* ── JavaScript Core: Modules and Errors ───────────────────────────── */
+  "How do you export a function from a module?": {
+    options: [
+      "export function name() {} or export default.",
+      "module.exports = function, which is the only syntax the browser supports.",
+      "import function from './file', which declares the export as well as the import.",
+      "export function, with no parentheses or body, which creates the binding.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A named export uses export function name() {}, and a default export uses export default. The importer then writes import { name } or import name accordingly.",
+  },
+  "What information does an Error object carry?": {
+    options: [
+      "A message, a name, and a stack trace (plus custom fields on subclasses).",
+      "Only a message string; the name and stack are only available in development.",
+      "A message, the file and line where it was created, and the function arguments.",
+      "The error type, the stack, and a copy of the state at the moment it was thrown.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "An Error carries a name (its class, such as TypeError), a message, and a stack trace pointing at where it was thrown. Subclasses add their own fields, which is how a ValidationError can carry the field that failed.",
+  },
+  "Write a try/catch that logs error.message and rethrows anything that is not a ValidationError.": {
+    explanation:
+      "A correct answer is `try { work(); } catch (error) { if (error instanceof ValidationError) { console.log(error.message); } else { throw error; } }`. Handling the error you know and rethrowing the rest keeps the failure visible instead of swallowing it.",
+  },
+
+  /* ── Async: Sync vs Async and Queues ───────────────────────────────── */
+  "After an async task resolves, when do microtasks run relative to the next task?": {
+    options: [
+      "Before the next task (microtasks drain first).",
+      "After the next task, so promise callbacks are always delayed.",
+      "Only when the call stack is completely empty and no more work is queued.",
+      "They run immediately, before the resolving task's own code finishes.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Each task finishes, then the microtask queue is drained completely before the next task starts. That is why a promise chain scheduled inside a timer runs before the next timer, and why an endless microtask chain can starve rendering.",
+  },
+  "Why does a long synchronous loop freeze the UI?": {
+    options: [
+      "JavaScript shares one thread with rendering and input; a long task prevents paint and event handling.",
+      "Because loops are compiled to slower code than the browser's scheduler.",
+      "Because the browser only paints between network requests.",
+      "Because event handlers queue behind any running loop, so nothing can be clicked.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Rendering and input handling share the main thread with your script. While a loop runs, the browser cannot paint or process a click. Break long work into chunks, or move it to a Web Worker.",
+  },
+  "What is the difference between a task and a microtask?": {
+    options: [
+      "Tasks are timers, I/O, and events; microtasks are promise reactions and queueMicrotask, drained before the next task.",
+      "Tasks are user interactions; microtasks are everything else the browser does.",
+      "Microtasks are created by the browser, while tasks are created by your code.",
+      "There is no difference; both queues are drained at the same point.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The task queue holds timers, I/O callbacks, and events. The microtask queue holds promise reactions and queueMicrotask callbacks, and it is drained completely after each task before the next one starts.",
+  },
+
+  /* ── Async: Promises ───────────────────────────────────────────────── */
+  "What are the three promise states?": {
+    options: [
+      "Pending, fulfilled, and rejected.",
+      "Open, closed, and error.",
+      "Waiting, running, and done.",
+      "Created, resolved, and cancelled.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A promise starts pending, then settles once into either fulfilled or rejected. It can never change again, which is why a promise is a one-way record of an outcome rather than a value you can edit.",
+  },
+  "When would you use Promise.allSettled instead of Promise.all?": {
+    options: [
+      "When every result matters even if some fail; all rejects on the first failure.",
+      "When the promises must settle in the order they were created.",
+      "When you need the fastest result and want to ignore the slower ones.",
+      "When the promises reject, because allSettled converts a rejection into a value.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Promise.all rejects as soon as one promise rejects, and the other results are lost. allSettled always waits for every promise and reports each outcome, which is what you want for a batch where one failure should not hide the rest.",
+  },
+  "Write a promise chain that fetches /api/user, parses the JSON, and logs it.": {
+    explanation:
+      "A correct answer is `fetch('/api/user').then((res) => res.json()).then((user) => console.log(user)).catch(console.error);`. Each then returns a new promise, and the final catch handles a rejection anywhere in the chain.",
+  },
+
+  /* ── Async: async/await and fetch ──────────────────────────────────── */
+  "What does await do in async code?": {
+    options: [
+      "Pauses function execution until a promise settles, then continues with the value.",
+      "Blocks the thread until the promise settles, so nothing else can run.",
+      "Converts the promise into a value immediately if it is already resolved.",
+      "Schedules the rest of the function as a new task in the queue.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "await pauses that one async function and returns to the event loop, so other work keeps running. When the promise settles the function resumes with the value. The thread itself is never blocked.",
+  },
+  "Does fetch reject on a 404 response? Explain.": {
+    options: [
+      "No; fetch resolves for any HTTP response and you must check res.ok or res.status.",
+      "Yes, a 404 is a network-level failure and rejects the promise.",
+      "No, because the browser blocks requests to pages that do not exist.",
+      "Yes, but only when the response has no body.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "fetch rejects on network-level failures only, not on HTTP error statuses. A 404 is a perfectly successful round trip. Check res.ok or res.status yourself, or your error path never runs.",
+  },
+  "How do you cancel an in-flight fetch request?": {
+    options: [
+      "Create an AbortController, pass controller.signal to fetch, and call controller.abort() to cancel.",
+      "Call fetch.cancel(), which the browser exposes for this purpose.",
+      "Set the timeout option to 0, which tells the server to drop the request.",
+      "Throw inside the response handler, which aborts the request automatically.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "AbortController gives you a signal you pass into fetch. Calling abort() rejects the promise with an AbortError and stops the request, which is what you want when the user navigates away or the component unmounts.",
+  },
+  "Write an async function that fetches data from an API endpoint and logs the JSON response.": {
+    explanation:
+      "A correct answer is `async function load() { const res = await fetch('/api/data'); const data = await res.json(); console.log(data); }`. Each await unwraps one promise, so the code reads top to bottom.",
+  },
+
+  /* ── Async: Six Data States ────────────────────────────────────────── */
+  "In a data view, what is the difference between error and stale?": {
+    options: [
+      "Error = fetch failed; stale = data exists but is outdated (last-updated time).",
+      "Error means the data is missing; stale means the request is still running.",
+      "They are the same state with different wording.",
+      "Stale means the request failed; error means the data is out of date.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Error is a failed request and there is nothing to show. Stale is successful data that is simply old, so you can keep showing it with a 'last updated' note while a refresh runs. Treating them the same makes you throw away usable data.",
+  },
+  "Why is an empty state different from a loading state?": {
+    options: [
+      "Empty is a successful request with no data; loading means the result is not known yet.",
+      "They are the same; empty just means the request returned nothing yet.",
+      "Loading is shown on the first visit and empty afterwards, never both.",
+      "An empty state means the request failed and there is nothing to show.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Loading means the answer is unknown, empty means the answer is known and it is nothing. Showing 'no results yet' while the request is in flight is the classic bug this split prevents.",
+  },
+  "Write a fetch handler that sets loading true before the request and false in a finally block.": {
+    explanation:
+      "A correct answer is `setLoading(true); try { await load(); } finally { setLoading(false); }`. finally runs on both the success and the failure path, so the flag never gets stuck on.",
+  },
+
+  /* ── Shipping It: Git Workflow ─────────────────────────────────────── */
+  "What does git add . do?": {
+    options: [
+      "Stages all changes for the next commit.",
+      "Commits every change in the working tree to the current branch.",
+      "Creates a new branch with the current changes copied into it.",
+      "Discards every change that has not been committed yet.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "git add . stages the changes in the current folder, so they become part of the next commit. Staging is the step between editing and committing, and it lets you commit part of your work on purpose.",
+  },
+  "What does a branch isolate, and why does that matter?": {
+    options: [
+      "A line of work separate from main so incomplete changes do not affect the deployable branch.",
+      "It isolates your local files from the remote repository.",
+      "It duplicates the project so you can experiment without any risk.",
+      "It freezes the current state of the code so it cannot be changed.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A branch is a movable pointer to a commit, so you can work on a feature without touching main. That is what lets a half-finished change sit on its own branch while main keeps shipping.",
+  },
+  "What causes a merge conflict?": {
+    options: [
+      "Two branches change the same lines or the same file region and Git cannot choose automatically.",
+      "Two branches create files with the same name in different folders.",
+      "A branch is merged twice, or merged after it has been deleted.",
+      "The commits are too far apart for Git to find a common ancestor.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Git merges automatically when the changes do not overlap. When both branches touch the same lines, Git has no way to know which version is right, so it stops and asks you to resolve it.",
+  },
+
+  /* ── Shipping It: Deploy ───────────────────────────────────────────── */
+  "What is typically required to deploy a Vite static app?": {
+    options: [
+      "Build command output dist, host serving static files.",
+      "A Node server running forever, because Vite has no static output.",
+      "A database connection string, because the bundle queries the server.",
+      "Nothing but the source folder, because Vite serves from source in production.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Vite builds a static site into dist. Any static host will do and there is no server process to keep running. That is what makes it cheap to deploy.",
+  },
+  "Why must a VITE_ environment variable never contain a secret?": {
+    options: [
+      "Vite inlines VITE_ values into the client bundle, so anyone can read them.",
+      "Because Vite refuses to start if a VITE_ variable looks like a password.",
+      "Because VITE_ variables are sent to the server on every request in plain text.",
+      "Because the build fails when a VITE_ variable is longer than a URL.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Anything prefixed VITE_ is inlined into the JavaScript that ships to the browser. It is public, like a label on the page. Secrets belong on the server, never in a VITE_ variable.",
+  },
+  "What is an SPA fallback rewrite for?": {
+    options: [
+      "Serving index.html for unknown paths so client-side routes work on refresh and deep links.",
+      "Redirecting every old URL to the homepage after a deploy.",
+      "Serving a cached copy of the site while the new build uploads.",
+      "Rewriting asset requests so they point at a CDN.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Your host only has the built files, so /dashboard does not exist on disk. The fallback makes any unknown path return index.html and the client router renders that route. Without it, refreshing a deep link is a 404.",
+  },
+
+  /* ── Shipping It: Accessibility, Performance, Capstone ─────────────── */
+  "Name one accessibility improvement for a page with an image missing alt text.": {
+    options: [
+      "Add meaningful alt text.",
+      "Add a title attribute to the image, which covers the missing alt.",
+      "Wrap the image in a figure element with a caption.",
+      "Set width and height on the image so it does not shift.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Alt text is what a screen reader announces, so a meaningful description is the fix. An empty alt=\"\" is correct only for decorative images. The other options improve different things but leave the image unnamed.",
+  },
+  "What do LCP, INP, and CLS measure?": {
+    options: [
+      "LCP: loading of the largest visible element; INP: responsiveness to input; CLS: visual stability from layout shifts.",
+      "LCP: page load time; INP: image size; CLS: caching efficiency.",
+      "LCP: layout shifts; INP: largest contentful paint; CLS: input latency.",
+      "They all measure how quickly the server responds to a request.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The three Core Web Vitals cover the three ways a page feels broken: too slow to show (LCP), unresponsive to tap (INP), and jumpy while loading (CLS). Fixing them means a smaller hero image, an unblocked main thread, and reserved space.",
+  },
+  "What should the capstone include before you call it done?": {
+    options: [
+      "A form, a keyed list, derived values, a fetch with loading/empty/error states, keyboard access, a live deploy, and a README.",
+      "A deployed app, a README, and at least one third-party dependency.",
+      "At least three components, one custom hook, and a reducer.",
+      "A working build, no console errors, and a passing test suite.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The capstone is where the pieces meet: controlled inputs, a keyed list, derived values, real data with all six states, keyboard access, a live URL, and a README explaining how to run it. A list of technologies is not the same as a finished thing.",
+  },
+
+  /* ── State: State vs Prop vs Derived ───────────────────────────────── */
+  "In React, is state mutable or immutable?": {
+    options: [
+      "Immutable (state updates create new objects/arrays).",
+      "Mutable, because setState changes the existing object in place.",
+      "Mutable for primitives and immutable for objects and arrays.",
+      "It depends on whether you use useState or useReducer.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "State is treated as read-only. setState does not modify the old value; it stores a new one and React re-renders. Mutating the old value in place is what causes the 'two copies' bug.",
+  },
+  "What is derived state, and why should you avoid storing it?": {
+    options: [
+      "Data computed from existing state or props; storing it duplicates the source of truth and can drift out of sync.",
+      "State computed inside a reducer, which is faster than computing it in the component.",
+      "State that only a parent can read, so children receive it as a prop.",
+      "State stored in a ref, because refs update without a re-render.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "If you can compute it from what you already have, compute it during render. Storing it means two sources of truth that can disagree, and you end up synchronising them by hand.",
+  },
+  "When should state live in a parent instead of a child?": {
+    options: [
+      "When siblings or another component need the same state and the parent is their closest common ancestor.",
+      "Whenever the state is used by more than one component in the file.",
+      "Never, because a child with state always re-renders faster.",
+      "When the child component is written before the parent.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Lift state to the closest common ancestor of the components that need it, and no higher. Lifting further than necessary makes every consumer re-render for one small change.",
+  },
+
+  /* ── State: Immutability and One-Way Flow ──────────────────────────── */
+  "What causes the 'two-copies' bug in React state?": {
+    options: [
+      "Direct mutation of a nested object that was previously copied into state.",
+      "Passing the same object to two components as a prop.",
+      "Calling setState twice in the same event handler.",
+      "Storing an array in state and rendering it with a keyed map.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "If you spread a state object and then mutate the nested part, the copy and the original are the same object below the top level. The two now hold different values, and React's comparison misses the change.",
+  },
+  "Why is items.push(newItem) a bug when items is React state?": {
+    options: [
+      "push mutates the existing array, so the reference does not change and React may not re-render.",
+      "Because push is not allowed on frozen arrays in development mode.",
+      "Because push returns a new length instead of the array itself.",
+      "Because push does not work on arrays that came from a state hook.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "React compares the previous state with the next one by reference. Mutating the array in place leaves the reference identical, so React sees no change and skips the re-render. Use a new array: setItems([...items, newItem]).",
+  },
+  "Update a state array immutably by adding a new item.": {
+    explanation:
+      "A correct answer is `setItems([...items, newItem]);`. The spread creates a new array with the same items plus the new one, so React sees a different reference and re-renders.",
+  },
+
+  /* ── State: State in the Real UI ───────────────────────────────────── */
+  "Which parts of a filter UI belong in the URL rather than component state?": {
+    options: [
+      "Search text, filters, sort order, page number, and selected tab.",
+      "Only the page number, because the other filters are temporary.",
+      "None of them, because URL state makes the page slow to load.",
+      "Only the search text, because the rest of the filters are private.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Anything in the URL is shareable, bookmarkable, and survives a refresh or a back button, which is exactly what a filter is. Private or purely visual state, such as an open dropdown, belongs in component state.",
+  },
+  "When is useReducer a better fit than useState?": {
+    options: [
+      "When multiple actions update related state or transitions are complex enough to centralize in one pure function.",
+      "Always, because useReducer is faster and uses less memory than useState.",
+      "When the state is a single boolean, since a reducer handles booleans better.",
+      "Never, because useState is simpler and reducer actions are harder to follow.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "useState is right for one value or a few independent ones. A reducer earns its keep when several actions touch related state, because the transitions live in one pure function you can read, test, and log in one place.",
+  },
+  "Write a state updater that toggles a boolean using the functional form.": {
+    explanation:
+      "A correct answer is `setOpen((open) => !open);`. The functional form receives the latest state, so the toggle stays correct even when several updates are batched in one event.",
+  },
+
+  /* ── State: Refs, Context, and Performance ─────────────────────────── */
+  "When should you use a ref instead of state?": {
+    options: [
+      "When the value must survive renders but does not affect the UI, such as a DOM node, timer id, or previous value; changing it must not trigger a render.",
+      "When the value needs to trigger a re-render as soon as it changes.",
+      "When the value is large, because refs are stored more efficiently.",
+      "Never, because refs are deprecated in favour of state.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "State is for values the UI shows. A ref is for values the UI does not show: a DOM node, a timer id, the previous value of a prop. Mutating a ref does not re-render, which is exactly why you reach for it.",
+  },
+  "Why can a context provider re-render more components than expected?": {
+    options: [
+      "Every consumer of that context re-renders when the provider value changes, even if the part it reads is unchanged; split contexts or memoize the value.",
+      "Because React re-renders the whole tree on any provider update, by design.",
+      "Because context values are compared by identity rather than by content.",
+      "Because consumers must re-render to pick up a new context value at all.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Context is a subscription with no selector: change the value and every consumer re-renders. Split contexts by update frequency, or memoize the value so it only changes when it really does.",
+  },
+  "What makes a reducer easy to test?": {
+    options: [
+      "It is a pure function from state and action to next state, with no fetching, clock, randomness, or mutation.",
+      "Because reducers are automatically covered by React's testing utilities.",
+      "Because a reducer can only be called from a React component.",
+      "Because reducers never touch the DOM, so no browser is needed.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Given the same state and action, a pure reducer returns the same next state. That means you can call it directly in a test with no component, no DOM, and no mocking, which is the cheapest kind of test to write.",
+  },
+  "When does React.memo actually prevent a re-render?": {
+    options: [
+      "When the parent re-renders but the child's props are shallow-equal; unstable functions or objects in props defeat it.",
+      "Only when the child is a class component with shouldComponentUpdate.",
+      "Whenever the child's own state has not changed.",
+      "Whenever the parent passes the same number of props.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "memo compares props with a shallow equality check. A new inline function or a fresh object literal in the props is a different reference, so the comparison fails and the child re-renders anyway. Memoisation only helps when the props are genuinely stable.",
+  },
+  "Create a ref for an input and focus it when a button is clicked.": {
+    explanation:
+      "A correct answer is `const inputRef = useRef(null);` with `<input ref={inputRef} />` and a button whose onClick calls `inputRef.current?.focus()`. The optional chaining handles the null you get before the first render.",
+  },
 };
