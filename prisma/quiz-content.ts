@@ -1144,4 +1144,348 @@ export const questionContent: Record<string, QuestionContent> = {
     explanation:
       "If you render the component twice, a literal id appears twice, and the label then points at the wrong input. useId gives every instance its own id that stays the same across renders, so htmlFor and aria-describedby keep pointing at the right element.",
   },
+
+  /* ── CSS: Flexbox and Grid ─────────────────────────────────────────── */
+  "When should you reach for flexbox instead of grid?": {
+    options: [
+      "Use flexbox for one-dimensional layout along a single row or column, and grid for two-dimensional layout with rows and columns.",
+      "Use flexbox when the layout has rows and columns, and grid when items sit in a single row.",
+      "Use grid for everything, because flexbox only supports two items at a time.",
+      "They are interchangeable, and the only difference is that grid is newer.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Flexbox lays out along one axis: a row or a column, which makes it the natural fit for a toolbar or a card header. Grid lays out in two dimensions at once, so rows and columns stay aligned. Plenty of real layouts use both.",
+  },
+  "What does flex: 1 1 0 mean?": {
+    options: [
+      "Grow and shrink are enabled with a zero basis, so items share the free space equally.",
+      "It means grow 1, shrink 1, and basis 0%, which is the same as writing flex: 1.",
+      "It sets flex-grow to 1, flex-shrink to 1, and flex-basis to 0 pixels of the container.",
+      "It disables shrinking so the items never overflow their container.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The shorthand is grow, shrink, basis. flex: 1 is short for 1 1 0%, which is basis 0%: items start from nothing and split the free space evenly, no matter how wide their content is.",
+  },
+  "What is the difference between justify-content and align-items in a flex row?": {
+    options: [
+      "justify-content distributes items along the main axis, while align-items aligns them on the cross axis.",
+      "justify-content aligns items vertically and align-items distributes them horizontally.",
+      "They do the same thing; one works on the main axis and the other on the cross axis.",
+      "justify-content only works on grid containers, while align-items only works on flex.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "In a row the main axis is horizontal, so justify-content lays items out left to right and align-items lines them up vertically. In a column the axes swap, which is exactly where people mix them up.",
+  },
+  "How do auto-fit and minmax combine to make a responsive card grid?": {
+    options: [
+      "repeat(auto-fit, minmax(240px, 1fr)) creates as many columns as fit at 240px and lets them stretch to fill the row.",
+      "repeat(auto-fit, minmax(240px, 1fr)) fixes the column count to the viewport width.",
+      "repeat(auto-fill, minmax(240px, 1fr)) stretches each card to 240px and leaves empty gaps.",
+      "minmax(240px, 1fr) sets a minimum column width but never changes the number of columns.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "auto-fit works out how many 240px columns fit, and minmax(240px, 1fr) lets each one grow to share the row. It is a whole responsive grid in one line, with no media queries involved.",
+  },
+  "Center .card horizontally and vertically inside .stage using flexbox.": {
+    explanation:
+      "A correct answer is `.stage { display: flex; align-items: center; justify-content: center; }`. align-items handles the cross axis, which is vertical in a row, and justify-content handles the horizontal main axis.",
+  },
+
+  /* ── CSS: Responsive Layout in Practice ────────────────────────────── */
+  "Why write base styles first and add min-width media queries after them?": {
+    options: [
+      "Mobile-first CSS starts with the small-screen layout and progressively adds rules for larger screens, so the base stays simple and the cascade is easier to follow.",
+      "Because min-width queries are the only ones browsers support on mobile.",
+      "Because the cascade works in reverse, so later rules win on smaller screens.",
+      "Because desktop browsers ignore stylesheets that are not wrapped in a media query.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Mobile-first means the base rules describe the smallest screen and the queries only add what bigger screens need. The cascade then works in your favour: each query overrides the base instead of fighting it, and the base stays readable.",
+  },
+  "When is a container query better than a media query?": {
+    options: [
+      "A container query responds to the size of a component's parent, so the component adapts wherever it is placed, while a media query responds only to the viewport.",
+      "A container query is always faster because it never needs a viewport recalculation.",
+      "A media query is better when the component appears in a sidebar of unknown width.",
+      "They are the same feature with different names in different browsers.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A media query can only see the viewport, so the same card needs different rules depending on whether it sits in a wide grid or a narrow sidebar. A container query lets the component ask about the space it is actually in, which is what a reusable component needs.",
+  },
+  "How do srcset and sizes improve a responsive image?": {
+    options: [
+      "srcset offers several image widths and sizes tells the browser the display size, so it can download the smallest file that fits.",
+      "srcset compresses the image and sizes caches it, so the page loads faster.",
+      "srcset changes the image file, while sizes changes the width of the container.",
+      "They let the browser download every size at once and pick the best one.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "srcset lists the candidate files and sizes tells the browser how wide the image will actually be displayed, which is what lets it choose correctly on a high-density screen. Without sizes the browser assumes the image fills the viewport and usually picks something too large.",
+  },
+  "Name three checks before calling a responsive layout done.": {
+    options: [
+      "No horizontal scroll at 320px, readable text at 200 percent zoom, and keyboard focus visible on every control.",
+      "It looks right in Chrome, iOS Safari, and Firefox at their default widths.",
+      "It matches the design file, loads in under three seconds, and has no console errors.",
+      "The nav collapses, the grid becomes one column, and the images have width set.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Those three checks catch the failures that actually matter: sideways scrolling on a small phone, text that becomes unreadable when a user zooms, and controls a keyboard user cannot see. They test behaviour, not resemblance to a mockup.",
+  },
+  "Write a mobile-first rule that makes .grid one column by default and two equal columns from 768px up.": {
+    explanation:
+      "A correct answer is `.grid { grid-template-columns: 1fr; } @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }`. The base rule is the one-column mobile layout, and the min-width query adds the second column when there is room.",
+  },
+
+  /* ── CSS: Positioning and Layering ─────────────────────────────────── */
+  "Why does an absolutely positioned element stop reserving space in the layout?": {
+    options: [
+      "Absolute positioning removes the box from normal flow and positions it against the nearest positioned ancestor, so its original space collapses.",
+      "Because its width is auto, the browser gives it no space at all.",
+      "Because absolute elements are always painted outside the scrollable area.",
+      "Because the element's display value changes to block when it is positioned.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Normal flow is what reserves space for a box. Taking a box out of flow means nothing is reserved for it, so its siblings move up. That is why an absolutely positioned badge overlays a card instead of pushing the card content around.",
+  },
+  "Name two reasons a position: sticky element might fail to stick.": {
+    options: [
+      "It needs an offset such as top: 0, and an ancestor with overflow hidden or auto, a transform, or a filter can break it; it also stops at the edge of its parent.",
+      "Sticky only works on elements that are also grid or flex children.",
+      "A sticky element needs a z-index above its siblings, or it scrolls underneath them.",
+      "Sticky requires the element to have a fixed height, otherwise it never sticks.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Sticky needs an offset or it never leaves its normal position, and it is constrained by its scrolling ancestor. The subtle one is that a transform or filter on an ancestor creates a containing block that quietly breaks the behaviour.",
+  },
+  "What creates a stacking context, and why does that matter for z-index?": {
+    options: [
+      "A positioned element with a z-index, opacity below 1, a transform, filter, or isolation can create a stacking context; z-index only competes inside its context, so a high value cannot escape.",
+      "Only position: fixed creates a stacking context, and z-index is then relative to the viewport.",
+      "A stacking context is created by any z-index, including z-index: auto.",
+      "z-index always compares globally, so a value of 9999 beats every other element.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A stacking context is a private layer for z-index comparisons. Inside it, your values only compete with siblings in that same context. A child with z-index: 9999 inside a transformed parent still cannot rise above that parent's siblings, which is why 'my z-index is not working' is nearly always a stacking context problem.",
+  },
+  "Why is the native dialog element a better base for a modal than a positioned div?": {
+    options: [
+      "It provides modal semantics, focus handling, Escape to close, and a backdrop, while a div requires those behaviors to be rebuilt and tested.",
+      "It is smaller in bytes and needs no JavaScript to open or close.",
+      "A div cannot be positioned, so it can never be used for an overlay.",
+      "It works in every browser without the showModal() method.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "showModal() gives you the role, the focus trap, Escape handling, and the inert background for free. Rebuilding that on a div is where most custom modals pick up their accessibility bugs.",
+  },
+  "Why should a design use a small set of z-index tokens instead of 9999?": {
+    options: [
+      "Tokens keep layer order intentional and predictable; arbitrary large values start an arms race and still cannot escape a parent stacking context.",
+      "Because z-index values above 1000 are ignored by the browser.",
+      "Tokens make the browser composite the layers in the right order automatically.",
+      "Because a large z-index prevents the element from creating a stacking context.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Tokens such as --z-dropdown, --z-modal, --z-toast name the layers you actually have. They make the order reviewable in one place, and they stay honest about the fact that a big number cannot escape a parent's stacking context.",
+  },
+  "Make .site-header stick to the top of the viewport and sit above ordinary page content.": {
+    explanation:
+      "A correct answer is `.site-header { position: sticky; top: 0; z-index: 10; }`. Sticky needs the offset to know where to stick, and the z-index keeps it above the page content scrolling underneath.",
+  },
+
+  /* ── CSS: Motion and Visual Effects ────────────────────────────────── */
+  "Why should a transition be declared on the base rule instead of only on :hover?": {
+    options: [
+      "The base rule animates both entering and leaving the state; a transition only on hover animates one direction and snaps back.",
+      "Because a transition on the base rule is applied by the browser before the page paints.",
+      "Because :hover transitions are ignored on touch devices, so nothing would ever move.",
+      "Because the base rule is where the transition-duration must be declared.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Put transition on the base rule and the property animates in both directions. Put it only on :hover and the change in is animated while the change out snaps instantly, which reads as a glitch.",
+  },
+  "Why are transform and opacity better animation properties than width and top?": {
+    options: [
+      "Transform and opacity can be composited without layout or paint, while width and top trigger layout on each frame and can drop frames.",
+      "Because transform and opacity are the only properties the GPU understands.",
+      "Because width and top are ignored while an animation is running.",
+      "Because transform cannot be combined with transitions.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Changing width or top changes geometry, so layout must run for every frame and paint follows. Transform and opacity can be handled by the compositor, which is why they are the properties to reach for when smoothness matters.",
+  },
+  "What should happen to animation when prefers-reduced-motion is reduce?": {
+    options: [
+      "Remove or replace non-essential motion, such as disabling transitions and looping animations while keeping content and state changes usable.",
+      "Everything should be disabled, including the state changes that motion communicates.",
+      "Only looping animations should stop; transitions should keep their timing.",
+      "Nothing changes, because the preference is a suggestion the browser ignores.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Reduced motion means less movement, not less feedback. Keep the transition that shows a panel opening, drop the decorative slide and the looping animation. Some people get motion sickness from large movements, and this preference is a genuine accessibility setting.",
+  },
+  "What is the difference between opacity and an alpha color?": {
+    options: [
+      "Opacity fades the whole element including its text and children, while an alpha color fades only that paint layer and lets the background show through.",
+      "Opacity only works on backgrounds, while an alpha color works on any property.",
+      "They are identical, because a colour with alpha is just opacity applied to the background.",
+      "Opacity is cheaper to render than an alpha colour, so it should always be preferred.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "opacity on an element creates a group and fades everything in it, text included. An alpha value in a background or border colour fades only that one paint, so the text stays crisp. Over a busy background the alpha colour is usually the better choice.",
+  },
+  "When several background layers are declared, which one paints on top?": {
+    options: [
+      "The layer listed first in the background shorthand or background-image list paints on top, with later layers behind it.",
+      "The last layer listed paints on top, since it is painted last.",
+      "All layers paint at the same time, so the order in the list does not matter.",
+      "The first gradient always wins over an image, regardless of the order.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Background layers paint in reverse order of declaration: the first one listed is on top. That is why a gradient overlay usually goes first and a photo goes second.",
+  },
+  "Make .card fade to 60% opacity on hover with a 150ms transition.": {
+    explanation:
+      "A correct answer is `.card { transition: opacity 150ms ease; } .card:hover { opacity: 0.6; }`. The transition lives on the base rule so it animates in both directions.",
+  },
+
+  /* ── CSS: Components and Content ───────────────────────────────────── */
+  "Why is a visible label better than a placeholder for a form field?": {
+    options: [
+      "A label stays visible after typing, gives the control a reliable accessible name, and can carry a stronger contrast than placeholder text.",
+      "A placeholder is hidden by the browser as soon as the field is focused.",
+      "Placeholders cannot be translated, so a label is always shorter.",
+      "Because a label is submitted with the form data, while a placeholder is not.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A placeholder disappears the moment you type, which is exactly when someone needs to remember what the field was for. It is also not a reliable accessible name and is usually low-contrast. Use a visible label and keep the placeholder for an example format only.",
+  },
+  "How do you make a data table adapt to a narrow screen without destroying its semantics?": {
+    options: [
+      "Wrap the table in a horizontally scrollable container with keyboard access and an accessible name, and keep the table, caption, and header cells intact.",
+      "Replace the table with divs styled as a grid, so the visual design stays intact.",
+      "Hide the columns that do not fit and show them in a tooltip instead.",
+      "Convert the table to a list of cards, one per row, on small screens.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A scroll container keeps the real table, its caption, and its header cells, which is what screen readers and anyone comparing rows rely on. The container needs tabindex and a label so keyboard users can scroll it. Turning rows into cards usually loses the row and column relationships entirely.",
+  },
+  "What is required for ::before and ::after to appear, and what should they not be used for?": {
+    options: [
+      "They need the content property. They should not carry essential text or interactive controls because they are not part of the DOM and cannot receive events or focus.",
+      "They need a display value; they should not be used for decorative shapes.",
+      "They are created automatically, so they should not be used to add visible text.",
+      "They must be defined on a parent element, never on the element itself.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A pseudo-element without content does not exist at all. And because generated content is not in the DOM, it cannot be focused, clicked, or reliably announced, so it must never carry meaning or a control.",
+  },
+  "How do CSS counters number a list of steps?": {
+    options: [
+      "Reset the counter on the container, increment it on each item, and display it with content: counter(name), usually in a pseudo-element.",
+      "Add an ordered list element, and the browser numbers the steps automatically.",
+      "Set counter-reset and counter-increment on the same element, then read it with attr().",
+      "Counters only work inside @keyframes, so the number is set on every animation frame.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A counter is a number the browser maintains for you: reset it on the container, increment it on each step, and print it with content: counter(steps). It replaces hand-numbered list items that break whenever the list is reordered.",
+  },
+  "Why use :user-invalid instead of :invalid for a required field?": {
+    options: [
+      "An empty required field matches :invalid immediately, while :user-invalid waits until the user has interacted, so the page does not start in an error state.",
+      ":invalid is not supported in older browsers, while :user-invalid works everywhere.",
+      ":user-invalid also fires when the field is empty, but only after the page loads.",
+      ":user-invalid removes the browser's own validation messages entirely.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A required field nobody has touched is already :invalid, so styling :invalid paints every empty form red before the user has typed anything. :user-invalid only matches after interaction, which is what you want for error styling.",
+  },
+  "Give an input inside .field a visible keyboard focus ring with a 2px solid #2563eb outline.": {
+    explanation:
+      "A correct answer is `.field input:focus-visible { outline: 2px solid #2563eb; }`. :focus-visible draws the ring for keyboard users without adding it on every mouse click.",
+  },
+
+  /* ── CSS: Modern CSS and Architecture ──────────────────────────────── */
+  "What is one difference between native CSS nesting and a preprocessor such as Sass?": {
+    options: [
+      "Native nesting runs in the browser without a build step and uses & for the parent, but it does not support string concatenation such as &__title.",
+      "Native nesting supports string concatenation, while preprocessors require & for the parent.",
+      "Native nesting needs a build step, while a preprocessor runs directly in the browser.",
+      "There is no difference; native nesting is a drop-in replacement for Sass.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Native nesting ships in browsers and needs no toolchain, but it deliberately omits Sass's string helpers. & is supported for the parent selector, while &__title concatenation is not, so that pattern still needs a preprocessor or a custom property.",
+  },
+  "Where do unlayered normal declarations sit relative to cascade layers?": {
+    options: [
+      "Unlayered normal declarations win over layered normal declarations, while important declarations reverse the layer order and unlayered important declarations lose.",
+      "Unlayered declarations always lose, so layers always take priority.",
+      "Layers only change the order of important declarations, not normal ones.",
+      "Unlayered normal declarations win over layers, and important declarations keep the same order.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Layers are the last word for normal declarations: anything unlayered beats anything layered, which is what makes a layered reset possible without !important. For important declarations the order reverses, and an unlayered important declaration loses to every layer.",
+  },
+  "What does @supports test, and what does it not guarantee?": {
+    options: [
+      "It tests whether the browser can parse a declaration or selector; it does not guarantee that the feature works correctly or looks right.",
+      "It tests whether the feature is supported and works exactly as specified.",
+      "It checks the user's browser settings and disables the rule when it conflicts.",
+      "It runs the declaration in a sandbox and reports any error at build time.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "@supports is a parse test: can this browser understand the syntax? That is not the same as the feature behaving correctly. It is a way to provide a fallback, not a promise of correctness.",
+  },
+  "What does :has() let you style, and give one practical example.": {
+    options: [
+      "It styles an element based on whether a relative selector matches inside it, such as styling a field wrapper when its input is user-invalid.",
+      "It styles an element based on what comes after it, such as styling a label before its input.",
+      "It lets you select elements by their text content, like find by value.",
+      "It applies a style to every child of an element that matches a selector.",
+    ],
+    correctIndex: 0,
+    explanation:
+      ":has() is a relational selector: it matches an element based on its descendants. That lets a parent respond to its children's state, such as a form field wrapper that turns red when its input is invalid, or a card that changes when a checkbox inside it is ticked.",
+  },
+  "What does @property add to a custom property?": {
+    options: [
+      "It registers a syntax type, an inheritance rule, and an initial value, which enables validation and interpolation.",
+      "It makes the custom property animatable by giving it a JavaScript setter.",
+      "It scopes the custom property to a single element instead of the whole tree.",
+      "It converts the value into a design token that is available to JavaScript.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A registered custom property has a type, so the browser can validate it, reject nonsense values, and animate it. An unregistered property is just a string, which snaps from one value to another instead of interpolating.",
+  },
+  "Give .card 16px of padding on the inline axis and 24px on the block axis using logical properties.": {
+    explanation:
+      "A correct answer is `.card { padding-inline: 16px; padding-block: 24px; }`. Logical properties follow the writing direction, so the padding stays on the correct sides in a right-to-left language.",
+  },
 };
