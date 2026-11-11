@@ -862,4 +862,286 @@ export const questionContent: Record<string, QuestionContent> = {
     explanation:
       "A correct answer calls event.preventDefault() first, then reads the field with new FormData(form).get('email'). FormData gives you the named values without reaching into the DOM.",
   },
+
+  /* ── React Basics: Vite, JSX, Component ────────────────────────────── */
+  "In JSX, how do you write the HTML class attribute?": {
+    options: [
+      "className.",
+      "class.",
+      "htmlClass.",
+      "You write class normally, because JSX is just HTML.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "JSX is JavaScript, not HTML, so attributes are property names and multi-word ones are camelCase: className, htmlFor, tabIndex. The compiler turns className back into class in the real HTML.",
+  },
+  "What does JSX compile to?": {
+    options: [
+      "JavaScript function calls that create React elements (the JSX runtime / React.createElement).",
+      "HTML strings that React parses and injects into the page with innerHTML.",
+      "A special template tag that only the browser understands at runtime.",
+      "A compiled DOM diffing algorithm that bypasses React entirely.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "JSX is syntax sugar. The compiler rewrites each element into a call that creates a plain object describing what to render, and React then reconciles those objects with the real DOM. No HTML string is parsed at runtime.",
+  },
+  "Write a React function component that renders a heading with the text Hello world.": {
+    explanation:
+      "A correct answer is `function HelloWorld() { return <h1>Hello world</h1>; }`. A component is a function that returns JSX, and the element it returns becomes part of the React tree.",
+  },
+
+  /* ── React Basics: Props ───────────────────────────────────────────── */
+  "Are props mutable in React?": {
+    options: [
+      "No; props are immutable inputs from the parent.",
+      "Yes, a child can assign to props, though React warns in development.",
+      "Yes, as long as the prop was not passed with a spread operator.",
+      "Only props passed as objects are mutable; primitives are not.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Props are read-only by design, and React throws in development if you try to assign to one. A child that needs to change something asks the parent to do it through a callback, which keeps the flow of data one-directional.",
+  },
+  "How does a child component request a change from its parent?": {
+    options: [
+      "It calls a callback function passed down as a prop; the parent updates its own state.",
+      "It calls setState on the parent's state object directly.",
+      "It dispatches a DOM event that the parent listens for on the window.",
+      "It mutates the prop it was given, and React re-renders the parent.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The parent owns the state and passes down a function that changes it. The child calls that function, the parent re-renders, and the new value flows back down as a prop. That is the whole of one-way data flow.",
+  },
+  "Write a Button component that accepts a label prop and renders a button.": {
+    explanation:
+      "A correct answer is `function Button({ label }) { return <button>{label}</button>; }`. Destructuring the props object in the parameter list is the usual way to read a prop.",
+  },
+
+  /* ── React Basics: State and Lists ─────────────────────────────────── */
+  "Why do lists need stable keys in React?": {
+    options: [
+      "Keys help reconciliation match items across renders; unstable keys cause bugs.",
+      "Keys make React render the list faster by skipping items that did not change.",
+      "Keys are required so React can apply the CSS class of the first item to all of them.",
+      "Keys are only used for server rendering and are ignored in the browser.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "On re-render, React compares the new list with the old one and reuses the matching DOM nodes. The key is how it decides what matches what. With unstable keys React reuses the wrong node, and state, focus, and input values jump to the wrong item.",
+  },
+  "Why is the array index a risky key when items can reorder?": {
+    options: [
+      "An index identifies a position, not an item, so inserts and reorders make React reuse the wrong element and state.",
+      "Indexes are strings in React, so they never match and the list always remounts.",
+      "Indexes are slower than UUIDs, so they cause the list to re-render on every keystroke.",
+      "Indexes are only a problem when the list is sorted, because React forbids numeric keys.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "If the item at position 0 changes, the index key is unchanged, so React keeps the old DOM node and the state that belonged to the previous item. An index key is safe only for a list that never reorders, adds, or removes items.",
+  },
+  "Write the code to render an array of names as a list of items with stable keys.": {
+    explanation:
+      "A correct answer is `names.map((name) => <li key={name}>{name}</li>)`. The key must identify the item rather than its position, so a stable value from the data such as an id is used.",
+  },
+
+  /* ── React Basics: Events, Forms, useEffect ────────────────────────── */
+  "What is a controlled input in React?": {
+    options: [
+      "Input value comes from state and changes update state via onChange.",
+      "The input has a value prop and React blocks the browser's own editing.",
+      "The input's value is read from the DOM on submit instead of being tracked.",
+      "The input is bound to a ref, so React re-renders it after every keystroke.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Controlled means the value lives in state: you pass value={text} and update text in onChange, and React re-renders the input with the new value. An uncontrolled input keeps its own value in the DOM and you read it through a ref when needed.",
+  },
+  "What does the dependency array of useEffect control?": {
+    options: [
+      "Which reactive values trigger the effect to run again when they change between renders.",
+      "Which effects are allowed to run in the browser rather than on the server.",
+      "The order in which the cleanup functions run when the component unmounts.",
+      "How many times the effect is allowed to run before React stops it.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "The array lists the values the effect reads. When one of them changes between renders, React runs the cleanup and then the effect again. An empty array means it runs once after the first render and never again.",
+  },
+  "Why must an effect that subscribes return a cleanup function?": {
+    options: [
+      "To unsubscribe, clear timers, or cancel work before re-running and on unmount, preventing leaks and stale updates.",
+      "Because React throws an error if an effect returns nothing at all.",
+      "So the effect's dependencies can be garbage collected earlier.",
+      "Because the cleanup function is where you declare the values the effect uses.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Without cleanup, every re-run adds another subscription while the old ones keep firing, and an unmounted component keeps working on data nobody can see. Cleanup is the teardown half of any effect that acquires something.",
+  },
+  "Write a React input handler that updates component state when the user types.": {
+    explanation:
+      "A correct answer is `const handleChange = (e) => setValue(e.target.value);`. The change event carries the new value, and calling the state setter schedules the re-render.",
+  },
+
+  /* ── React Basics: Forms in Depth ──────────────────────────────────── */
+  "How is a controlled checkbox different from a controlled text input?": {
+    options: [
+      "A text input uses value plus onChange; a checkbox uses checked plus onChange and reads e.target.checked.",
+      "A checkbox uses value plus onChange; a text input uses checked plus onChange.",
+      "There is no difference; both read their state from e.target.value.",
+      "A checkbox cannot be controlled at all, because the browser owns the tick.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A text field's value is a string, so it binds to value. A checkbox is a boolean, so it binds to checked and the change event reports e.target.checked rather than e.target.value.",
+  },
+  "Why can a file input not be controlled?": {
+    options: [
+      "The browser owns the file selection and forbids setting its value from JavaScript for security; read files from the event or a ref instead.",
+      "Because the File object cannot be stored in React state without losing its metadata.",
+      "Because React only supports text, number, and email inputs in controlled mode.",
+      "Because the file path is different in every browser and cannot be compared.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "For security, a browser will not let a page set the value of a file input. You keep the input uncontrolled and read the selected File from the change event, or through a ref, and store that in your own state.",
+  },
+  "Where should focus go after a failed form submit?": {
+    options: [
+      "To the first invalid field, with its error message associated and announced.",
+      "Back to the submit button, so the user can try the whole form again.",
+      "To the browser's address bar, so the error survives a page refresh.",
+      "Nowhere, because moving focus automatically breaks screen reader navigation.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Move focus to the first field that needs attention so the user is not hunting for the problem, and connect the error message with aria-describedby so it is announced. Announcing without moving focus leaves many screen reader users unaware anything went wrong.",
+  },
+  "Write a controlled select whose value comes from state.": {
+    explanation:
+      "A correct answer is `<select value={role} onChange={(e) => setRole(e.target.value)}>...</select>`. The select is controlled the same way a text input is: the value comes from state and onChange writes it back.",
+  },
+
+  /* ── React Basics: Routing and Styling ──────────────────────────────── */
+  "Why use a Link component instead of an anchor tag for internal navigation?": {
+    options: [
+      "Link updates the history and renders the route without a full document request; a plain anchor reloads the page.",
+      "Link sends the same request but caches it, so the page reloads faster.",
+      "Link preloads every route in the app, so navigation is instant every time.",
+      "An anchor tag cannot be used for internal routes in a React application.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A plain anchor asks the browser for a new document, which throws away the app state and re-downloads everything. Link intercepts the click, updates the history entry, and renders the new route with the data it already has.",
+  },
+  "What type do route params have, and what must you do before comparing one to a number?": {
+    options: [
+      "They are strings; convert with Number before numeric comparison.",
+      "They are numbers already, because the router parses them for you.",
+      "They are strings, so you should compare them with the === operator only.",
+      "They are undefined until the route loads, and then they become strings.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A parameter comes out of the URL, and the URL is text, so '/users/7' gives you the string '7'. Comparing it with === 7 fails, and id > 10 misbehaves because '9' is greater than '10' as a string.",
+  },
+  "What does a CSS Module scope?": {
+    options: [
+      "Class names, by rewriting them to unique names; the cascade still applies normally.",
+      "The whole stylesheet, so no rule outside the module can reach it.",
+      "Only the properties, so a global reset cannot change them.",
+      "Nothing on its own; scoping only happens when the file is imported.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A CSS Module rewrites each class name to something unique, so .card in one file cannot collide with .card in another. The rules still live in the same cascade, so specificity and order work exactly as in a normal stylesheet.",
+  },
+  "Why are design tokens better than repeating hex colors in components?": {
+    options: [
+      "They centralize decisions so themes and changes are consistent, instead of requiring a search through every component.",
+      "They make the browser cache the colours, so pages using them load faster.",
+      "They remove the need for a design system or any shared conventions.",
+      "They let you skip CSS variables and write plain hex values in one place.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A token is a name for a decision: --color-danger, --space-3. Change the token and every component follows, and a dark theme becomes a second set of token values rather than a second stylesheet. Repeating hex values spreads one decision across a hundred files.",
+  },
+
+  /* ── React Basics: Lifting State, Custom Hooks, Mini App ───────────── */
+  "When should you lift state up in React?": {
+    options: [
+      "When sibling or child components need shared state.",
+      "Whenever a component's state changes, so the change is always visible everywhere.",
+      "Never, because a parent re-render always re-renders its children.",
+      "Only when the state is a boolean, since other types cannot be shared.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "Lift state to the closest common ancestor of the components that need it. That keeps the state in one place and the data flow one-way. Lifting further up than necessary makes every consumer re-render for the same change.",
+  },
+  "What are the rules of hooks?": {
+    options: [
+      "Call hooks only at the top level of a component or custom hook, never conditionally or in loops.",
+      "Call hooks only inside event handlers, so they run when the user acts.",
+      "Call hooks in the same order in every component, but you may call them conditionally.",
+      "Hooks may only be used in files named with the use prefix.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "React tracks hooks by call order, so a conditional or looped hook would shift that order between renders and break the state attached to them. A hook that returns a value must also be named starting with use, so linting can find it.",
+  },
+  "Write a custom hook useToggle that returns a boolean and a toggle function.": {
+    explanation:
+      "A correct answer is `function useToggle(initial = false) { const [value, setValue] = useState(initial); const toggle = () => setValue((v) => !v); return [value, toggle]; }`. The updater form of setState reads the previous value, so the toggle stays correct even when calls are batched.",
+  },
+
+  /* ── React Basics: Errors, Suspense, and Accessibility ─────────────── */
+  "What errors does an error boundary catch, and what does it miss?": {
+    options: [
+      "It catches render, lifecycle, and constructor errors below it; it does not catch event handler errors, async rejections, or its own errors.",
+      "It catches every error thrown anywhere in the application, including network failures.",
+      "It catches only errors from network requests, and never render errors.",
+      "It catches render errors and async rejections, but not event handler errors.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A boundary is a React rendering concept, so it catches what happens while React renders the tree below it. Errors thrown later, in a click handler or in a promise, never pass through the render phase, so you catch those yourself with try/catch.",
+  },
+  "What must a module have for React.lazy to load it directly?": {
+    options: [
+      "A default export; otherwise map a named export to { default: ... } in the loader.",
+      "A named export called default, or the lazy import will fail silently.",
+      "Nothing special; React.lazy can load any module shape.",
+      "A sideEffects: false field in the package.json of the module.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "React.lazy expects the module to resolve to something with a default export, because that is what it treats as the component. If your module exports a named component, map it: lazy(() => import('./Chart').then((m) => ({ default: m.Chart }))).",
+  },
+  "What focus work does a modal need beyond rendering an overlay?": {
+    options: [
+      "Move focus inside, trap Tab, close on Escape, restore focus to the trigger, and hide the background from assistive technology.",
+      "Only move focus to the first field; the rest is handled by the browser.",
+      "Only add a close button, because keyboard users can still click it with the mouse.",
+      "Nothing, as long as the overlay covers the page visually.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "A modal takes over the interaction, so it has to behave like one: focus moves in and is trapped while it is open, Escape closes it, and focus returns to the button that opened it. The background also needs aria-hidden or inert so a screen reader does not wander out of the dialog.",
+  },
+  "Why use useId instead of a hard-coded input id in a reusable component?": {
+    options: [
+      "A hard-coded id repeats when the component renders more than once, breaking label and description associations; useId generates a stable unique id.",
+      "Because React forbids literal ids in JSX and requires the useId hook.",
+      "Because a hard-coded id is regenerated on every render and would lose focus.",
+      "Because hard-coded ids are not valid HTML when they contain a colon.",
+    ],
+    correctIndex: 0,
+    explanation:
+      "If you render the component twice, a literal id appears twice, and the label then points at the wrong input. useId gives every instance its own id that stays the same across renders, so htmlFor and aria-describedby keep pointing at the right element.",
+  },
 };
