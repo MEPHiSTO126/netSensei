@@ -7,13 +7,13 @@ const isProductionSeed = process.argv.includes("--production");
 const includeDemoUsers =
   !isProductionSeed && !process.argv.includes("--no-demo-users");
 
-type StageSeed = {
+export type StageSeed = {
   title: string;
   type: "TEXT" | "IMAGE" | "CHART";
   content: string;
 };
 
-type PhaseSeed = {
+export type PhaseSeed = {
   title: string;
   order: number;
   description?: string;
@@ -32,14 +32,14 @@ type PhaseSeed = {
   };
 };
 
-type ModuleSeed = {
+export type ModuleSeed = {
   title: string;
   order: number;
   description?: string;
   phases: PhaseSeed[];
 };
 
-const modules: ModuleSeed[] = [
+export const modules: ModuleSeed[] = [
   {
     title: "Orientation: The Workshop",
     order: 1,
@@ -1288,11 +1288,19 @@ async function main() {
   console.log(`   Modules:  ${modules.length}`);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await db.$disconnect();
-  });
+// Only seed when this file is run directly. Importing it (for example from a
+// content-sync script) must never wipe the database.
+const invokedDirectly =
+  process.argv[1]?.replace(/\\/g, "/").endsWith("/prisma/seed.ts") ||
+  process.argv[1]?.replace(/\\/g, "/").endsWith("/prisma/seed.mts");
+
+if (invokedDirectly) {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await db.$disconnect();
+    });
+}
