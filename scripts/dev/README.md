@@ -43,6 +43,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 | `cleanup_e2e.mts` | Removes any throwaway `e2e-*` accounts and the records they wrote. |
 | `cleanup_leftovers.mts` | Removes leftover `safety-*` test accounts and lists the applied migrations. |
 | `remove_demo_users.mts` | Removes the demo accounts if they are ever seeded into production. |
+| `tutor_session.mts` | Writes a temporary page that sets a tutor session cookie, so you can open the auth-protected tutor pages in a browser without logging in. Deletes nothing. |
 
 Never commit `.env`. The scripts read it directly.
 
