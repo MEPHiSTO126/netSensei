@@ -51,15 +51,6 @@ const provided = new Set([
   ...Object.keys(manifestDeps),
   ...Object.keys(manifestDevDeps),
 ]);
-const builtin = new Set([
-  "node:fs",
-  "node:path",
-  "node:crypto",
-  "node:url",
-  "node:child_process",
-  "node:os",
-  "node:process",
-]);
 
 function walk(dir) {
   for (const entry of fs.readdirSync(dir)) {
