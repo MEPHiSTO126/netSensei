@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="Illustration placeholder">
+  <rect width="800" height="450" fill="#f1f5f9" />
+  <rect x="40" y="40" width="720" height="370" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+  <g fill="none" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round">
+    <path d="M120 160h180M120 200h280M120 240h220M120 280h140" />
+  </g>
+  <g transform="translate(560 180)">
+    <rect x="0" y="0" width="140" height="100" rx="12" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" />
+    <path d="M28 72l26-30 20 22 14-16 24 24" fill="none" stroke="#1f6ae1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="46" cy="32" r="8" fill="#1f6ae1" opacity="0.35" />
+  </g>
+  <text x="400" y="380" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" fill="#64748b">Illustration coming soon</text>
+</svg>

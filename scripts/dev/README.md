@@ -14,7 +14,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 
 | Script | What it does |
 |---|---|
-| `sync_content.mts` | Applies the seed curriculum to the database **without deleting anything**. Creates missing modules, phases, stages, quizzes, and questions, and refreshes answer keys on questions that already exist. Safe to run against production. |
+| `check_content.mts` | Integrity check: no empty phases, every phase has a quiz, every question has a key or an explanation, and image stages point at a file that exists. |
 | `apply_quiz_content.mts` | Writes the multiple-choice options, key index, and explanation from `prisma/quiz-content.ts` onto existing questions. Idempotent. |
 | `audit_mcq.mts` | Checks every keyed option against the original seeded answer: the key must overlap the reference answer more than any distractor does. Flags anything for manual review. |
 | `check_mcq.mts` | Structural check: every MCQ has at least two options, an in-range key, an explanation, and no duplicated options. Also reports duplicate prompts. |
@@ -33,6 +33,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 | `verify_quiz_flow.mts` | End-to-end check of the quiz API: a student receives options but never the key, a tutor receives the key, a correct option scores 100 and a wrong one scores 0. Creates and removes a throwaway student. |
 | `verify_mcq_keys.mts` | Grades every MCQ in one phase through the live API and asserts the key scores 100. Set `PHASE_ID`. |
 | `check_migrations.mjs` | Fails if a migration contains destructive SQL. Runs automatically as part of `npm run build`. |
+| `check_manifest.mjs` | Fails if package.json and package-lock.json disagree, if an import has no dependency, or if postinstall runs a binary that is not a dependency. Runs as part of `npm run build`. |
 | `reset_course_content.mts` | The only script that deletes. `--progress <email> --confirm CLEAR-THIS-STUDENT` for one learner, `--content --confirm DELETE-CONTENT` for all course content. |
 
 ## Housekeeping

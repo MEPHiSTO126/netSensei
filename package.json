@@ -12,7 +12,7 @@
     "db:seed:production": "tsx prisma/seed.ts --production",
     "db:reset:content": "tsx scripts/dev/reset_course_content.mts --content --confirm DELETE-CONTENT",
     "db:reset:student": "tsx scripts/dev/reset_course_content.mts --progress",
-    "content:apply": "tsx scripts/dev/sync_content.mts",
+    "content:apply": "npm run db:seed:production",
     "content:quiz-keys": "tsx scripts/dev/apply_quiz_content.mts",
     "content:css": "node scripts/build-css-extra.mjs",
     "prisma:migrate:deploy": "prisma migrate deploy",
