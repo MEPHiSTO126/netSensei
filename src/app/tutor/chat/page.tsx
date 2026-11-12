@@ -18,12 +18,20 @@ import { formatRelative, summariseProgress } from "@/lib/tutor";
 
 export const dynamic = "force-dynamic";
 
+const MESSAGES_PER_PAGE = 50;
+
+/**
+ * Only the most recent messages are loaded. A long thread used to be fetched
+ * in full on every poll, which made each refresh slower as the conversation
+ * grew.
+ */
 const sessionInclude = {
   messages: {
     include: {
       sender: { select: { id: true, email: true, role: true } },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
+    take: MESSAGES_PER_PAGE,
   },
   student: { select: { id: true, email: true } },
   tutor: { select: { id: true, email: true } },
@@ -32,6 +40,11 @@ const sessionInclude = {
 type SessionWithMessages = Prisma.TutorSessionGetPayload<{
   include: typeof sessionInclude;
 }>;
+
+/** The query returns the newest messages first; the transcript reads oldest to newest. */
+function chronological(session: SessionWithMessages): SessionWithMessages {
+  return { ...session, messages: [...session.messages].reverse() };
+}
 
 function ChatState({
   title,
@@ -103,13 +116,15 @@ export default async function TutorChatPage({
       found.studentId === user.id || found.tutorId === user.id;
 
     if (isParticipant) {
-      session = found;
+      session = chronological(found);
     } else if (isTutor && !found.tutorId) {
-      session = await db.tutorSession.update({
-        where: { id: found.id },
-        data: { tutorId: user.id },
-        include: sessionInclude,
-      });
+      session = chronological(
+        await db.tutorSession.update({
+          where: { id: found.id },
+          data: { tutorId: user.id },
+          include: sessionInclude,
+        }),
+      );
     } else {
       return (
         <ChatState
@@ -140,22 +155,26 @@ export default async function TutorChatPage({
 
     if (existing) {
       session = existing.tutorId
-        ? existing
-        : await db.tutorSession.update({
-            where: { id: existing.id },
-            data: { tutorId: user.id },
-            include: sessionInclude,
-          });
+        ? chronological(existing)
+        : chronological(
+            await db.tutorSession.update({
+              where: { id: existing.id },
+              data: { tutorId: user.id },
+              include: sessionInclude,
+            }),
+          );
     } else {
-      session = await db.tutorSession.create({
-        data: {
-          studentId,
-          tutorId: user.id,
-          mode: "LIVE",
-          status: "ACTIVE",
-        },
-        include: sessionInclude,
-      });
+      session = chronological(
+        await db.tutorSession.create({
+          data: {
+            studentId,
+            tutorId: user.id,
+            mode: "LIVE",
+            status: "ACTIVE",
+          },
+          include: sessionInclude,
+        }),
+      );
     }
 
     if (requestId) {
@@ -171,16 +190,18 @@ export default async function TutorChatPage({
       orderBy: { createdAt: "desc" },
     });
 
-    session =
-      existing ??
-      (await db.tutorSession.create({
-        data: {
-          studentId: user.id,
-          mode: "LIVE",
-          status: "ACTIVE",
-        },
-        include: sessionInclude,
-      }));
+    session = existing
+      ? chronological(existing)
+      : chronological(
+          await db.tutorSession.create({
+            data: {
+              studentId: user.id,
+              mode: "LIVE",
+              status: "ACTIVE",
+            },
+            include: sessionInclude,
+          }),
+        );
   }
 
   if (!session) {
@@ -467,6 +488,19 @@ export default async function TutorChatPage({
       )}
 
       <div className="flex-1 space-y-4 overflow-y-auto p-5">
+        {session.messages.length >= MESSAGES_PER_PAGE && (
+          <p className="rounded-lg bg-muted/50 px-4 py-2.5 text-center text-xs text-muted-foreground">
+            Showing the {MESSAGES_PER_PAGE} most recent messages. The full
+            conversation is kept in the{" "}
+            <Link
+              href={`/sessions/${session.id}`}
+              className="font-medium text-primary hover:underline"
+            >
+              session record
+            </Link>
+            .
+          </p>
+        )}
         {session.messages.length === 0 && (
           <div className="py-10 text-center">
             {focusedRequest ? (

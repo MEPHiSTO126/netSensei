@@ -4,8 +4,10 @@ import { cssExtraPhases } from "./css-extra-phases";
 import { questionContent } from "./quiz-content";
 
 const isProductionSeed = process.argv.includes("--production");
-const includeDemoUsers =
-  !isProductionSeed && !process.argv.includes("--no-demo-users");
+// Demo accounts are opt-in only. The default used to create them, which meant
+// a routine `npm run db:seed` against the production database left a
+// student@netsensei.local account behind.
+const includeDemoUsers = process.argv.includes("--with-demo-users");
 
 export type StageSeed = {
   title: string;
@@ -1160,8 +1162,37 @@ export const modules: ModuleSeed[] = [
   },
 ];
 
+/**
+ * The Neon driver talks to Postgres over a WebSocket. On a flaky connection the
+ * socket can drop in the middle of a long run, which used to kill the process
+ * and leave the content half applied. Every write is idempotent, so retrying is
+ * safe: the retry picks up where the previous attempt stopped.
+ */
+async function withRetry<T>(label: string, work: () => Promise<T>): Promise<T> {
+  const attempts = 4;
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await work();
+    } catch (error) {
+      lastError = error;
+      const message =
+        error instanceof Error ? error.message : String(error);
+      console.warn(
+        `   ${label} failed (attempt ${attempt}/${attempts}): ${message}`,
+      );
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 1500));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 async function main() {
-  console.log("🌱 Seeding frontend course content...");
+  console.log("🌱 Applying frontend course content...");
 
   if (isProductionSeed) {
     const learnerData =
@@ -1171,8 +1202,8 @@ async function main() {
       (await db.tutorRequest.count());
 
     if (learnerData > 0) {
-      throw new Error(
-        "Refusing to reseed: learner records already exist. This seed rebuilds course content and deletes progress. Back up the database first or remove the learner records deliberately."
+      console.log(
+        `   ${learnerData} learner records exist. Content is applied as an upsert, so they are untouched.`,
       );
     }
   }
@@ -1211,62 +1242,130 @@ async function main() {
     },
   });
 
-  // Delete existing modules/phases for clean re-seed
-  const existingModules = await db.module.findMany({ where: { courseId: course.id } });
-  for (const m of existingModules) {
-    const phases = await db.phase.findMany({ where: { moduleId: m.id } });
-    for (const p of phases) {
-      await db.answerRecord.deleteMany({ where: { question: { quiz: { phaseId: p.id } } } });
-      await db.snippetAttempt.deleteMany({ where: { question: { quiz: { phaseId: p.id } } } });
-      await db.question.deleteMany({ where: { quiz: { phaseId: p.id } } });
-      await db.quiz.deleteMany({ where: { phaseId: p.id } });
-      await db.stage.deleteMany({ where: { phaseId: p.id } });
-      await db.progressRecord.deleteMany({ where: { phaseId: p.id } });
-      await db.phase.delete({ where: { id: p.id } });
-    }
-    await db.module.delete({ where: { id: m.id } });
-  }
+  // ── Content is applied as an upsert ────────────────────────────────
+  //
+  // Nothing here deletes. Modules, phases, stages, quizzes, and questions
+  // are matched by title (or prompt) and updated in place, so a learner's
+  // progress records keep pointing at the same phase and question rows.
+  //
+  // An earlier version of this file deleted every module and phase before
+  // recreating it, which wiped progress records, answer records, and snippet
+  // attempts for every learner. Removing content is now a separate, explicit
+  // operation in scripts/dev/reset_course_content.mts.
+  const counts = {
+    modulesCreated: 0,
+    modulesUpdated: 0,
+    phasesCreated: 0,
+    phasesUpdated: 0,
+    stagesCreated: 0,
+    stagesUpdated: 0,
+    quizzesCreated: 0,
+    quizzesUpdated: 0,
+    questionsCreated: 0,
+    questionsUpdated: 0,
+  };
 
   for (const mod of modules) {
-    const createdModule = await db.module.create({
-      data: { courseId: course.id, title: mod.title, order: mod.order, description: mod.description },
-    });
-
-    for (const phase of mod.phases) {
-      const createdPhase = await db.phase.create({
-        data: { moduleId: createdModule.id, title: phase.title, order: phase.order, description: phase.description },
-      });
-
-      for (const [idx, stage] of phase.stages.entries()) {
-        await db.stage.create({
-          data: {
-            phaseId: createdPhase.id,
-            title: stage.title,
-            type: stage.type,
-            content: stage.content,
-            order: idx + 1,
-            imageUrl: stage.type === "IMAGE" ? "/uploads/placeholder.svg" : null,
-          },
-        });
-      }
-
-      if (phase.quiz) {
-        const quiz = await db.quiz.create({
-          data: {
-            phaseId: createdPhase.id,
-            mode: "NORMAL",
-            passThreshold: phase.quiz.passThreshold ?? 70,
-          },
+    await withRetry(`module "${mod.title}"`, async () => {
+        const existingModule = await db.module.findFirst({
+          where: { courseId: course.id, title: mod.title },
         });
 
-        for (const [idx, q] of phase.quiz.questions.entries()) {
-          const content = questionContent[q.prompt];
-          await db.question.create({
-            data: {
-              quizId: quiz.id,
+        const targetModule = existingModule
+          ? await db.module.update({
+              where: { id: existingModule.id },
+              data: {
+                order: mod.order,
+                description: mod.description ?? existingModule.description,
+              },
+            })
+          : await db.module.create({
+              data: {
+                courseId: course.id,
+                title: mod.title,
+                order: mod.order,
+                description: mod.description ?? null,
+              },
+            });
+
+        if (existingModule) counts.modulesUpdated += 1;
+        else counts.modulesCreated += 1;
+
+        for (const phase of mod.phases) {
+          const existingPhase = await db.phase.findFirst({
+            where: { moduleId: targetModule.id, title: phase.title },
+          });
+
+          const targetPhase = existingPhase
+            ? await db.phase.update({
+                where: { id: existingPhase.id },
+                data: {
+                  order: phase.order,
+                  description: phase.description ?? existingPhase.description,
+                },
+              })
+            : await db.phase.create({
+                data: {
+                  moduleId: targetModule.id,
+                  title: phase.title,
+                  order: phase.order,
+                  description: phase.description ?? null,
+                },
+              });
+
+          if (existingPhase) counts.phasesUpdated += 1;
+          else counts.phasesCreated += 1;
+
+          for (const [idx, stage] of phase.stages.entries()) {
+            const existingStage = await db.stage.findFirst({
+              where: { phaseId: targetPhase.id, title: stage.title },
+            });
+
+            const stageData = {
+              type: stage.type,
+              content: stage.content,
+              order: idx + 1,
+              imageUrl: stage.type === "IMAGE" ? "/uploads/placeholder.svg" : null,
+            };
+
+            if (existingStage) {
+              await db.stage.update({ where: { id: existingStage.id }, data: stageData });
+              counts.stagesUpdated += 1;
+            } else {
+              await db.stage.create({
+                data: { phaseId: targetPhase.id, title: stage.title, ...stageData },
+              });
+              counts.stagesCreated += 1;
+            }
+          }
+
+          if (!phase.quiz) continue;
+
+          const existingQuiz = await db.quiz.findFirst({
+            where: { phaseId: targetPhase.id },
+          });
+
+          const targetQuiz = existingQuiz
+            ? await db.quiz.update({
+                where: { id: existingQuiz.id },
+                data: { passThreshold: phase.quiz.passThreshold ?? 70 },
+              })
+            : await db.quiz.create({
+                data: {
+                  phaseId: targetPhase.id,
+                  mode: "NORMAL",
+                  passThreshold: phase.quiz.passThreshold ?? 70,
+                },
+              });
+
+          if (existingQuiz) counts.quizzesUpdated += 1;
+          else counts.quizzesCreated += 1;
+
+          for (const [idx, q] of phase.quiz.questions.entries()) {
+            const content = questionContent[q.prompt];
+            const questionData = {
               type: q.type,
               language: q.language ?? "javascript",
-              prompt: q.prompt,
               fullGoal: q.fullGoal ?? null,
               expectedAnswer: q.expectedAnswer ?? null,
               rubric: q.rubric ?? null,
@@ -1275,14 +1374,45 @@ async function main() {
               explanation: content?.explanation ?? null,
               order: idx,
               points: q.points ?? 1,
-            },
-          });
+            };
+
+            const existingQuestion = await db.question.findFirst({
+              where: { quizId: targetQuiz.id, prompt: q.prompt },
+            });
+
+            if (existingQuestion) {
+              await db.question.update({
+                where: { id: existingQuestion.id },
+                data: questionData,
+              });
+              counts.questionsUpdated += 1;
+            } else {
+              await db.question.create({
+                data: { quizId: targetQuiz.id, prompt: q.prompt, ...questionData },
+              });
+              counts.questionsCreated += 1;
+            }
+          }
         }
-      }
-    }
+    });
   }
 
-  console.log("✅ Frontend course content seeded");
+  console.log("✅ Frontend course content applied (no records were deleted)");
+  console.log(
+    `   modules   ${counts.modulesCreated} created, ${counts.modulesUpdated} updated`,
+  );
+  console.log(
+    `   phases    ${counts.phasesCreated} created, ${counts.phasesUpdated} updated`,
+  );
+  console.log(
+    `   stages    ${counts.stagesCreated} created, ${counts.stagesUpdated} updated`,
+  );
+  console.log(
+    `   quizzes   ${counts.quizzesCreated} created, ${counts.quizzesUpdated} updated`,
+  );
+  console.log(
+    `   questions ${counts.questionsCreated} created, ${counts.questionsUpdated} updated`,
+  );
   if (tutorEmail) console.log(`   Tutor:    ${tutorEmail} / tutor123`);
   if (studentEmail) console.log(`   Student:  ${studentEmail} / student123`);
   console.log(`   Modules:  ${modules.length}`);
