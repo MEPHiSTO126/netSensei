@@ -32,6 +32,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 | `verify_data_safety.mts` | Proves a learner's records survive the deploy pipeline. Run `setup`, then `npm run db:seed:production`, `npx prisma migrate deploy`, `npx prisma generate`, then `check`. |
 | `verify_quiz_flow.mts` | End-to-end check of the quiz API: a student receives options but never the key, a tutor receives the key, a correct option scores 100 and a wrong one scores 0. Creates and removes a throwaway student. |
 | `verify_mcq_keys.mts` | Grades every MCQ in one phase through the live API and asserts the key scores 100. Set `PHASE_ID`. |
+| `verify_live.mts` | Calls the deployed site with signed sessions for a tutor and a throwaway student: the tutor must receive the answer key, the student must receive only the options, and only the student may submit. Uses a temporary account and removes it afterwards. |
 | `check_migrations.mjs` | Fails if a migration contains destructive SQL. Runs automatically as part of `npm run build`. |
 | `check_manifest.mjs` | Fails if package.json and package-lock.json disagree, if an import has no dependency, or if postinstall runs a binary that is not a dependency. Runs as part of `npm run build`. |
 | `reset_course_content.mts` | The only script that deletes. `--progress <email> --confirm CLEAR-THIS-STUDENT` for one learner, `--content --confirm DELETE-CONTENT` for all course content. |
@@ -42,6 +43,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 |---|---|
 | `cleanup_e2e.mts` | Removes any throwaway `e2e-*` accounts and the records they wrote. |
 | `cleanup_leftovers.mts` | Removes leftover `safety-*` test accounts and lists the applied migrations. |
+| `cleanup_live_test.mts` | Removes empty quiz attempts left by a verification run. |
 | `remove_demo_users.mts` | Removes the demo accounts if they are ever seeded into production. |
 | `tutor_session.mts` | Writes a temporary page that sets a tutor session cookie, so you can open the auth-protected tutor pages in a browser without logging in. Deletes nothing. |
 
