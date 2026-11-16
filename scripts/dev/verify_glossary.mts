@@ -17,6 +17,7 @@ const courses = await db.course.findMany({
 });
 
 let failures = 0;
+const checked = new Set<string>();
 function fail(message: string) {
   failures += 1;
   console.log(`  FAIL  ${message}`);
@@ -38,12 +39,19 @@ for (const course of courses) {
     },
   });
 
-  const moduleOf = new Map<string, string>();
-  for (const stage of stages) moduleOf.set(stage.title, stage.phase.module.title);
+  const modulesInCourse = new Set(
+    stages.map((stage) => stage.phase.module.title),
+  );
+  const entries = GLOSSARY.filter((entry) =>
+    modulesInCourse.has(entry.module),
+  );
 
-  console.log(`\n${course.title} — ${stages.length} stages, ${GLOSSARY.length} terms`);
+  console.log(
+    `\n${course.title} — ${stages.length} stages, ${entries.length} terms`,
+  );
 
-  for (const entry of GLOSSARY) {
+  for (const entry of entries) {
+    checked.add(entry.term);
     const target = stages.find(
       (stage) =>
         stage.title === entry.stage &&
@@ -80,6 +88,14 @@ for (const course of courses) {
     }
 
     console.log(`  ok    ${entry.term} → ${entry.module} › ${entry.stage}`);
+  }
+}
+
+// An entry whose module name matches no course at all is a typo in the
+// glossary, and would otherwise pass simply because no course claimed it.
+for (const entry of GLOSSARY) {
+  if (!checked.has(entry.term)) {
+    fail(`${entry.term}: no course has a module named "${entry.module}"`);
   }
 }
 

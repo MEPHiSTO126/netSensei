@@ -11,6 +11,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { MessageCircleQuestionMark } from "lucide-react";
+import { InlineText } from "@/components/course/InlineText";
 
 const TOOLTIP_WIDTH = 288;
 const GAP = 10;
@@ -199,7 +200,7 @@ export function GlossaryTerm({
               {term}
             </p>
             <p className="mt-1.5 text-xs leading-[1.6] text-foreground">
-              {explanation}
+              <InlineText text={explanation} />
             </p>
           </div>,
           document.body,

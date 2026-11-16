@@ -34,14 +34,16 @@ function escapeRegExp(value: string) {
 /**
  * Builds the pattern for one entry. The suffix allows the same word to be
  * caught in a different grammatical form ("promises", "asynchronously").
+ *
+ * There is deliberately no lookbehind here. Safari before 16.4 throws a
+ * SyntaxError on `(?<!...)`, and a thrown error in the matcher would take
+ * the whole stage page down. The character in front of a match is checked
+ * by hand in `splitByGlossaryTerms` instead.
  */
 export function buildGlossaryPattern(entry: GlossaryEntry): RegExp {
   const forms = [entry.term, ...(entry.aliases ?? [])];
   const alternatives = forms.map(escapeRegExp).join("|");
-  return new RegExp(
-    `(?<![\\w$@])(${alternatives})${SUFFIX}(?![\\w-])`,
-    "gi",
-  );
+  return new RegExp(`(${alternatives})${SUFFIX}(?![\\w-])`, "gi");
 }
 
 /**
@@ -63,11 +65,17 @@ export function splitByGlossaryTerms(
     const pattern = buildGlossaryPattern(entry);
     let match = pattern.exec(text);
     while (match !== null) {
-      candidates.push({
-        start: match.index,
-        end: match.index + match[0].length,
-        entry,
-      });
+      // The character in front of the term decides whether it is a word of
+      // its own or the tail of a longer name: "memo" in "useMemo" is not a
+      // mention of "memo".
+      const before = text.charAt(match.index - 1);
+      if (!before || !/[\w$@]/.test(before)) {
+        candidates.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          entry,
+        });
+      }
       if (match.index === pattern.lastIndex) pattern.lastIndex += 1;
       match = pattern.exec(text);
     }

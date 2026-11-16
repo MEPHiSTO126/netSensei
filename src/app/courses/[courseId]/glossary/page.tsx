@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import Link from "next/link";
 import { ChevronRight, BookOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { InlineText } from "@/components/course/InlineText";
 import { glossaryByModule } from "@/data/glossary";
 
 export const dynamic = "force-dynamic";
@@ -125,7 +126,7 @@ export default async function GlossaryPage({
                       </code>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-foreground">
-                          {entry.explanation}
+                          <InlineText text={entry.explanation} />
                         </p>
                         {link && (
                           <Link

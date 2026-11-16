@@ -155,7 +155,7 @@ export default async function StagePage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[264px_minmax(0,1fr)] lg:items-start lg:gap-8">
         {/* ── Timeline sidebar (left on desktop, below content on mobile) ── */}
-        <aside className="order-2 lg:order-1 lg:sticky lg:top-6 space-y-5">
+        <aside className="order-2 lg:order-1 lg:sticky lg:top-20 space-y-5">
           <div>
             <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
               In this phase
