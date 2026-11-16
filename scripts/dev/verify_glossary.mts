@@ -1,5 +1,14 @@
 import { db } from "../../src/lib/db";
 import { GLOSSARY } from "../../src/data/glossary";
+import { buildGlossaryPattern, type GlossaryEntry } from "../../src/lib/glossary";
+
+/**
+ * Uses the very pattern the stage renderer uses, so the check agrees with
+ * what a learner actually sees (including plural forms and aliases).
+ */
+function mentions(entry: GlossaryEntry, text: string) {
+  return buildGlossaryPattern(entry).test(text);
+}
 
 /**
  * Checks that every glossary entry still matches the course:
@@ -65,20 +74,20 @@ for (const course of courses) {
 
     // The term must be visible in that stage, outside fenced code blocks.
     const visible = target.content.replace(/```[\s\S]*?```/g, " ");
-    const pattern = new RegExp(
-      `(?<![\\w$@])${entry.term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w-])`,
-      "i",
-    );
-    if (!pattern.test(visible)) {
+    if (!mentions(entry, visible)) {
       fail(`${entry.term}: stage "${entry.stage}" no longer mentions it`);
       continue;
     }
 
-    // No earlier stage may mention it, or the explanation arrives too late.
+    // No earlier stage in the same module may mention it, or the
+    // explanation arrives too late for that part of the course. An earlier
+    // mention in another module is often a different sense of the word —
+    // a git "record" is not a DNS record — so it does not count here.
     const index = stages.indexOf(target);
     const earlier = stages.slice(0, index).find((stage) => {
+      if (stage.phase.module.title !== entry.module) return false;
       const text = stage.content.replace(/```[\s\S]*?```/g, " ");
-      return pattern.test(text);
+      return mentions(entry, text);
     });
     if (earlier) {
       fail(
