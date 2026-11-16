@@ -103,21 +103,19 @@ export default async function PhasePage({
       >
         <Link
           href={`/courses/${courseId}`}
-          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
+          className="text-muted-foreground hover:text-primary transition-colors"
         >
           {phase.module.course.title}
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
         <Link
           href={`/courses/${courseId}#module-${moduleId}`}
-          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
+          className="text-muted-foreground hover:text-primary transition-colors"
         >
           {phase.module.title}
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
-        <span className="font-semibold text-heading truncate max-w-[180px]">
-          {phase.title}
-        </span>
+        <span className="font-semibold text-heading">{phase.title}</span>
       </nav>
 
       <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">

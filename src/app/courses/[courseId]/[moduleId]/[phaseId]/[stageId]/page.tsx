@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronRight, FileText, Image as ImageIcon, BarChart3, Play } from "lucide-react";
 import { TutorRequestButton } from "@/components/tutor/TutorRequestButton";
 import { StageContent } from "@/components/course/StageContent";
+import { glossaryForStage } from "@/data/glossary";
 import { getOnlineTutorCount } from "@/lib/presence";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +69,10 @@ export default async function StagePage({
   const user = await getCurrentUser();
   const isTutor = user?.role === "TUTOR";
   const onlineTutorCount = isTutor ? 0 : await getOnlineTutorCount();
+  const glossary = glossaryForStage(
+    stage.phase.module.title,
+    stage.title,
+  );
 
   return (
     <div className="space-y-6">
@@ -78,39 +83,40 @@ export default async function StagePage({
       >
         <Link
           href={`/courses/${courseId}`}
-          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
+          className="text-muted-foreground hover:text-primary transition-colors"
         >
           {stage.phase.module.course.title}
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
         <Link
           href={`/courses/${courseId}#module-${moduleId}`}
-          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
+          className="text-muted-foreground hover:text-primary transition-colors"
         >
           {stage.phase.module.title}
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
         <Link
           href={`/courses/${courseId}/${moduleId}/${phaseId}`}
-          className="text-muted-foreground hover:text-primary transition-colors truncate max-w-[140px]"
+          className="text-muted-foreground hover:text-primary transition-colors"
         >
           {stage.phase.title}
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
-        <span className="font-semibold text-heading truncate max-w-[180px]">
-          {stage.title}
-        </span>
+        <span className="font-semibold text-heading">{stage.title}</span>
       </nav>
 
       {/* ── Mobile stage quick switcher (< lg) ───────────── */}
       <div className="lg:hidden">
         <details className="group rounded-xl border border-border bg-card p-3 shadow-sm">
           <summary className="flex items-center justify-between cursor-pointer list-none text-sm font-semibold text-heading">
-            <span className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="w-5 h-5 shrink-0 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
                 {currentIndex + 1}
               </span>
-              <span className="truncate">Stage {currentIndex + 1} of {stage.phase.stages.length}: {stage.title}</span>
+              <span className="min-w-0 truncate">
+                Stage {currentIndex + 1} of {stage.phase.stages.length}:{" "}
+                {stage.title}
+              </span>
             </span>
             <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90 shrink-0 ml-2" />
           </summary>
@@ -147,12 +153,17 @@ export default async function StagePage({
         </details>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[264px_minmax(0,1fr)] lg:items-start lg:gap-8">
         {/* ── Timeline sidebar (left on desktop, below content on mobile) ── */}
-        <aside className="order-2 lg:order-1 lg:w-1/4 space-y-5">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            Stages in {stage.phase.title}
-          </h2>
+        <aside className="order-2 lg:order-1 lg:sticky lg:top-6 space-y-5">
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              In this phase
+            </h2>
+            <p className="mt-1 text-sm font-semibold text-heading">
+              {stage.phase.title}
+            </p>
+          </div>
           <div className="relative space-y-1">
             {/* vertical progress line */}
             <div className="absolute left-[17px] top-3 bottom-3 w-px bg-border pointer-events-none" />
@@ -179,7 +190,9 @@ export default async function StagePage({
                   >
                     {STAGE_ICONS[s.type] ?? <FileText className="h-3.5 w-3.5" />}
                   </span>
-                  <span className={`font-medium truncate ${isActive ? "text-primary" : ""}`}>
+                  <span
+                    className={`min-w-0 flex-1 font-medium leading-snug line-clamp-2 ${isActive ? "text-primary" : ""}`}
+                  >
                     {s.title}
                   </span>
                   {isActive && (
@@ -226,95 +239,100 @@ export default async function StagePage({
         </aside>
 
         {/* ── Content card (renders top on mobile, right on desktop) ─── */}
-        <Card className="order-1 lg:order-2 lg:w-3/4 overflow-hidden relative transition-all duration-200 hover:shadow-md">
+        <Card className="order-1 lg:order-2 relative transition-all duration-200 hover:shadow-md">
           {/* accent bar */}
-          <div className="h-1 w-full bg-primary/20" />
+          <div className="h-1 w-full rounded-t-xl bg-primary/20" />
 
-          <div className="p-6 md:p-8">
-            {/* title + badge */}
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-2xl font-bold text-heading">{stage.title}</h1>
-              <Badge variant="outline" className="text-xs shrink-0 ml-4">
-                Stage {stage.order}
-              </Badge>
-            </div>
+          <div className="px-6 py-8 md:px-10">
+            {/* A reading measure of about 74 characters a line. Wider than
+                this and the eye loses its place on the return sweep. */}
+            <div className="mx-auto w-full max-w-[40rem]">
+              {/* title + badge */}
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <h1 className="text-2xl font-bold text-heading">{stage.title}</h1>
+                <Badge variant="outline" className="text-xs shrink-0">
+                  Stage {stage.order}
+                </Badge>
+              </div>
 
-            {/* content */}
-            <div id={`stage-${stage.id}`} className="max-w-none">
-              <StageContent
-                type={stage.type}
-                content={stage.content}
-                imageUrl={stage.imageUrl}
-              />
-            </div>
+              {/* content */}
+              <div id={`stage-${stage.id}`} className="max-w-none">
+                <StageContent
+                  type={stage.type}
+                  content={stage.content}
+                  imageUrl={stage.imageUrl}
+                  glossary={glossary}
+                />
+              </div>
 
-            {!isTutor && (
-              <TutorRequestButton
-                stageId={stage.id}
-                stageTitle={stage.title}
-                onlineTutorCount={onlineTutorCount}
-              />
-            )}
+              {!isTutor && (
+                <TutorRequestButton
+                  stageId={stage.id}
+                  stageTitle={stage.title}
+                  onlineTutorCount={onlineTutorCount}
+                />
+              )}
 
-            {/* ── Card-based prev/next navigation ────────────── */}
-            <div className="mt-10 pt-6 border-t border-border">
-              <div className="grid grid-cols-2 gap-4">
-                {prevStage ? (
-                  <Link
-                    href={`/courses/${courseId}/${moduleId}/${phaseId}/${prevStage.id}`}
-                    className="group flex flex-col gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30"
-                  >
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <ChevronRight className="h-3.5 w-3.5 rotate-180" />
-                      Previous
-                    </span>
-                    <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
-                      {prevStage.title}
-                    </span>
-                  </Link>
-                ) : (
-                  <div />
-                )}
-                {nextStage ? (
-                  <Link
-                    href={`/courses/${courseId}/${moduleId}/${phaseId}/${nextStage.id}`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
-                  >
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      Next
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
-                      {nextStage.title}
-                    </span>
-                  </Link>
-                ) : canTakeQuiz ? (
-                  <Link
-                    href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-primary/40 bg-primary/[0.04] p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary text-right"
-                  >
-                    <span className="text-xs font-semibold text-primary flex items-center gap-1">
-                      {isTutor ? "Preview Quiz" : "Phase Complete"}
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="text-sm font-bold text-heading group-hover:text-primary transition-colors truncate">
-                      Take Phase Quiz →
-                    </span>
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/courses/${courseId}/${moduleId}/${phaseId}`}
-                    className="group flex flex-col items-end gap-1 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 text-right"
-                  >
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      Phase Complete
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="text-sm font-semibold text-heading group-hover:text-primary transition-colors truncate">
-                      Phase Overview →
-                    </span>
-                  </Link>
-                )}
+              {/* ── Card-based prev/next navigation ────────────── */}
+              <div className="mt-10 pt-6 border-t border-border">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {prevStage ? (
+                    <Link
+                      href={`/courses/${courseId}/${moduleId}/${phaseId}/${prevStage.id}`}
+                      className="group flex h-full flex-col gap-1.5 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30"
+                    >
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+                        Previous
+                      </span>
+                      <span className="w-full min-w-0 truncate text-sm font-semibold text-heading transition-colors group-hover:text-primary">
+                        {prevStage.title}
+                      </span>
+                    </Link>
+                  ) : (
+                    <div />
+                  )}
+                  {nextStage ? (
+                    <Link
+                      href={`/courses/${courseId}/${moduleId}/${phaseId}/${nextStage.id}`}
+                      className="group flex h-full flex-col items-start gap-1.5 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 sm:items-end sm:text-right"
+                    >
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        Next
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="w-full min-w-0 truncate text-sm font-semibold text-heading transition-colors group-hover:text-primary">
+                        {nextStage.title}
+                      </span>
+                    </Link>
+                  ) : canTakeQuiz ? (
+                    <Link
+                      href={`/courses/${courseId}/${moduleId}/${phaseId}/quiz`}
+                      className="group flex h-full flex-col items-start gap-1.5 rounded-xl border border-primary/40 bg-primary/[0.04] p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary sm:items-end sm:text-right"
+                    >
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                        {isTutor ? "Preview Quiz" : "Phase Complete"}
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="w-full min-w-0 truncate text-sm font-bold text-heading transition-colors group-hover:text-primary">
+                        Take Phase Quiz →
+                      </span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/courses/${courseId}/${moduleId}/${phaseId}`}
+                      className="group flex h-full flex-col items-start gap-1.5 rounded-xl border border-border bg-card p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/30 sm:items-end sm:text-right"
+                    >
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        Phase Complete
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="w-full min-w-0 truncate text-sm font-semibold text-heading transition-colors group-hover:text-primary">
+                        Phase Overview →
+                      </span>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>

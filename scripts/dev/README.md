@@ -15,6 +15,7 @@ Run them from the repository root with `npx tsx scripts/dev/<name>.mts`.
 | Script | What it does |
 |---|---|
 | `check_content.mts` | Integrity check: no empty phases, every phase has a quiz, every question has a key or an explanation, and image stages point at a file that exists. |
+| `verify_glossary.mts` | Checks that every entry in `src/data/glossary.ts` still names a real stage that still mentions the term, and that no earlier stage mentions it — so a renamed stage fails the check instead of losing its explanation. |
 | `apply_quiz_content.mts` | Writes the multiple-choice options, key index, and explanation from `prisma/quiz-content.ts` onto existing questions. Idempotent. |
 | `audit_mcq.mts` | Checks every keyed option against the original seeded answer: the key must overlap the reference answer more than any distractor does. Flags anything for manual review. |
 | `check_mcq.mts` | Structural check: every MCQ has at least two options, an in-range key, an explanation, and no duplicated options. Also reports duplicate prompts. |

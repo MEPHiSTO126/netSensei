@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ImageIcon, Copy, Check } from "lucide-react";
+import { GlossaryTerm } from "@/components/course/GlossaryTerm";
+import { splitByGlossaryTerms, type GlossaryEntry } from "@/lib/glossary";
 
 export function StageContent({
   type,
   content,
   imageUrl,
+  glossary = [],
 }: {
   type: string;
   content: string;
   imageUrl: string | null;
+  /** Terms that are explained the first time this learner meets them. */
+  glossary?: GlossaryEntry[];
 }) {
   switch (type) {
     case "IMAGE":
@@ -18,7 +23,7 @@ export function StageContent({
     case "CHART":
       return <ChartDiagram content={content} />;
     default:
-      return <RichText content={content} />;
+      return <RichText content={content} glossary={glossary} />;
   }
 }
 
@@ -105,9 +110,47 @@ function parseContentBlocks(content: string) {
 }
 
 /**
+ * Renders a run of text, turning any glossary term inside it into a marked
+ * term with an explanation attached.
+ */
+function GlossaryRuns({
+  text,
+  glossary,
+}: {
+  text: string;
+  glossary: GlossaryEntry[];
+}) {
+  const segments = splitByGlossaryTerms(text, glossary);
+
+  return (
+    <>
+      {segments.map((segment, index) =>
+        segment.entry ? (
+          <GlossaryTerm
+            key={index}
+            term={segment.entry.term}
+            explanation={segment.entry.explanation}
+          >
+            {segment.text}
+          </GlossaryTerm>
+        ) : (
+          <Fragment key={index}>{segment.text}</Fragment>
+        ),
+      )}
+    </>
+  );
+}
+
+/**
  * Parse inline markdown: `code`, **bold**, *italic*
  */
-function InlineText({ text }: { text: string }) {
+function InlineText({
+  text,
+  glossary,
+}: {
+  text: string;
+  glossary: GlossaryEntry[];
+}) {
   // Split on backticks first, then parse bold/italic in non-code segments
   const backtickParts = text.split("`");
   return (
@@ -118,17 +161,23 @@ function InlineText({ text }: { text: string }) {
             key={index}
             className="rounded-md bg-primary/[0.08] text-primary border border-primary/15 px-1.5 py-0.5 font-mono text-xs"
           >
-            {part}
+            <GlossaryRuns text={part} glossary={glossary} />
           </code>
         ) : (
-          <InlineFormattedText key={index} text={part} />
+          <InlineFormattedText key={index} text={part} glossary={glossary} />
         ),
       )}
     </>
   );
 }
 
-function InlineFormattedText({ text }: { text: string }) {
+function InlineFormattedText({
+  text,
+  glossary,
+}: {
+  text: string;
+  glossary: GlossaryEntry[];
+}) {
   // Parse links [text](url), **bold**, *italic*
   const tokens = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*|\*[^*]+\*)/g);
   return (
@@ -159,24 +208,30 @@ function InlineFormattedText({ text }: { text: string }) {
         if (token.startsWith("**") && token.endsWith("**")) {
           return (
             <strong key={i} className="font-semibold text-heading">
-              {token.slice(2, -2)}
+              <GlossaryRuns text={token.slice(2, -2)} glossary={glossary} />
             </strong>
           );
         }
         if (token.startsWith("*") && token.endsWith("*") && token.length > 2) {
           return (
             <em key={i} className="italic">
-              {token.slice(1, -1)}
+              <GlossaryRuns text={token.slice(1, -1)} glossary={glossary} />
             </em>
           );
         }
-        return token;
+        return <GlossaryRuns key={i} text={token} glossary={glossary} />;
       })}
     </>
   );
 }
 
-function RichText({ content }: { content: string }) {
+function RichText({
+  content,
+  glossary,
+}: {
+  content: string;
+  glossary: GlossaryEntry[];
+}) {
   const blocks = parseContentBlocks(content);
   const firstTextIndex = blocks.findIndex((block) => block.kind !== "code");
 
@@ -228,14 +283,14 @@ function RichText({ content }: { content: string }) {
               if (text.startsWith("### ")) {
                 return (
                   <h4 key={j} className="text-lg font-bold text-heading pt-2">
-                    <InlineText text={text.slice(4)} />
+                    <InlineText glossary={glossary} text={text.slice(4)} />
                   </h4>
                 );
               }
               if (text.startsWith("## ")) {
                 return (
                   <h3 key={j} className="text-xl font-bold text-heading pt-3">
-                    <InlineText text={text.slice(3)} />
+                    <InlineText glossary={glossary} text={text.slice(3)} />
                   </h3>
                 );
               }
@@ -247,7 +302,7 @@ function RichText({ content }: { content: string }) {
                     key={j}
                     className="border-l-4 border-primary/40 bg-muted/30 px-4 py-2.5 rounded-r-lg italic text-muted-foreground my-2"
                   >
-                    <InlineText text={text.slice(2)} />
+                    <InlineText glossary={glossary} text={text.slice(2)} />
                   </blockquote>
                 );
               }
@@ -264,7 +319,7 @@ function RichText({ content }: { content: string }) {
                   >
                     {p.map((line, lIdx) => (
                       <li key={lIdx}>
-                        <InlineText text={line.slice(2)} />
+                        <InlineText glossary={glossary} text={line.slice(2)} />
                       </li>
                     ))}
                   </ul>
@@ -280,7 +335,7 @@ function RichText({ content }: { content: string }) {
                   >
                     {p.map((line, lIdx) => (
                       <li key={lIdx}>
-                        <InlineText text={line.replace(/^\d+\.\s/, "")} />
+                        <InlineText glossary={glossary} text={line.replace(/^\d+\.\s/, "")} />
                       </li>
                     ))}
                   </ol>
@@ -299,13 +354,13 @@ function RichText({ content }: { content: string }) {
                     <span className="float-left text-4xl font-bold text-primary leading-[0.85] mr-2 mt-1">
                       {text[0]}
                     </span>
-                    <InlineText text={text.slice(1)} />
+                    <InlineText glossary={glossary} text={text.slice(1)} />
                   </p>
                 );
               }
               return (
                 <p key={j} className="whitespace-pre-line">
-                  <InlineText text={text} />
+                  <InlineText glossary={glossary} text={text} />
                 </p>
               );
             })}

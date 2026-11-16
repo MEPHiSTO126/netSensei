@@ -44,3 +44,20 @@ npx tsx scripts/dev/verify_data_safety.mts check   # asserts nothing was lost
 **Content changes** belong in `prisma/seed.ts` (course content) and
 `prisma/quiz-content.ts` (answer keys and explanations). After editing them,
 apply with `npm run db:seed:production` and `npm run content:quiz-keys`.
+
+## The glossary (read before editing stage text)
+
+Terms a learner meets before the course explains them live in
+`src/data/glossary.ts`, not in the database. Each entry names the term, a
+plain-language explanation, and the module and stage that introduce it. The
+stage page marks the term inline and shows the explanation in a bubble.
+
+- It is a **static file**: no migration, no seed, no database write. Editing it
+  cannot touch a learner's progress.
+- A term is marked **only in the stage that introduces it**, so a stage never
+  fills up with marks.
+- If a stage is renamed, the entry no longer matches. Run
+  `npx tsx scripts/dev/verify_glossary.mts` after any change to stage text or
+  to the glossary; it fails when an entry names a stage that does not exist,
+  when that stage no longer mentions the term, or when an earlier stage
+  mentions it first.

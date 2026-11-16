@@ -4,7 +4,7 @@ import { getCourseProgress } from "@/lib/progress";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Eye, LayoutList, Play } from "lucide-react";
+import { CheckCircle2, Eye, LayoutList, Play, BookText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -65,12 +65,20 @@ export default async function CoursePage({
           <h1 className="text-2xl font-bold text-heading">{course.title}</h1>
           <p className="text-muted-foreground">{course.description}</p>
         </div>
-        <Link
-          href="/courses"
-          className="inline-flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors"
-        >
-          <LayoutList className="h-4 w-4" /> Back to courses
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/courses/${courseId}/glossary`}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors"
+          >
+            <BookText className="h-4 w-4" /> Glossary
+          </Link>
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-input rounded-md text-sm font-medium hover:bg-muted transition-colors"
+          >
+            <LayoutList className="h-4 w-4" /> Back to courses
+          </Link>
+        </div>
       </div>
 
       {isTutor && (
