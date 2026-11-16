@@ -17,6 +17,12 @@ const GAP = 10;
 const EDGE = 12;
 const HOVER_QUERY = "(hover: hover) and (pointer: fine)";
 
+/**
+ * Only one explanation may stay pinned at a time, so opening a second term
+ * does not leave the first one hanging on the screen.
+ */
+let dismissPinned: (() => void) | null = null;
+
 function subscribeToHover(callback: () => void) {
   const query = window.matchMedia(HOVER_QUERY);
   query.addEventListener("change", callback);
@@ -50,6 +56,8 @@ export function GlossaryTerm({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const pressedWhilePinned = useRef(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const arrowAboveRef = useRef<HTMLSpanElement>(null);
@@ -60,6 +68,11 @@ export function GlossaryTerm({
     getHoverSnapshot,
     getServerHoverSnapshot,
   );
+
+  const hide = useCallback(() => {
+    setOpen(false);
+    setPinned(false);
+  }, []);
 
   /**
    * Positions the tooltip over the term. The size is written straight to the
@@ -128,7 +141,7 @@ export function GlossaryTerm({
         if (!button) return;
         const box = button.getBoundingClientRect();
         if (box.bottom <= 0 || box.top >= window.innerHeight) {
-          setOpen(false);
+          hide();
           return;
         }
         place();
@@ -137,7 +150,7 @@ export function GlossaryTerm({
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      setOpen(false);
+      hide();
       buttonRef.current?.focus();
     };
 
@@ -150,7 +163,13 @@ export function GlossaryTerm({
       window.removeEventListener("resize", onScroll);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [open, place]);
+  }, [open, place, hide]);
+
+  useEffect(() => {
+    return () => {
+      if (dismissPinned === hide) dismissPinned = null;
+    };
+  }, [hide]);
 
   const tooltip =
     open && typeof document !== "undefined"
@@ -194,12 +213,37 @@ export function GlossaryTerm({
         type="button"
         aria-expanded={open}
         aria-describedby={open ? tooltipId : undefined}
-        onMouseEnter={canHover ? () => setOpen(true) : undefined}
-        onMouseLeave={canHover ? () => setOpen(false) : undefined}
+        onPointerEnter={
+          canHover
+            ? () => {
+                if (!pinned) setOpen(true);
+              }
+            : undefined
+        }
+        onPointerLeave={
+          canHover
+            ? () => {
+                if (!pinned) setOpen(false);
+              }
+            : undefined
+        }
+        onPointerDown={() => {
+          // Opening on pointerdown rather than on click means the bubble
+          // appears the moment the term is pressed, with no wait for the
+          // click, and it does not depend on the order in which the browser
+          // fires focus and blur.
+          pressedWhilePinned.current = pinned;
+          if (dismissPinned) dismissPinned();
+          dismissPinned = hide;
+          setOpen(true);
+          setPinned(true);
+        }}
         onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
+        onBlur={hide}
         onClick={() => {
-          if (!canHover) setOpen(true);
+          // A second press on a term that is already pinned puts it away
+          // again.
+          if (pressedWhilePinned.current) hide();
         }}
         className="group inline-flex cursor-help items-baseline gap-[3px] rounded border-0 bg-transparent p-0 font-inherit text-inherit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
