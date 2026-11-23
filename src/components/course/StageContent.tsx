@@ -439,16 +439,25 @@ function ChartDiagram({ content }: { content: string }) {
     );
   }
 
+  // A reading column is about 600px wide. Long flows wrap onto balanced
+  // rows instead of pushing the first and last cards out of the card.
+  const columns =
+    cleaned.length <= 4
+      ? cleaned.length
+      : cleaned.length <= 6
+        ? 3
+        : 4;
+
   return (
     <div
       className="mt-6 rounded-xl border border-border bg-card p-5 md:p-8"
       style={{ animation: "fadeInScale 0.5s ease-out both" }}
     >
-      <ol className="flex flex-col gap-3 md:flex-row md:items-center md:justify-center md:gap-0">
+      <ol className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-center md:gap-x-1 md:gap-y-5">
         {cleaned.map((step, idx) => (
           <li
             key={idx}
-            className="flex flex-col md:contents"
+            className="flex flex-col md:flex md:flex-row md:items-center"
             style={{
               animation: `slideUp 0.4s ease-out ${idx * 100}ms both`,
             }}
@@ -456,25 +465,27 @@ function ChartDiagram({ content }: { content: string }) {
             {idx > 0 && (
               <div
                 aria-hidden="true"
-                className="mx-3 my-1 flex justify-center md:mx-1 md:my-0 md:flex-col md:items-center"
+                className={`mx-3 my-1 flex justify-center md:mx-1 md:my-0 md:flex-col md:items-center ${
+                  idx % columns === 0 ? "md:hidden" : ""
+                }`}
               >
                 {/* vertical connector on mobile */}
                 <div className="h-4 w-0.5 rounded-full bg-gradient-to-b from-primary/60 to-primary/30 md:hidden" />
                 <div className="h-0 w-0 border-x-[5px] border-x-transparent border-t-[7px] border-t-primary/50 md:hidden" />
                 {/* horizontal connector on desktop */}
                 <div className="hidden items-center md:flex">
-                  <div className="h-0.5 w-6 rounded-full bg-gradient-to-r from-primary/60 to-primary/30 lg:w-10" />
+                  <div className="h-0.5 w-4 rounded-full bg-gradient-to-r from-primary/60 to-primary/30" />
                   <div className="h-0 w-0 border-y-[5px] border-y-transparent border-l-[7px] border-l-primary/50" />
                 </div>
               </div>
             )}
-            <div className="flex items-center gap-3 md:flex-col">
+            <div className="flex items-center gap-3 md:w-[112px] md:shrink-0 md:flex-col">
               {/* numbered badge */}
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-sm">
                 {idx + 1}
               </span>
               {/* step card */}
-              <div className="min-w-0 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:max-w-[180px] md:text-center">
+              <div className="min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:w-full md:text-center">
                 {step}
               </div>
             </div>
